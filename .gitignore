@@ -46,3 +46,6 @@ pnpm-debug.log*
 # temp
 tmp/
 temp/
+
+# local sensitive file
+database_password.txt

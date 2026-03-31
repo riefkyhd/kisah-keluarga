@@ -13,6 +13,15 @@ type TestMember = {
   full_name: string;
 };
 
+type RelationshipType = "parent" | "spouse";
+
+type TestRelationship = {
+  id: string;
+  from_person_id: string;
+  to_person_id: string;
+  relationship_type: RelationshipType;
+};
+
 function assertTestBootstrapEnabled() {
   if (process.env.ENABLE_TEST_AUTH_BOOTSTRAP !== "true") {
     throw new Error(
@@ -165,4 +174,43 @@ export async function createMemberFixture(label: string, createdByUserId?: strin
   }
 
   return data as TestMember;
+}
+
+function normalizeSpousePair(fromPersonId: string, toPersonId: string) {
+  return fromPersonId < toPersonId
+    ? { fromPersonId, toPersonId }
+    : { fromPersonId: toPersonId, toPersonId: fromPersonId };
+}
+
+export async function createRelationshipFixture(params: {
+  fromPersonId: string;
+  toPersonId: string;
+  relationshipType: RelationshipType;
+  createdByUserId?: string;
+}): Promise<TestRelationship> {
+  const admin = getAdminClient();
+
+  const normalized =
+    params.relationshipType === "spouse"
+      ? normalizeSpousePair(params.fromPersonId, params.toPersonId)
+      : { fromPersonId: params.fromPersonId, toPersonId: params.toPersonId };
+
+  const { data, error } = await admin
+    .from("relationships")
+    .insert({
+      from_person_id: normalized.fromPersonId,
+      to_person_id: normalized.toPersonId,
+      relationship_type: params.relationshipType,
+      is_archived: false,
+      created_by: params.createdByUserId ?? null,
+      updated_by: params.createdByUserId ?? null
+    })
+    .select("id, from_person_id, to_person_id, relationship_type")
+    .single();
+
+  if (error || !data) {
+    throw new Error(`Gagal membuat relationship fixture: ${error?.message ?? "unknown error"}`);
+  }
+
+  return data as TestRelationship;
 }

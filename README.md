@@ -24,6 +24,8 @@ Yang sudah disiapkan:
 - profil anggota (`/keluarga/[personId]`)
 - tambah anggota (`/anggota-baru`)
 - edit + arsip/pulihkan anggota (`/anggota/[personId]/edit`)
+- tautkan relasi kontekstual dari profil (`orang tua`, `pasangan`, `anak`)
+- tampilan relasi profil (`orang tua`, `pasangan`, `anak`, `saudara` turunan)
 - baseline folder `supabase/` (`migrations`, `seeds`, `policies`)
 - `.env.example`
 
@@ -50,8 +52,9 @@ Yang **belum** diimplementasikan:
 5. (Opsional, untuk admin pertama) jalankan template:
    - `supabase/seeds/001_initial_admin_template.sql`
    - ganti `<AUTH_USER_UUID>` dengan user id dari Supabase Auth
-6. Jalankan migration `people`:
+6. Jalankan migration:
    - `supabase/migrations/20260331113000_create_people.sql`
+   - `supabase/migrations/20260401013000_create_relationships.sql`
 7. Jalankan app:
    ```bash
    npm run dev
@@ -73,6 +76,7 @@ Prasyarat:
 2. Migration sudah diterapkan:
    - `supabase/migrations/20260331100000_create_user_roles.sql`
    - `supabase/migrations/20260331113000_create_people.sql`
+   - `supabase/migrations/20260401013000_create_relationships.sql`
 3. Install browser Playwright (sekali):
    ```bash
    npx playwright install chromium

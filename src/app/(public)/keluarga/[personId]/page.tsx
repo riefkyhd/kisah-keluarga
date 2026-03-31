@@ -3,12 +3,38 @@ import { notFound } from "next/navigation";
 import { getCurrentUserRole, requireViewer } from "@/lib/permissions/guards";
 import { hasMinimumRole } from "@/lib/auth/roles";
 import { getMemberById } from "@/server/queries/members";
+import { RelationshipSection } from "@/components/relationships/relationship-section";
+import {
+  archiveRelationshipAction,
+  addChildRelationshipAction,
+  addParentRelationshipAction,
+  addSpouseRelationshipAction
+} from "@/server/actions/relationships";
+import { getProfileRelationships, listRelationshipCandidates } from "@/server/queries/relationships";
 
 type MemberProfilePageProps = {
   params: Promise<{ personId: string }>;
+  searchParams: Promise<{ relationship_error?: string; relationship_status?: string }>;
 };
 
-export default async function MemberProfilePage({ params }: MemberProfilePageProps) {
+const relationshipErrorMessages: Record<string, string> = {
+  invalid_relationship: "Relasi tidak valid. Mohon periksa data yang dipilih.",
+  self_link: "Anggota tidak bisa dihubungkan ke dirinya sendiri.",
+  duplicate_relationship: "Relasi aktif yang sama sudah ada.",
+  illegal_relationship: "Relasi ini tidak dapat dibuat karena bertentangan dengan aturan data keluarga.",
+  archived_person: "Relasi tidak bisa dibuat karena salah satu anggota sedang diarsipkan.",
+  save_failed: "Relasi belum tersimpan. Coba lagi sebentar.",
+  archive_failed: "Relasi belum berhasil diarsipkan. Coba lagi."
+};
+
+const relationshipStatusMessages: Record<string, string> = {
+  added_parent: "Relasi orang tua berhasil ditambahkan.",
+  added_spouse: "Relasi pasangan berhasil ditambahkan.",
+  added_child: "Relasi anak berhasil ditambahkan.",
+  archived: "Relasi berhasil diarsipkan."
+};
+
+export default async function MemberProfilePage({ params, searchParams }: MemberProfilePageProps) {
   const { personId } = await params;
 
   await requireViewer(`/keluarga/${personId}`);
@@ -19,6 +45,16 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
   if (!member) {
     notFound();
   }
+
+  const relationshipData = await getProfileRelationships(personId, canManageMember);
+  const relationshipCandidates = canManageMember ? await listRelationshipCandidates(personId) : [];
+  const query = await searchParams;
+  const relationshipErrorMessage = query.relationship_error
+    ? relationshipErrorMessages[query.relationship_error]
+    : "";
+  const relationshipStatusMessage = query.relationship_status
+    ? relationshipStatusMessages[query.relationship_status]
+    : "";
 
   return (
     <section className="space-y-4">
@@ -52,6 +88,79 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
         ) : null}
         {member.bio ? <p>Catatan: {member.bio}</p> : null}
       </div>
+
+      {relationshipErrorMessage ? (
+        <div className="rounded-lg border border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
+          {relationshipErrorMessage}
+        </div>
+      ) : null}
+
+      {relationshipStatusMessage ? (
+        <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-800">
+          {relationshipStatusMessage}
+        </div>
+      ) : null}
+
+      <RelationshipSection
+        testId="parents-section"
+        title="Orang Tua"
+        description="Anggota yang menjadi orang tua dari profil ini."
+        emptyText="Belum ada data orang tua."
+        currentPersonId={member.id}
+        items={relationshipData.parents}
+        canManage={canManageMember}
+        candidates={relationshipCandidates}
+        addLabel="Tambah orang tua"
+        submitLabel="Tambah Orang Tua"
+        addAction={addParentRelationshipAction}
+        archiveAction={archiveRelationshipAction}
+      />
+
+      <RelationshipSection
+        testId="spouse-section"
+        title="Pasangan"
+        description="Hubungan pasangan aktif pada profil ini."
+        emptyText="Belum ada data pasangan."
+        currentPersonId={member.id}
+        items={relationshipData.spouse}
+        canManage={canManageMember}
+        candidates={relationshipCandidates}
+        addLabel="Tambah pasangan"
+        submitLabel="Tambah Pasangan"
+        showAddForm={relationshipData.spouse.length === 0}
+        addAction={addSpouseRelationshipAction}
+        archiveAction={archiveRelationshipAction}
+      />
+      {canManageMember && relationshipData.spouse.length > 0 ? (
+        <p className="text-sm text-slate-600">
+          Profil ini sudah memiliki pasangan aktif. Arsipkan relasi pasangan saat ini untuk menambah yang baru.
+        </p>
+      ) : null}
+
+      <RelationshipSection
+        testId="children-section"
+        title="Anak"
+        description="Anggota yang tercatat sebagai anak dari profil ini."
+        emptyText="Belum ada data anak."
+        currentPersonId={member.id}
+        items={relationshipData.children}
+        canManage={canManageMember}
+        candidates={relationshipCandidates}
+        addLabel="Tambah anak"
+        submitLabel="Tambah Anak"
+        addAction={addChildRelationshipAction}
+        archiveAction={archiveRelationshipAction}
+      />
+
+      <RelationshipSection
+        testId="siblings-section"
+        title="Saudara (otomatis)"
+        description="Diturunkan dari orang tua yang sama."
+        emptyText="Belum ada data saudara."
+        currentPersonId={member.id}
+        items={relationshipData.siblings}
+        canManage={false}
+      />
 
       {canManageMember ? (
         <div>
