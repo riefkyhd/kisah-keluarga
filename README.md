@@ -2,7 +2,7 @@
 
 Fondasi awal web app keluarga besar yang **mobile-first** dan **ramah lansia**.
 
-Phase aktif saat ini: **TASK-00 Foundation**.
+Phase aktif saat ini: **TASK-01 Auth and Roles**.
 
 ## Stack
 - Next.js (App Router) + TypeScript
@@ -10,17 +10,19 @@ Phase aktif saat ini: **TASK-00 Foundation**.
 - Supabase (Postgres, Auth, Storage)
 - Vercel (deployment nanti, belum dibahas di phase ini)
 
-## Scope TASK-00
-Yang sudah disiapkan pada fase fondasi:
+## Scope TASK-00 + TASK-01
+Yang sudah disiapkan:
 - bootstrap app Next.js
 - setup Tailwind + konfigurasi dasar shadcn/ui
 - helper Supabase client/server
-- route groups placeholder `(public)`, `(auth)`, `(admin)`
+- login flow sederhana (email magic link)
+- auth callback route (`/callback`)
+- role guard server-side untuk route admin
+- migration awal `user_roles`
 - baseline folder `supabase/` (`migrations`, `seeds`, `policies`)
 - `.env.example`
 
 Yang **belum** diimplementasikan:
-- auth flow
 - CRUD anggota keluarga
 - relasi keluarga
 - tree visualization
@@ -38,19 +40,26 @@ Yang **belum** diimplementasikan:
    cp .env.example .env.local
    ```
 3. Isi nilai Supabase pada `.env.local`.
-4. Jalankan app:
+4. Di Supabase Dashboard, pastikan Auth Redirect URLs memuat:
+   - `http://localhost:3000/callback`
+   - URL deploy kamu + `/callback` (contoh: `https://your-app.vercel.app/callback`)
+5. (Opsional, untuk admin pertama) jalankan template:
+   - `supabase/seeds/001_initial_admin_template.sql`
+   - ganti `<AUTH_USER_UUID>` dengan user id dari Supabase Auth
+6. Jalankan app:
    ```bash
    npm run dev
    ```
-5. Validasi lint:
+7. Validasi lint:
    ```bash
    npm run lint
    ```
 
 ## Initial Routes
 - `/` -> public home placeholder
-- `/login` -> auth placeholder
-- `/admin` -> admin placeholder
+- `/login` -> kirim magic link login
+- `/callback` -> tukar auth code menjadi session
+- `/admin` -> route terlindungi admin (server-side guard)
 
 ## Dokumen Referensi
 Urutan dokumen utama sebelum lanjut ke task berikutnya:

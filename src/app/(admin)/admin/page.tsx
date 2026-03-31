@@ -1,10 +1,13 @@
 export default function AdminPage() {
   return (
-    <section className="space-y-3">
+    <section className="space-y-4">
+      <p className="text-sm font-medium uppercase tracking-wide text-amber-700">
+        Area Terlindungi
+      </p>
       <h2 className="text-xl font-semibold text-slate-900">Admin</h2>
       <p className="text-slate-700">
-        Placeholder area admin untuk fase fondasi. Role guard dan proteksi
-        route belum diimplementasikan.
+        Halaman ini hanya bisa diakses oleh pengguna dengan role admin, dan
+        pengecekan akses dilakukan di sisi server.
       </p>
     </section>
   );
