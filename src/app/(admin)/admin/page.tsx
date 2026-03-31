@@ -1,4 +1,8 @@
-export default function AdminPage() {
+import { requireAdmin } from "@/lib/permissions/guards";
+
+export default async function AdminPage() {
+  await requireAdmin("/admin");
+
   return (
     <section className="space-y-4">
       <p className="text-sm font-medium uppercase tracking-wide text-amber-700">

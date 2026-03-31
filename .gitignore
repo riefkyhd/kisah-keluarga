@@ -6,6 +6,9 @@
 /.next
 /out
 coverage/
+playwright-report/
+test-results/
+.playwright/
 
 # production
 /build

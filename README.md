@@ -2,7 +2,7 @@
 
 Fondasi awal web app keluarga besar yang **mobile-first** dan **ramah lansia**.
 
-Phase aktif saat ini: **TASK-01 Auth and Roles**.
+Phase aktif saat ini: **TASK-02 Family Members CRUD**.
 
 ## Stack
 - Next.js (App Router) + TypeScript
@@ -10,7 +10,7 @@ Phase aktif saat ini: **TASK-01 Auth and Roles**.
 - Supabase (Postgres, Auth, Storage)
 - Vercel (deployment nanti, belum dibahas di phase ini)
 
-## Scope TASK-00 + TASK-01
+## Scope TASK-00 + TASK-01 + TASK-02
 Yang sudah disiapkan:
 - bootstrap app Next.js
 - setup Tailwind + konfigurasi dasar shadcn/ui
@@ -19,11 +19,15 @@ Yang sudah disiapkan:
 - auth callback route (`/callback`)
 - role guard server-side untuk route admin
 - migration awal `user_roles`
+- migration awal `people`
+- direktori keluarga (`/keluarga`)
+- profil anggota (`/keluarga/[personId]`)
+- tambah anggota (`/anggota-baru`)
+- edit + arsip/pulihkan anggota (`/anggota/[personId]/edit`)
 - baseline folder `supabase/` (`migrations`, `seeds`, `policies`)
 - `.env.example`
 
 Yang **belum** diimplementasikan:
-- CRUD anggota keluarga
 - relasi keluarga
 - tree visualization
 - stories/timeline
@@ -46,19 +50,53 @@ Yang **belum** diimplementasikan:
 5. (Opsional, untuk admin pertama) jalankan template:
    - `supabase/seeds/001_initial_admin_template.sql`
    - ganti `<AUTH_USER_UUID>` dengan user id dari Supabase Auth
-6. Jalankan app:
+6. Jalankan migration `people`:
+   - `supabase/migrations/20260331113000_create_people.sql`
+7. Jalankan app:
    ```bash
    npm run dev
    ```
-7. Validasi lint:
+8. Validasi lint:
    ```bash
    npm run lint
    ```
+
+## Automated Testing (E2E)
+Testing otomatis menggunakan Playwright dengan auth bootstrap **khusus test runner** (Node-side), tanpa route backdoor di app runtime.
+
+Prasyarat:
+1. `.env.local` berisi nilai valid:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `NEXT_PUBLIC_APP_URL`
+2. Migration sudah diterapkan:
+   - `supabase/migrations/20260331100000_create_user_roles.sql`
+   - `supabase/migrations/20260331113000_create_people.sql`
+3. Install browser Playwright (sekali):
+   ```bash
+   npx playwright install chromium
+   ```
+
+Perintah test:
+```bash
+npm run test:smoke
+npm run test:e2e
+```
+
+Catatan keamanan:
+- Auth produksi tetap magic-link biasa.
+- `ENABLE_TEST_AUTH_BOOTSTRAP=true` hanya dipakai oleh script test untuk helper Node-side.
+- `SUPABASE_SERVICE_ROLE_KEY` tidak dipakai di browser/client bundle.
 
 ## Initial Routes
 - `/` -> public home placeholder
 - `/login` -> kirim magic link login
 - `/callback` -> tukar auth code menjadi session
+- `/keluarga` -> direktori anggota aktif
+- `/keluarga/[personId]` -> profil anggota
+- `/anggota-baru` -> form tambah anggota (editor/admin)
+- `/anggota/[personId]/edit` -> form edit + arsip/pulihkan (editor/admin)
 - `/admin` -> route terlindungi admin (server-side guard)
 
 ## Dokumen Referensi

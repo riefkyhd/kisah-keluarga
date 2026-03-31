@@ -21,6 +21,7 @@ export default function RootLayout({
               <h1 className="text-lg font-semibold">Kisah Keluarga</h1>
               <nav className="flex items-center gap-4 text-sm text-slate-700">
                 <Link href="/">Beranda</Link>
+                <Link href="/keluarga">Keluarga</Link>
                 <Link href="/login">Login</Link>
                 <Link href="/admin">Admin</Link>
               </nav>
