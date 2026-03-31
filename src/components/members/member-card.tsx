@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MemberAvatar } from "@/components/members/member-avatar";
 import type { MemberListItem } from "@/server/queries/members";
 
 type MemberCardProps = {
@@ -30,10 +31,13 @@ export function MemberCard({ member }: MemberCardProps) {
     <li>
       <Link
         href={`/keluarga/${member.id}`}
-        className="block rounded-xl border border-slate-200 bg-white p-4 hover:border-amber-300"
+        className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 hover:border-amber-300"
       >
-        <h3 className="text-base font-semibold text-slate-900">{member.full_name}</h3>
-        {subtitle ? <p className="mt-1 text-sm text-slate-600">{subtitle}</p> : null}
+        <MemberAvatar fullName={member.full_name} photoUrl={member.profile_photo_url} size="sm" />
+        <div className="min-w-0">
+          <h3 className="text-base font-semibold text-slate-900">{member.full_name}</h3>
+          {subtitle ? <p className="mt-1 text-sm text-slate-600">{subtitle}</p> : null}
+        </div>
       </Link>
     </li>
   );

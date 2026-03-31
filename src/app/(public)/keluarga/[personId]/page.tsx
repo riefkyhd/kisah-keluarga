@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { getCurrentUserRole, requireViewer } from "@/lib/permissions/guards";
 import { hasMinimumRole } from "@/lib/auth/roles";
 import { getMemberById } from "@/server/queries/members";
+import { MemberAvatar } from "@/components/members/member-avatar";
+import { MemberPhotoManager } from "@/components/members/member-photo-manager";
 import { RelationshipSection } from "@/components/relationships/relationship-section";
 import {
   archiveRelationshipAction,
@@ -10,11 +12,20 @@ import {
   addParentRelationshipAction,
   addSpouseRelationshipAction
 } from "@/server/actions/relationships";
+import {
+  removeMemberPhotoAction,
+  uploadOrReplaceMemberPhotoAction
+} from "@/server/actions/member-photos";
 import { getProfileRelationships, listRelationshipCandidates } from "@/server/queries/relationships";
 
 type MemberProfilePageProps = {
   params: Promise<{ personId: string }>;
-  searchParams: Promise<{ relationship_error?: string; relationship_status?: string }>;
+  searchParams: Promise<{
+    relationship_error?: string;
+    relationship_status?: string;
+    photo_error?: string;
+    photo_status?: string;
+  }>;
 };
 
 const relationshipErrorMessages: Record<string, string> = {
@@ -32,6 +43,23 @@ const relationshipStatusMessages: Record<string, string> = {
   added_spouse: "Relasi pasangan berhasil ditambahkan.",
   added_child: "Relasi anak berhasil ditambahkan.",
   archived: "Relasi berhasil diarsipkan."
+};
+
+const photoErrorMessages: Record<string, string> = {
+  invalid_member: "Anggota tidak ditemukan untuk proses foto profil.",
+  missing_file: "Silakan pilih file foto terlebih dahulu.",
+  invalid_file_type: "Format foto belum didukung. Gunakan JPG, PNG, atau WEBP.",
+  file_too_large: "Ukuran foto terlalu besar. Maksimum 5MB.",
+  archived_member: "Anggota yang diarsipkan tidak dapat diubah fotonya.",
+  upload_failed: "Foto belum berhasil diunggah. Coba lagi.",
+  save_failed: "Foto sudah terunggah tapi data belum tersimpan. Coba lagi.",
+  remove_failed: "Foto belum berhasil dihapus. Coba lagi."
+};
+
+const photoStatusMessages: Record<string, string> = {
+  uploaded: "Foto profil berhasil diunggah.",
+  replaced: "Foto profil berhasil diperbarui.",
+  removed: "Foto profil berhasil dihapus."
 };
 
 export default async function MemberProfilePage({ params, searchParams }: MemberProfilePageProps) {
@@ -55,6 +83,8 @@ export default async function MemberProfilePage({ params, searchParams }: Member
   const relationshipStatusMessage = query.relationship_status
     ? relationshipStatusMessages[query.relationship_status]
     : "";
+  const photoErrorMessage = query.photo_error ? photoErrorMessages[query.photo_error] : "";
+  const photoStatusMessage = query.photo_status ? photoStatusMessages[query.photo_status] : "";
 
   return (
     <section className="space-y-4">
@@ -62,9 +92,19 @@ export default async function MemberProfilePage({ params, searchParams }: Member
         ← Kembali ke direktori
       </Link>
 
-      <header className="space-y-2 rounded-xl border border-slate-200 bg-white p-4">
-        <h2 className="text-2xl font-semibold text-slate-900">{member.full_name}</h2>
-        {member.nickname ? <p className="text-slate-700">Panggilan: {member.nickname}</p> : null}
+      <header className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+        <div className="flex items-center gap-4">
+          <MemberAvatar
+            fullName={member.full_name}
+            photoUrl={member.profile_photo_url}
+            size="lg"
+            testId="member-photo-image"
+          />
+          <div className="space-y-1">
+            <h2 className="text-2xl font-semibold text-slate-900">{member.full_name}</h2>
+            {member.nickname ? <p className="text-slate-700">Panggilan: {member.nickname}</p> : null}
+          </div>
+        </div>
         {member.is_archived ? (
           <p className="rounded-md bg-amber-100 px-3 py-2 text-sm text-amber-900">
             Anggota ini sedang diarsipkan.
@@ -100,6 +140,26 @@ export default async function MemberProfilePage({ params, searchParams }: Member
           {relationshipStatusMessage}
         </div>
       ) : null}
+
+      {photoErrorMessage ? (
+        <div className="rounded-lg border border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
+          {photoErrorMessage}
+        </div>
+      ) : null}
+
+      {photoStatusMessage ? (
+        <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-800">
+          {photoStatusMessage}
+        </div>
+      ) : null}
+
+      <MemberPhotoManager
+        personId={member.id}
+        canManage={canManageMember}
+        hasPhoto={Boolean(member.profile_photo_path)}
+        uploadAction={uploadOrReplaceMemberPhotoAction}
+        removeAction={removeMemberPhotoAction}
+      />
 
       <RelationshipSection
         testId="parents-section"

@@ -22,6 +22,15 @@ type TestRelationship = {
   relationship_type: RelationshipType;
 };
 
+type TestUploadFile = {
+  name: string;
+  mimeType: string;
+  buffer: Buffer;
+};
+
+const TINY_PNG_BASE64 =
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7ZJwAAAABJRU5ErkJggg==";
+
 function assertTestBootstrapEnabled() {
   if (process.env.ENABLE_TEST_AUTH_BOOTSTRAP !== "true") {
     throw new Error(
@@ -213,4 +222,52 @@ export async function createRelationshipFixture(params: {
   }
 
   return data as TestRelationship;
+}
+
+export function createTinyPngUpload(name = "photo.png"): TestUploadFile {
+  return {
+    name,
+    mimeType: "image/png",
+    buffer: Buffer.from(TINY_PNG_BASE64, "base64")
+  };
+}
+
+export function createInvalidUpload(name = "invalid.txt"): TestUploadFile {
+  return {
+    name,
+    mimeType: "text/plain",
+    buffer: Buffer.from("not-an-image", "utf-8")
+  };
+}
+
+export async function attachPhotoFixtureToMember(personId: string, createdByUserId?: string) {
+  const admin = getAdminClient();
+  const file = createTinyPngUpload(`fixture-${Date.now()}.png`);
+  const photoPath = `members/${personId}/fixture-${Date.now()}.png`;
+
+  const { error: uploadError } = await admin.storage
+    .from("member-photos")
+    .upload(photoPath, file.buffer, {
+      contentType: file.mimeType,
+      upsert: true
+    });
+
+  if (uploadError) {
+    throw new Error(`Gagal upload foto fixture: ${uploadError.message}`);
+  }
+
+  const { error: updateError } = await admin
+    .from("people")
+    .update({
+      profile_photo_path: photoPath,
+      updated_by: createdByUserId ?? null,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", personId);
+
+  if (updateError) {
+    throw new Error(`Gagal memasang foto fixture ke member: ${updateError.message}`);
+  }
+
+  return photoPath;
 }
