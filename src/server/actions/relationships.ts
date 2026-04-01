@@ -24,11 +24,11 @@ function toFormObject(formData: FormData) {
   return Object.fromEntries(formData.entries());
 }
 
-function redirectWithRelationshipError(personId: string, error: ActionErrorCode) {
+function redirectWithRelationshipError(personId: string, error: ActionErrorCode): never {
   redirect(`/keluarga/${personId}?relationship_error=${error}`);
 }
 
-function redirectWithRelationshipStatus(personId: string, status: string) {
+function redirectWithRelationshipStatus(personId: string, status: string): never {
   redirect(`/keluarga/${personId}?relationship_status=${status}`);
 }
 

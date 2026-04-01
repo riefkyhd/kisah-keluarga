@@ -1,9 +1,6 @@
 import { createBrowserClient } from "@supabase/ssr";
-import type { SupabaseClient } from "@supabase/supabase-js";
 
-type Database = Record<string, never>;
-
-let client: SupabaseClient<Database> | null = null;
+let client: ReturnType<typeof createBrowserClient> | null = null;
 
 function getSupabaseEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -25,6 +22,6 @@ export function createClient() {
 
   const { supabaseUrl, supabaseAnonKey } = getSupabaseEnv();
 
-  client = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey);
+  client = createBrowserClient(supabaseUrl, supabaseAnonKey);
   return client;
 }

@@ -16,7 +16,8 @@ async function getRoleByUserId(userId: string): Promise<AppRole> {
     return "viewer";
   }
 
-  return normalizeRole(data?.role);
+  const roleRow = data as { role?: unknown } | null;
+  return normalizeRole(roleRow?.role);
 }
 
 export async function requireSignedIn(nextPath = "/"): Promise<User> {

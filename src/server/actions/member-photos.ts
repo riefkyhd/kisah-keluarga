@@ -11,6 +11,11 @@ const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024;
 const ALLOWED_PHOTO_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 const personIdSchema = z.string().uuid("ID anggota tidak valid.");
+type PersonPhotoWriteRow = {
+  id: string;
+  is_archived: boolean;
+  profile_photo_path: string | null;
+};
 
 function getExtensionFromMimeType(mimeType: string) {
   if (mimeType === "image/jpeg") {
@@ -26,11 +31,11 @@ function getExtensionFromMimeType(mimeType: string) {
   return null;
 }
 
-function redirectWithPhotoError(personId: string, error: string) {
+function redirectWithPhotoError(personId: string, error: string): never {
   redirect(`/keluarga/${personId}?photo_error=${error}`);
 }
 
-function redirectWithPhotoStatus(personId: string, status: string) {
+function redirectWithPhotoStatus(personId: string, status: string): never {
   redirect(`/keluarga/${personId}?photo_status=${status}`);
 }
 
@@ -47,11 +52,13 @@ async function getPersonForPhotoWrite(personId: string) {
     .eq("id", personId)
     .maybeSingle();
 
-  if (error || !data) {
+  const person = data as PersonPhotoWriteRow | null;
+
+  if (error || !person) {
     return null;
   }
 
-  return data;
+  return person;
 }
 
 export async function uploadOrReplaceMemberPhotoAction(formData: FormData) {

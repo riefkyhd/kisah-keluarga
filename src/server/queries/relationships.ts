@@ -141,7 +141,7 @@ export async function getProfileRelationships(personId: string, includeArchivedP
   const peopleRows = await getPeopleRows(allIds);
   const peopleMap = mapPeopleById(peopleRows);
 
-  const isVisible = (person: PersonRow | undefined) =>
+  const isVisible = (person: PersonRow | undefined): person is PersonRow =>
     Boolean(person && (includeArchivedPeople || person.is_archived === false));
 
   const parents = sortByName(

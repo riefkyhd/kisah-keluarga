@@ -18,7 +18,7 @@ function toFormObject(formData: FormData) {
   return Object.fromEntries(formData.entries());
 }
 
-function redirectCreateStoryError(error: StoryActionErrorCode, personId?: string) {
+function redirectCreateStoryError(error: StoryActionErrorCode, personId?: string): never {
   const params = new URLSearchParams({ error });
   if (personId) {
     params.set("personId", personId);
@@ -27,7 +27,7 @@ function redirectCreateStoryError(error: StoryActionErrorCode, personId?: string
   redirect(`/cerita-baru?${params.toString()}`);
 }
 
-function redirectEditStoryError(storyId: string, error: StoryActionErrorCode) {
+function redirectEditStoryError(storyId: string, error: StoryActionErrorCode): never {
   redirect(`/cerita/${storyId}/edit?error=${error}`);
 }
 
