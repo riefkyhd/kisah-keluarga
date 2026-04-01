@@ -1,11 +1,26 @@
 import Link from "next/link";
 import { MemberCard } from "@/components/members/member-card";
+import { MemberSearchForm } from "@/components/members/member-search-form";
 import { requireViewer } from "@/lib/permissions/guards";
 import { listActiveMembers } from "@/server/queries/members";
 
-export default async function FamilyDirectoryPage() {
+type FamilyDirectoryPageProps = {
+  searchParams: Promise<{ q?: string }>;
+};
+
+function normalizeSearchQuery(rawQuery?: string) {
+  if (!rawQuery) {
+    return "";
+  }
+
+  return rawQuery.trim().replace(/\s+/g, " ").slice(0, 80);
+}
+
+export default async function FamilyDirectoryPage({ searchParams }: FamilyDirectoryPageProps) {
   await requireViewer("/keluarga");
-  const members = await listActiveMembers();
+  const query = await searchParams;
+  const searchQuery = normalizeSearchQuery(query.q);
+  const members = await listActiveMembers(searchQuery);
 
   return (
     <section className="space-y-4">
@@ -17,6 +32,13 @@ export default async function FamilyDirectoryPage() {
         Lihat anggota keluarga yang aktif. Anggota yang diarsipkan tidak
         ditampilkan di daftar utama.
       </p>
+      <MemberSearchForm value={searchQuery} />
+
+      {searchQuery ? (
+        <p className="text-sm text-slate-700">
+          Menampilkan {members.length} hasil untuk: <span className="font-semibold">&quot;{searchQuery}&quot;</span>
+        </p>
+      ) : null}
 
       <div className="flex flex-wrap gap-3">
         <Link
@@ -29,8 +51,9 @@ export default async function FamilyDirectoryPage() {
 
       {members.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-5 text-slate-700">
-          Belum ada anggota aktif. Editor atau admin bisa menambahkan anggota
-          pertama dari tombol di atas.
+          {searchQuery
+            ? "Belum ada anggota yang cocok dengan pencarian Anda. Coba nama atau panggilan lain."
+            : "Belum ada anggota aktif. Editor atau admin bisa menambahkan anggota pertama dari tombol di atas."}
         </div>
       ) : (
         <ul className="space-y-3">

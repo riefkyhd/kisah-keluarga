@@ -26,6 +26,14 @@ type MemberWithPhotoPath = {
   profile_photo_path: string | null;
 };
 
+function normalizeDirectorySearchQuery(searchQuery?: string) {
+  if (!searchQuery) {
+    return "";
+  }
+
+  return searchQuery.trim().replace(/\s+/g, " ").slice(0, 80);
+}
+
 async function buildSignedPhotoUrlMap(paths: string[]) {
   if (paths.length === 0) {
     return new Map<string, string>();
@@ -64,15 +72,23 @@ async function withPhotoUrls<T extends MemberWithPhotoPath>(rows: T[]) {
   }));
 }
 
-export async function listActiveMembers() {
+export async function listActiveMembers(searchQuery?: string) {
+  const normalizedSearchQuery = normalizeDirectorySearchQuery(searchQuery);
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("people")
     .select(
       "id, full_name, nickname, gender, birth_date, death_date, is_living, is_archived, profile_photo_path"
     )
     .eq("is_archived", false)
     .order("full_name", { ascending: true });
+
+  if (normalizedSearchQuery) {
+    const likePattern = `%${normalizedSearchQuery}%`;
+    query = query.or(`full_name.ilike.${likePattern},nickname.ilike.${likePattern}`);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     throw new Error("Gagal memuat daftar anggota keluarga.");

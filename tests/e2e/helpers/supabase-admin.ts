@@ -13,6 +13,12 @@ type TestMember = {
   full_name: string;
 };
 
+type CreateMemberFixtureOptions = {
+  nickname?: string | null;
+  isArchived?: boolean;
+  isLiving?: boolean;
+};
+
 type RelationshipType = "parent" | "spouse";
 
 type TestRelationship = {
@@ -162,7 +168,11 @@ export async function getMagicLinkForRole(role: AppRole, nextPath = "/keluarga")
   return actionLink;
 }
 
-export async function createMemberFixture(label: string, createdByUserId?: string): Promise<TestMember> {
+export async function createMemberFixture(
+  label: string,
+  createdByUserId?: string,
+  options: CreateMemberFixtureOptions = {}
+): Promise<TestMember> {
   const admin = getAdminClient();
   const fullName = `${label} ${Date.now()}-${Math.floor(Math.random() * 10_000)}`;
 
@@ -170,8 +180,9 @@ export async function createMemberFixture(label: string, createdByUserId?: strin
     .from("people")
     .insert({
       full_name: fullName,
-      is_living: true,
-      is_archived: false,
+      nickname: options.nickname ?? null,
+      is_living: options.isLiving ?? true,
+      is_archived: options.isArchived ?? false,
       created_by: createdByUserId ?? null,
       updated_by: createdByUserId ?? null
     })

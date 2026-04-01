@@ -2,7 +2,7 @@
 
 Fondasi awal web app keluarga besar yang **mobile-first** dan **ramah lansia**.
 
-Phase aktif saat ini: **TASK-04 Profile Photos and Media (minimal)**.
+Phase aktif saat ini: **TASK-05 Search and Directory**.
 
 ## Stack
 - Next.js (App Router) + TypeScript
@@ -10,7 +10,7 @@ Phase aktif saat ini: **TASK-04 Profile Photos and Media (minimal)**.
 - Supabase (Postgres, Auth, Storage)
 - Vercel (deployment nanti, belum dibahas di phase ini)
 
-## Scope TASK-00 + TASK-01 + TASK-02 + TASK-03 + TASK-04
+## Scope TASK-00 + TASK-01 + TASK-02 + TASK-03 + TASK-04 + TASK-05
 Yang sudah disiapkan:
 - bootstrap app Next.js
 - setup Tailwind + konfigurasi dasar shadcn/ui
@@ -28,6 +28,7 @@ Yang sudah disiapkan:
 - tampilan relasi profil (`orang tua`, `pasangan`, `anak`, `saudara` turunan)
 - upload/ganti/hapus foto profil anggota (editor/admin)
 - tampilan foto profil pada kartu direktori dan halaman profil anggota
+- pencarian direktori berbasis server (`?q=`) untuk nama lengkap dan panggilan
 - baseline folder `supabase/` (`migrations`, `seeds`, `policies`)
 - `.env.example`
 
