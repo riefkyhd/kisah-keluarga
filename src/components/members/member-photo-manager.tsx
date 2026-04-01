@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -9,6 +12,9 @@ type MemberPhotoManagerProps = {
   removeAction: (formData: FormData) => Promise<void>;
 };
 
+const MAX_PHOTO_SIZE_BYTES = 4 * 1024 * 1024;
+const ALLOWED_PHOTO_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+
 export function MemberPhotoManager({
   personId,
   canManage,
@@ -16,6 +22,30 @@ export function MemberPhotoManager({
   uploadAction,
   removeAction
 }: MemberPhotoManagerProps) {
+  const [uploadError, setUploadError] = useState("");
+
+  function handlePhotoFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.currentTarget.files?.[0];
+    if (!file) {
+      setUploadError("");
+      return;
+    }
+
+    if (!ALLOWED_PHOTO_TYPES.has(file.type)) {
+      setUploadError("Format foto belum didukung. Gunakan JPG, PNG, atau WEBP.");
+      event.currentTarget.value = "";
+      return;
+    }
+
+    if (file.size > MAX_PHOTO_SIZE_BYTES) {
+      setUploadError("Ukuran foto terlalu besar. Maksimum 4MB.");
+      event.currentTarget.value = "";
+      return;
+    }
+
+    setUploadError("");
+  }
+
   return (
     <Card data-testid="member-photo-manager" className="space-y-4 rounded-[2rem] border-stone-100 p-5 sm:p-6">
       <header className="space-y-1">
@@ -38,10 +68,15 @@ export function MemberPhotoManager({
                   type="file"
                   name="photo"
                   accept="image/png,image/jpeg,image/webp"
+                  onChange={handlePhotoFileChange}
                   className="block w-full text-sm text-stone-900 file:mr-3 file:rounded-xl file:border-0 file:bg-amber-100 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-amber-800 hover:file:bg-amber-200"
                 />
               </span>
             </label>
+            <p className="text-xs text-stone-500">Format JPG/PNG/WEBP, ukuran maksimal 4MB.</p>
+            {uploadError ? (
+              <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{uploadError}</p>
+            ) : null}
             <Button type="submit" className="w-full">
               {hasPhoto ? "Ganti Foto" : "Unggah Foto"}
             </Button>

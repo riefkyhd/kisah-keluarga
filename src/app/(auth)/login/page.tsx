@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { Heart } from "lucide-react";
 import { headers } from "next/headers";
 import { loginWithPasswordAction, requestMagicLink } from "./actions";
 import { getDevDummyLoginContext } from "@/server/dev-auth/config";
@@ -44,8 +44,15 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <section className="mx-auto flex min-h-[calc(100dvh-10rem)] w-full max-w-md items-center py-4">
       <Card className="w-full space-y-6 rounded-[2.5rem] border-stone-100 p-6 text-center sm:p-8">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-amber-50">
-          <Heart className="h-10 w-10 fill-amber-700 text-amber-700" />
+        <div className="mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-3xl border border-stone-200 bg-white p-1">
+          <Image
+            src="/icons/icon-192.png"
+            alt="Logo Kisah Keluarga"
+            width={72}
+            height={72}
+            className="h-[72px] w-[72px] rounded-2xl object-cover"
+            priority
+          />
         </div>
 
         <header className="space-y-2">

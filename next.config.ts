@@ -2,6 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  experimental: {
+    serverActions: {
+      // Default Next.js server action body limit (1mb) is too small for profile photos.
+      // Keep a modest cap so app-side validation (4MB) can run and show friendly errors.
+      bodySizeLimit: "6mb"
+    }
+  },
   images: {
     remotePatterns: [
       {

@@ -5,9 +5,10 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireEditor } from "@/lib/permissions/guards";
 import { createClient } from "@/lib/supabase/server";
+import { optimizeProfilePhoto } from "@/server/media/profile-photo-optimizer";
 
 const MEMBER_PHOTO_BUCKET = "member-photos";
-const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024;
+const MAX_PHOTO_SIZE_BYTES = 4 * 1024 * 1024;
 const ALLOWED_PHOTO_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 const personIdSchema = z.string().uuid("ID anggota tidak valid.");
@@ -16,20 +17,6 @@ type PersonPhotoWriteRow = {
   is_archived: boolean;
   profile_photo_path: string | null;
 };
-
-function getExtensionFromMimeType(mimeType: string) {
-  if (mimeType === "image/jpeg") {
-    return "jpg";
-  }
-  if (mimeType === "image/png") {
-    return "png";
-  }
-  if (mimeType === "image/webp") {
-    return "webp";
-  }
-
-  return null;
-}
 
 function redirectWithPhotoError(personId: string, error: string): never {
   redirect(`/keluarga/${personId}?photo_error=${error}`);
@@ -84,11 +71,6 @@ export async function uploadOrReplaceMemberPhotoAction(formData: FormData) {
     redirectWithPhotoError(personId, "file_too_large");
   }
 
-  const extension = getExtensionFromMimeType(file.type);
-  if (!extension) {
-    redirectWithPhotoError(personId, "invalid_file_type");
-  }
-
   const person = await getPersonForPhotoWrite(personId);
   if (!person) {
     redirectWithPhotoError(personId, "invalid_member");
@@ -97,13 +79,21 @@ export async function uploadOrReplaceMemberPhotoAction(formData: FormData) {
     redirectWithPhotoError(personId, "archived_member");
   }
 
-  const newPhotoPath = `members/${personId}/profile-${Date.now()}.${extension}`;
-  const bytes = new Uint8Array(await file.arrayBuffer());
+  const rawBytes = new Uint8Array(await file.arrayBuffer());
+  let optimizedPhoto: Awaited<ReturnType<typeof optimizeProfilePhoto>>;
+
+  try {
+    optimizedPhoto = await optimizeProfilePhoto(rawBytes);
+  } catch {
+    redirectWithPhotoError(personId, "optimize_failed");
+  }
+
+  const newPhotoPath = `members/${personId}/profile-${Date.now()}.${optimizedPhoto.extension}`;
   const supabase = await createClient();
   const { error: uploadError } = await supabase.storage
     .from(MEMBER_PHOTO_BUCKET)
-    .upload(newPhotoPath, bytes, {
-      contentType: file.type,
+    .upload(newPhotoPath, optimizedPhoto.bytes, {
+      contentType: optimizedPhoto.contentType,
       upsert: false
     });
 

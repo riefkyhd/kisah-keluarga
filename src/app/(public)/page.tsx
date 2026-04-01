@@ -1,5 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
-import { BookOpen, Heart, LogOut, Settings, TreeDeciduous, Users } from "lucide-react";
+import { BookOpen, LogOut, Settings, TreeDeciduous, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { InstallAppPrompt } from "@/components/pwa/install-app-prompt";
@@ -10,8 +11,15 @@ export default function PublicHomePage() {
     <section className="space-y-8">
       <header className="flex items-center justify-between py-1 md:hidden">
         <div className="flex items-center gap-2">
-          <div className="rounded-xl bg-amber-100 p-2">
-            <Heart className="h-5 w-5 fill-amber-700 text-amber-700" />
+          <div className="overflow-hidden rounded-xl border border-stone-200 bg-white p-1">
+            <Image
+              src="/icons/icon-192.png"
+              alt="Logo Kisah Keluarga"
+              width={28}
+              height={28}
+              className="h-7 w-7 rounded-lg object-cover"
+              priority
+            />
           </div>
           <span className="text-lg font-semibold text-stone-900">Kisah Keluarga</span>
         </div>

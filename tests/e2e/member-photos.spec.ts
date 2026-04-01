@@ -3,8 +3,10 @@ import { loginAsRole } from "./helpers/auth";
 import {
   attachPhotoFixtureToMember,
   createInvalidUpload,
+  createLargeJpegUpload,
   createMemberFixture,
   createTinyPngUpload,
+  getMemberPhotoStorageMeta,
   ensureRoleUser
 } from "./helpers/supabase-admin";
 
@@ -21,6 +23,11 @@ test("editor bisa unggah, ganti, dan hapus foto profil anggota", async ({ page }
 
   await expect(page.getByText("Foto profil berhasil diunggah.")).toBeVisible();
   await expect(page.locator('[data-testid="member-photo-image"] img')).toBeVisible();
+  const uploadedMeta = await getMemberPhotoStorageMeta(member.id);
+  expect(uploadedMeta).not.toBeNull();
+  expect(uploadedMeta?.path.endsWith(".webp")).toBeTruthy();
+  expect(uploadedMeta?.mimetype).toBe("image/webp");
+  expect((uploadedMeta?.size ?? 0) > 0).toBeTruthy();
 
   await page.goto("/keluarga");
   const memberCard = page.locator("a", { hasText: member.full_name }).first();
@@ -55,6 +62,26 @@ test("viewer hanya bisa melihat foto tanpa kontrol ubah", async ({ page }) => {
   await page.goto("/keluarga");
   const memberCard = page.locator("a", { hasText: member.full_name }).first();
   await expect(memberCard.locator(`img[alt="Foto profil ${member.full_name}"]`)).toBeVisible();
+});
+
+test("unggah foto galeri yang lebih besar tetap sukses dan tersimpan teroptimasi", async ({ page }) => {
+  const editor = await ensureRoleUser("editor");
+  const member = await createMemberFixture("Photo Large", editor.id);
+  const largeUpload = await createLargeJpegUpload("large-gallery-photo.jpg");
+  expect(largeUpload.buffer.length).toBeLessThanOrEqual(4 * 1024 * 1024);
+
+  await loginAsRole(page, "editor", `/keluarga/${member.id}`);
+  await page.getByTestId("member-photo-upload-input").setInputFiles(largeUpload);
+  await page.getByRole("button", { name: "Unggah Foto" }).click();
+
+  await expect(page.getByText("Foto profil berhasil diunggah.")).toBeVisible();
+  const uploadedMeta = await getMemberPhotoStorageMeta(member.id);
+  expect(uploadedMeta).not.toBeNull();
+  expect(uploadedMeta?.path.endsWith(".webp")).toBeTruthy();
+  expect(uploadedMeta?.mimetype).toBe("image/webp");
+  const storedSize = uploadedMeta?.size ?? 0;
+  expect(storedSize).toBeGreaterThan(0);
+  expect(storedSize).toBeLessThan(largeUpload.buffer.length);
 });
 
 test("unggah file non-gambar diblokir dengan pesan jelas", async ({ page }) => {

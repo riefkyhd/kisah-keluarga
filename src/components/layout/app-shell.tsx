@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Heart, Home, LogOut, Settings, TreeDeciduous, Users } from "lucide-react";
+import { BookOpen, Home, LogOut, Settings, TreeDeciduous, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -50,8 +51,15 @@ export function AppShell({ children }: AppShellProps) {
     <div className="min-h-screen bg-[#F9F7F4] pb-24 text-stone-800 md:pb-0">
       <header className="sticky top-0 z-50 hidden border-b border-stone-200/60 bg-white/80 px-8 py-4 backdrop-blur-md md:flex md:items-center md:justify-between">
         <div className="flex items-center gap-2">
-          <div className="rounded-xl bg-amber-100 p-2">
-            <Heart className="h-5 w-5 fill-amber-700 text-amber-700" />
+          <div className="overflow-hidden rounded-xl border border-stone-200 bg-white p-1">
+            <Image
+              src="/icons/icon-192.png"
+              alt="Logo Kisah Keluarga"
+              width={28}
+              height={28}
+              className="h-7 w-7 rounded-lg object-cover"
+              priority
+            />
           </div>
           <span className="text-lg font-semibold tracking-tight text-stone-900">Kisah Keluarga</span>
         </div>

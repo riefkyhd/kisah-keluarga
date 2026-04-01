@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import sharp from "sharp";
 
 export type AppRole = "viewer" | "contributor" | "editor" | "admin";
 
@@ -46,6 +47,12 @@ type TestUploadFile = {
   name: string;
   mimeType: string;
   buffer: Buffer;
+};
+
+type MemberPhotoStorageMeta = {
+  path: string;
+  mimetype: string | null;
+  size: number | null;
 };
 
 const TINY_PNG_BASE64 =
@@ -321,6 +328,40 @@ export function createInvalidUpload(name = "invalid.txt"): TestUploadFile {
   };
 }
 
+export async function createLargeJpegUpload(name = "gallery-large.jpg"): Promise<TestUploadFile> {
+  const width = 2200;
+  const height = 1600;
+  const channels = 3;
+  const raw = Buffer.alloc(width * height * channels);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const index = (y * width + x) * channels;
+      raw[index] = (x + y) % 256;
+      raw[index + 1] = (x * 3 + y * 5) % 256;
+      raw[index + 2] = (x * 7 + y * 11) % 256;
+    }
+  }
+
+  let quality = 94;
+  let jpeg = await sharp(raw, { raw: { width, height, channels } })
+    .jpeg({ quality, mozjpeg: true })
+    .toBuffer();
+
+  while (jpeg.length > 3_900_000 && quality > 70) {
+    quality -= 6;
+    jpeg = await sharp(raw, { raw: { width, height, channels } })
+      .jpeg({ quality, mozjpeg: true })
+      .toBuffer();
+  }
+
+  return {
+    name,
+    mimeType: "image/jpeg",
+    buffer: jpeg
+  };
+}
+
 export async function attachPhotoFixtureToMember(personId: string, createdByUserId?: string) {
   const admin = getAdminClient();
   const file = createTinyPngUpload(`fixture-${Date.now()}.png`);
@@ -351,4 +392,60 @@ export async function attachPhotoFixtureToMember(personId: string, createdByUser
   }
 
   return photoPath;
+}
+
+export async function getMemberPhotoStorageMeta(personId: string): Promise<MemberPhotoStorageMeta | null> {
+  const admin = getAdminClient();
+  const { data: member, error: memberError } = await admin
+    .from("people")
+    .select("profile_photo_path")
+    .eq("id", personId)
+    .maybeSingle();
+
+  if (memberError || !member) {
+    throw new Error(
+      `Gagal membaca profile_photo_path member ${personId}: ${memberError?.message ?? "member tidak ditemukan"}`
+    );
+  }
+
+  const photoPath = (member as { profile_photo_path: string | null }).profile_photo_path;
+  if (!photoPath) {
+    return null;
+  }
+
+  const segments = photoPath.split("/");
+  const fileName = segments.pop();
+  const folderPath = segments.join("/");
+  if (!fileName || !folderPath) {
+    throw new Error(`Path foto tidak valid: ${photoPath}`);
+  }
+
+  const { data: objectRows, error: objectError } = await admin.storage
+    .from("member-photos")
+    .list(folderPath, {
+      limit: 100,
+      search: fileName
+    });
+
+  if (objectError || !objectRows) {
+    throw new Error(
+      `Gagal membaca metadata object foto ${photoPath}: ${objectError?.message ?? "gagal list object"}`
+    );
+  }
+
+  const objectRow = objectRows.find((row) => row.name === fileName);
+  if (!objectRow) {
+    throw new Error(`Object foto ${photoPath} tidak ditemukan di bucket member-photos.`);
+  }
+
+  const metadata = objectRow.metadata as unknown;
+  const metadataRecord =
+    metadata && typeof metadata === "object" ? (metadata as Record<string, unknown>) : {};
+  const size = metadataRecord.size;
+
+  return {
+    path: photoPath,
+    mimetype: typeof metadataRecord.mimetype === "string" ? metadataRecord.mimetype : null,
+    size: typeof size === "number" ? size : null
+  };
 }

@@ -27,7 +27,7 @@ Yang sudah disiapkan:
 - edit + arsip/pulihkan anggota (`/anggota/[personId]/edit`)
 - tautkan relasi kontekstual dari profil (`orang tua`, `pasangan`, `anak`)
 - tampilan relasi profil (`orang tua`, `pasangan`, `anak`, `saudara` turunan)
-- upload/ganti/hapus foto profil anggota (editor/admin)
+- upload/ganti/hapus foto profil anggota (editor/admin, auto-optimasi server-side ke WebP)
 - tampilan foto profil pada kartu direktori dan halaman profil anggota
 - pencarian direktori berbasis server (`?q=`) untuk nama lengkap dan panggilan
 - tampilan pohon keluarga fokus (read-only) untuk orang tua/pasangan/anak

@@ -1,11 +1,14 @@
-import { ImageResponse } from "next/og";
-import { createBrandIconMarkup } from "@/lib/pwa/icon-template";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
-export function GET() {
-  return new ImageResponse(createBrandIconMarkup(512), {
-    width: 512,
-    height: 512
+export async function GET() {
+  const icon = await readFile(join(process.cwd(), "public", "icons", "icon-512.png"));
+  return new Response(new Uint8Array(icon), {
+    headers: {
+      "Content-Type": "image/png",
+      "Cache-Control": "public, max-age=31536000, immutable"
+    }
   });
 }
