@@ -1,6 +1,20 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { loginAsRole } from "./helpers/auth";
 import { createMemberFixture, createRelationshipFixture, ensureRoleUser } from "./helpers/supabase-admin";
+
+async function expectRelationshipStatusOnProfile(
+  page: Page,
+  personId: string,
+  status: "added_parent" | "added_spouse" | "added_child"
+) {
+  await expect(page).toHaveURL(new RegExp(`/keluarga/${personId}\\?.*relationship_status=${status}`));
+  const statusMessages: Record<string, string> = {
+    added_parent: "Relasi orang tua berhasil ditambahkan.",
+    added_spouse: "Relasi pasangan berhasil ditambahkan.",
+    added_child: "Relasi anak berhasil ditambahkan."
+  };
+  await expect(page.getByText(statusMessages[status])).toBeVisible();
+}
 
 test("editor bisa tambah relasi parent, spouse, dan child dari konteks profil", async ({ page }) => {
   const editor = await ensureRoleUser("editor");
@@ -14,19 +28,19 @@ test("editor bisa tambah relasi parent, spouse, dan child dari konteks profil", 
   const parentSection = page.getByTestId("parents-section");
   await parentSection.locator('select[name="related_person_id"]').selectOption(parent.id);
   await parentSection.getByRole("button", { name: "Tambah Orang Tua" }).click();
-  await expect(page.getByText("Relasi orang tua berhasil ditambahkan.")).toBeVisible();
+  await expectRelationshipStatusOnProfile(page, person.id, "added_parent");
   await expect(parentSection.getByRole("link", { name: parent.full_name })).toBeVisible();
 
   const spouseSection = page.getByTestId("spouse-section");
   await spouseSection.locator('select[name="related_person_id"]').selectOption(spouse.id);
   await spouseSection.getByRole("button", { name: "Tambah Pasangan" }).click();
-  await expect(page.getByText("Relasi pasangan berhasil ditambahkan.")).toBeVisible();
+  await expectRelationshipStatusOnProfile(page, person.id, "added_spouse");
   await expect(spouseSection.getByRole("link", { name: spouse.full_name })).toBeVisible();
 
   const childrenSection = page.getByTestId("children-section");
   await childrenSection.locator('select[name="related_person_id"]').selectOption(child.id);
   await childrenSection.getByRole("button", { name: "Tambah Anak" }).click();
-  await expect(page.getByText("Relasi anak berhasil ditambahkan.")).toBeVisible();
+  await expectRelationshipStatusOnProfile(page, person.id, "added_child");
   await expect(childrenSection.getByRole("link", { name: child.full_name })).toBeVisible();
 });
 
