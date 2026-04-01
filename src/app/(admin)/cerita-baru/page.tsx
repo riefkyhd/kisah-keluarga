@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { StoryForm } from "@/components/stories/story-form";
+import { EmptyState } from "@/components/ui/empty-state";
+import { SectionHeader } from "@/components/ui/section-header";
+import { StatusBanner } from "@/components/ui/status-banner";
 import { requireEditor } from "@/lib/permissions/guards";
 import { createStoryAction } from "@/server/actions/stories";
 import { listStoryMemberCandidates } from "@/server/queries/stories";
@@ -24,26 +27,29 @@ export default async function NewStoryPage({ searchParams }: NewStoryPageProps) 
     query.personId && candidates.some((member) => member.id === query.personId) ? query.personId : "";
 
   return (
-    <section className="space-y-4">
-      <Link href="/timeline" className="inline-block text-sm font-medium text-amber-700">
+    <section className="space-y-6">
+      <Link
+        href="/timeline"
+        className="inline-flex rounded-xl px-3 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-50"
+      >
         ← Kembali ke timeline
       </Link>
 
-      <h2 className="text-2xl font-semibold text-slate-900">Tambah Cerita Keluarga</h2>
-      <p className="text-slate-700">
-        Tulis momen penting keluarga dengan ringkas agar mudah dipahami semua generasi.
-      </p>
+      <SectionHeader
+        eyebrow="Cerita Baru"
+        title="Tambah Cerita Keluarga"
+        description="Tuliskan momen penting keluarga dengan bahasa sederhana agar nyaman dibaca lintas generasi."
+      />
 
       {errorMessage ? (
-        <div className="rounded-lg border border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
-          {errorMessage}
-        </div>
+        <StatusBanner variant="error" message={errorMessage} />
       ) : null}
 
       {candidates.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-5 text-slate-700">
-          Belum ada anggota aktif untuk ditautkan ke cerita.
-        </div>
+        <EmptyState
+          title="Belum ada anggota aktif"
+          description="Tambahkan anggota keluarga aktif terlebih dahulu sebelum membuat cerita."
+        />
       ) : (
         <StoryForm
           action={createStoryAction}

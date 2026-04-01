@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { StoryForm } from "@/components/stories/story-form";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { SectionHeader } from "@/components/ui/section-header";
+import { StatusBanner } from "@/components/ui/status-banner";
 import { requireEditor } from "@/lib/permissions/guards";
 import { archiveStoryAction, updateStoryAction } from "@/server/actions/stories";
 import { getStoryById, listStoryMemberCandidates } from "@/server/queries/stories";
@@ -38,24 +42,26 @@ export default async function EditStoryPage({ params, searchParams }: EditStoryP
   const statusMessage = query.status ? statusMessages[query.status] : "";
 
   return (
-    <section className="space-y-4">
-      <Link href={`/cerita/${story.id}`} className="inline-block text-sm font-medium text-amber-700">
+    <section className="space-y-6">
+      <Link
+        href={`/cerita/${story.id}`}
+        className="inline-flex rounded-xl px-3 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-50"
+      >
         ← Kembali ke detail cerita
       </Link>
 
-      <h2 className="text-2xl font-semibold text-slate-900">Edit Cerita</h2>
-      <p className="text-slate-700">Perbarui isi cerita atau arsipkan cerita dengan aman.</p>
+      <SectionHeader
+        eyebrow="Kelola Cerita"
+        title="Edit Cerita"
+        description="Perbarui isi cerita agar tetap akurat dan mudah dipahami keluarga."
+      />
 
       {errorMessage ? (
-        <div className="rounded-lg border border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
-          {errorMessage}
-        </div>
+        <StatusBanner variant="error" message={errorMessage} />
       ) : null}
 
       {statusMessage ? (
-        <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-800">
-          {statusMessage}
-        </div>
+        <StatusBanner variant="success" message={statusMessage} />
       ) : null}
 
       <StoryForm
@@ -72,25 +78,23 @@ export default async function EditStoryPage({ params, searchParams }: EditStoryP
       />
 
       {!story.is_archived ? (
-        <section className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
-          <h3 className="text-base font-semibold text-slate-900">Arsip Cerita</h3>
-          <p className="text-sm text-slate-700">
+        <Card className="space-y-4 rounded-[1.75rem] border-stone-100 p-5">
+          <h3 className="text-base font-semibold text-stone-900">Arsip Cerita</h3>
+          <p className="text-sm leading-relaxed text-stone-700">
             Penghapusan permanen tidak disediakan di fase ini. Gunakan arsip agar cerita tetap aman.
           </p>
           <form action={archiveStoryAction}>
             <input type="hidden" name="story_id" value={story.id} />
-            <button
-              type="submit"
-              className="w-full rounded-lg bg-amber-600 px-4 py-3 text-sm font-semibold text-white"
-            >
+            <Button type="submit" variant="secondary" className="w-full bg-amber-50 text-amber-900 hover:bg-amber-100">
               Arsipkan Cerita
-            </button>
+            </Button>
           </form>
-        </section>
+        </Card>
       ) : (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
-          Cerita ini sedang diarsipkan dan tidak tampil di timeline utama.
-        </div>
+        <StatusBanner
+          variant="warning"
+          message="Cerita ini sedang diarsipkan dan tidak tampil di timeline utama."
+        />
       )}
     </section>
   );

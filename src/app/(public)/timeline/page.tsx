@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { EmptyState } from "@/components/ui/empty-state";
+import { SectionHeader } from "@/components/ui/section-header";
 import { getCurrentUserRole, requireViewer } from "@/lib/permissions/guards";
 import { hasMinimumRole } from "@/lib/auth/roles";
 import { StoryCard } from "@/components/stories/story-card";
@@ -11,26 +13,28 @@ export default async function TimelinePage() {
   const stories = await listTimelineStories();
 
   return (
-    <section className="space-y-5">
-      <p className="text-sm font-medium uppercase tracking-wide text-amber-700">Timeline Keluarga</p>
-      <h2 data-testid="timeline-page-heading" className="text-2xl font-semibold text-slate-900">
+    <section className="space-y-6">
+      <SectionHeader
+        eyebrow="Timeline Keluarga"
+        title="Cerita & Momen Keluarga"
+        description="Kumpulan cerita penting keluarga yang disusun rapi agar mudah dibaca lintas generasi."
+      />
+
+      <h2 data-testid="timeline-page-heading" className="sr-only">
         Cerita & Momen Keluarga
       </h2>
-      <p className="max-w-2xl text-base leading-relaxed text-slate-700">
-        Timeline ini membantu keluarga menyimpan momen penting secara hangat dan mudah dibaca.
-      </p>
 
       <div className="flex flex-wrap gap-3">
         <Link
           href="/keluarga"
-          className="rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800"
+          className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
         >
           Buka Direktori Keluarga
         </Link>
         {canManageStories ? (
           <Link
             href="/cerita-baru"
-            className="rounded-lg bg-amber-500 px-5 py-3 text-base font-semibold text-white"
+            className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-amber-700 px-5 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-amber-800"
           >
             Tambah Cerita
           </Link>
@@ -38,11 +42,12 @@ export default async function TimelinePage() {
       </div>
 
       {stories.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-5 text-base leading-relaxed text-slate-700">
-          Belum ada cerita keluarga yang aktif. Editor atau admin dapat menambahkan cerita pertama.
-        </div>
+        <EmptyState
+          title="Belum ada cerita aktif"
+          description="Editor atau admin dapat menambahkan cerita pertama agar momen keluarga mulai terdokumentasi."
+        />
       ) : (
-        <ul className="space-y-3" data-testid="timeline-story-list">
+        <ul className="space-y-4" data-testid="timeline-story-list">
           {stories.map((story) => (
             <li key={story.id}>
               <StoryCard story={story} canManage={canManageStories} />

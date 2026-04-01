@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Card } from "@/components/ui/card";
+import { SectionHeader } from "@/components/ui/section-header";
+import { StatusBanner } from "@/components/ui/status-banner";
 import { getCurrentUserRole, requireViewer } from "@/lib/permissions/guards";
 import { hasMinimumRole } from "@/lib/auth/roles";
 import { getStoryById } from "@/server/queries/stories";
@@ -30,46 +33,53 @@ export default async function StoryDetailPage({ params, searchParams }: StoryDet
   const statusMessage = query.status ? statusMessages[query.status] : "";
 
   return (
-    <section className="space-y-5">
+    <section className="space-y-6">
       <div className="flex flex-wrap gap-2 text-sm font-medium text-amber-700">
-        <Link className="rounded-lg px-2 py-2" href="/timeline">
+        <Link className="inline-flex rounded-xl px-3 py-2 transition-colors hover:bg-amber-50" href="/timeline">
           ← Kembali ke timeline
         </Link>
-        <Link className="rounded-lg px-2 py-2" href={`/keluarga/${story.person_id}`}>
+        <Link
+          className="inline-flex rounded-xl px-3 py-2 transition-colors hover:bg-amber-50"
+          href={`/keluarga/${story.person_id}`}
+        >
           Buka profil anggota terkait
         </Link>
       </div>
 
       {statusMessage ? (
-        <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-800">
-          {statusMessage}
-        </div>
+        <StatusBanner variant="success" message={statusMessage} />
       ) : null}
 
-      <header className="space-y-2 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-        <h2 className="text-2xl font-semibold text-slate-900">{story.title}</h2>
-        <p className="text-sm leading-relaxed text-slate-600">
-          {story.event_date ? `Tanggal kejadian: ${story.event_date}` : "Tanggal kejadian belum diisi"}
-        </p>
-        <p className="text-sm leading-relaxed text-slate-600">
-          Terkait anggota: <Link href={`/keluarga/${story.person_id}`}>{story.person_full_name}</Link>
-        </p>
-        {story.is_archived ? (
-          <p className="rounded-md bg-amber-100 px-3 py-2 text-sm text-amber-900">
-            Cerita ini sedang diarsipkan.
-          </p>
-        ) : null}
-      </header>
+      <Card className="space-y-4 rounded-[1.75rem] border-stone-100 p-5 sm:p-6">
+        <SectionHeader
+          title={story.title}
+          description={story.event_date ? `Tanggal kejadian: ${story.event_date}` : "Tanggal kejadian belum diisi"}
+          eyebrow="Cerita Keluarga"
+        />
 
-      <article className="rounded-xl border border-slate-200 bg-white p-4 text-base leading-relaxed text-slate-800 sm:p-5">
-        <p className="whitespace-pre-wrap">{story.body}</p>
-      </article>
+        <p className="text-sm leading-relaxed text-stone-600">
+          Terkait anggota:{" "}
+          <Link href={`/keluarga/${story.person_id}`} className="font-medium text-stone-700 hover:text-amber-700">
+            {story.person_full_name}
+          </Link>
+        </p>
+
+        {story.is_archived ? (
+          <StatusBanner variant="warning" message="Cerita ini sedang diarsipkan." />
+        ) : null}
+      </Card>
+
+      <Card className="rounded-[1.75rem] border-stone-100 p-5 sm:p-6">
+        <article className="prose prose-stone max-w-none text-base leading-relaxed">
+          <p className="whitespace-pre-wrap text-stone-800">{story.body}</p>
+        </article>
+      </Card>
 
       {canManageStories ? (
-        <div>
+        <div className="pt-1">
           <Link
             href={`/cerita/${story.id}/edit`}
-            className="inline-block rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800"
+            className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
           >
             Edit Cerita
           </Link>
