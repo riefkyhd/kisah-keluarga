@@ -33,6 +33,19 @@ export type ProfileRelationships = {
   siblings: SiblingListItem[];
 };
 
+export type TreeFocusPerson = {
+  id: string;
+  full_name: string;
+};
+
+export type TreeViewData = {
+  focusPerson: TreeFocusPerson | null;
+  focusCandidates: TreeFocusPerson[];
+  parents: RelationshipListItem[];
+  spouse: RelationshipListItem[];
+  children: RelationshipListItem[];
+};
+
 export type RelationshipCandidate = {
   id: string;
   full_name: string;
@@ -206,4 +219,41 @@ export async function getProfileRelationships(personId: string, includeArchivedP
     children,
     siblings
   } as ProfileRelationships;
+}
+
+export async function getTreeViewData(focusPersonId?: string): Promise<TreeViewData> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("people")
+    .select("id, full_name")
+    .eq("is_archived", false)
+    .order("full_name", { ascending: true });
+
+  if (error) {
+    throw new Error("Gagal memuat data anggota untuk tampilan pohon.");
+  }
+
+  const focusCandidates = (data ?? []) as TreeFocusPerson[];
+  if (focusCandidates.length === 0) {
+    return {
+      focusPerson: null,
+      focusCandidates: [],
+      parents: [],
+      spouse: [],
+      children: []
+    };
+  }
+
+  const selectedFocusPerson =
+    (focusPersonId ? focusCandidates.find((person) => person.id === focusPersonId) : undefined) ??
+    focusCandidates[0];
+
+  const relationships = await getProfileRelationships(selectedFocusPerson.id, false);
+  return {
+    focusPerson: selectedFocusPerson,
+    focusCandidates,
+    parents: relationships.parents,
+    spouse: relationships.spouse,
+    children: relationships.children
+  };
 }

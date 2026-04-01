@@ -42,6 +42,12 @@ export default async function FamilyDirectoryPage({ searchParams }: FamilyDirect
 
       <div className="flex flex-wrap gap-3">
         <Link
+          href="/pohon"
+          className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800"
+        >
+          Lihat Mode Pohon
+        </Link>
+        <Link
           href="/anggota-baru"
           className="rounded-lg bg-amber-500 px-4 py-3 text-sm font-semibold text-white"
         >

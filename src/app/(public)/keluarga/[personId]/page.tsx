@@ -91,6 +91,12 @@ export default async function MemberProfilePage({ params, searchParams }: Member
       <Link href="/keluarga" className="inline-block text-sm font-medium text-amber-700">
         ← Kembali ke direktori
       </Link>
+      <Link
+        href={`/pohon?personId=${personId}`}
+        className="inline-block text-sm font-medium text-amber-700"
+      >
+        Lihat di mode pohon
+      </Link>
 
       <header className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
         <div className="flex items-center gap-4">
