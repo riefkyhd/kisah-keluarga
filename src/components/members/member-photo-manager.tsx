@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+
 type MemberPhotoManagerProps = {
   personId: string;
   canManage: boolean;
@@ -14,17 +17,17 @@ export function MemberPhotoManager({
   removeAction
 }: MemberPhotoManagerProps) {
   return (
-    <section data-testid="member-photo-manager" className="space-y-4 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-      <h3 className="text-lg font-semibold text-slate-900">Foto Profil</h3>
-      <p className="text-sm leading-relaxed text-slate-700">
+    <Card data-testid="member-photo-manager" className="space-y-4 rounded-[2rem] border-stone-100 p-5 sm:p-6">
+      <h3 className="text-lg font-semibold text-stone-900">Foto Profil</h3>
+      <p className="text-sm leading-relaxed text-stone-600">
         Foto membantu keluarga mengenali anggota dengan lebih mudah.
       </p>
 
       {canManage ? (
         <div className="space-y-3">
-          <form action={uploadAction} className="space-y-3">
+          <form action={uploadAction} className="space-y-3 rounded-2xl border border-stone-200 bg-stone-50 p-4">
             <input type="hidden" name="person_id" value={personId} />
-            <label className="block space-y-2 text-base font-semibold text-slate-800">
+            <label className="block space-y-2 text-base font-semibold text-stone-800">
               Pilih foto
               <input
                 data-testid="member-photo-upload-input"
@@ -32,32 +35,28 @@ export function MemberPhotoManager({
                 type="file"
                 name="photo"
                 accept="image/png,image/jpeg,image/webp"
-                className="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900"
+                className="block w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900"
               />
             </label>
-            <button
-              type="submit"
-              className="w-full rounded-lg bg-amber-500 px-4 py-3 text-base font-semibold text-white"
-            >
+            <Button type="submit" className="w-full">
               {hasPhoto ? "Ganti Foto" : "Unggah Foto"}
-            </button>
+            </Button>
           </form>
 
           {hasPhoto ? (
             <form action={removeAction}>
               <input type="hidden" name="person_id" value={personId} />
-              <button
-                type="submit"
-                className="w-full rounded-lg border border-rose-300 bg-white px-4 py-3 text-base font-semibold text-rose-700"
-              >
+              <Button type="submit" variant="danger" className="w-full">
                 Hapus Foto
-              </button>
+              </Button>
             </form>
           ) : null}
         </div>
       ) : (
-        <p className="text-sm leading-relaxed text-slate-600">Hanya editor/admin yang dapat mengubah foto profil.</p>
+        <p className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm leading-relaxed text-stone-600">
+          Hanya editor/admin yang dapat mengubah foto profil.
+        </p>
       )}
-    </section>
+    </Card>
   );
 }

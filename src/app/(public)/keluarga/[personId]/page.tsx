@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCurrentUserRole, requireViewer } from "@/lib/permissions/guards";
 import { hasMinimumRole } from "@/lib/auth/roles";
+import { Card } from "@/components/ui/card";
+import { StatusBanner } from "@/components/ui/status-banner";
 import { getMemberById } from "@/server/queries/members";
 import { MemberAvatar } from "@/components/members/member-avatar";
 import { MemberPhotoManager } from "@/components/members/member-photo-manager";
@@ -90,40 +92,39 @@ export default async function MemberProfilePage({ params, searchParams }: Member
   const photoStatusMessage = query.photo_status ? photoStatusMessages[query.photo_status] : "";
 
   return (
-    <section className="space-y-5">
+    <section className="space-y-6">
       <div className="flex flex-wrap gap-2 text-sm font-medium text-amber-700">
-        <Link href="/keluarga" className="rounded-lg px-2 py-2">
+        <Link href="/keluarga" className="rounded-xl px-3 py-2 hover:bg-amber-50">
           ← Kembali ke direktori
         </Link>
-        <Link href={`/pohon?personId=${personId}`} className="rounded-lg px-2 py-2">
+        <Link href={`/pohon?personId=${personId}`} className="rounded-xl px-3 py-2 hover:bg-amber-50">
           Lihat di mode pohon
         </Link>
-        <Link href="/timeline" className="rounded-lg px-2 py-2">
+        <Link href="/timeline" className="rounded-xl px-3 py-2 hover:bg-amber-50">
           Lihat timeline keluarga
         </Link>
       </div>
 
-      <header className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-        <div className="flex items-center gap-4">
+      <Card className="space-y-4 rounded-[2rem] border-stone-100 p-5 sm:p-6">
+        <div className="flex flex-wrap items-center gap-4">
           <MemberAvatar
             fullName={member.full_name}
             photoUrl={member.profile_photo_url}
             size="lg"
             testId="member-photo-image"
           />
-          <div className="space-y-1">
-            <h2 className="text-2xl font-semibold text-slate-900">{member.full_name}</h2>
-            {member.nickname ? <p className="text-base text-slate-700">Panggilan: {member.nickname}</p> : null}
+          <div className="min-w-0 space-y-1">
+            <h2 className="break-words text-3xl font-semibold tracking-tight text-stone-900">{member.full_name}</h2>
+            {member.nickname ? <p className="text-base text-stone-600">Panggilan: {member.nickname}</p> : null}
           </div>
         </div>
-        {member.is_archived ? (
-          <p className="rounded-md bg-amber-100 px-3 py-2 text-sm text-amber-900">
-            Anggota ini sedang diarsipkan.
-          </p>
-        ) : null}
-      </header>
 
-      <div className="space-y-2 rounded-xl border border-slate-200 bg-white p-4 text-base leading-relaxed text-slate-700 sm:p-5">
+        {member.is_archived ? (
+          <StatusBanner variant="warning" message="Anggota ini sedang diarsipkan." />
+        ) : null}
+      </Card>
+
+      <Card className="space-y-2 rounded-[2rem] border-stone-100 p-5 text-base leading-relaxed text-stone-700 sm:p-6">
         <p>Status: {member.is_living ? "Masih hidup" : "Sudah wafat"}</p>
         {member.birth_date ? <p>Tanggal lahir: {member.birth_date}</p> : null}
         {member.death_date ? <p>Tanggal wafat: {member.death_date}</p> : null}
@@ -138,30 +139,22 @@ export default async function MemberProfilePage({ params, searchParams }: Member
           </p>
         ) : null}
         {member.bio ? <p>Catatan: {member.bio}</p> : null}
-      </div>
+      </Card>
 
       {relationshipErrorMessage ? (
-        <div className="rounded-lg border border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
-          {relationshipErrorMessage}
-        </div>
+        <StatusBanner variant="error" message={relationshipErrorMessage} />
       ) : null}
 
       {relationshipStatusMessage ? (
-        <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-800">
-          {relationshipStatusMessage}
-        </div>
+        <StatusBanner variant="success" message={relationshipStatusMessage} />
       ) : null}
 
       {photoErrorMessage ? (
-        <div className="rounded-lg border border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
-          {photoErrorMessage}
-        </div>
+        <StatusBanner variant="error" message={photoErrorMessage} />
       ) : null}
 
       {photoStatusMessage ? (
-        <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-800">
-          {photoStatusMessage}
-        </div>
+        <StatusBanner variant="success" message={photoStatusMessage} />
       ) : null}
 
       <MemberPhotoManager
@@ -171,8 +164,6 @@ export default async function MemberProfilePage({ params, searchParams }: Member
         uploadAction={uploadOrReplaceMemberPhotoAction}
         removeAction={removeMemberPhotoAction}
       />
-
-      <MemberStoriesSection personId={member.id} stories={relatedStories} canManage={canManageMember} />
 
       <RelationshipSection
         testId="parents-section"
@@ -205,7 +196,7 @@ export default async function MemberProfilePage({ params, searchParams }: Member
         archiveAction={archiveRelationshipAction}
       />
       {canManageMember && relationshipData.spouse.length > 0 ? (
-        <p className="text-sm text-slate-600">
+        <p className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900">
           Profil ini sudah memiliki pasangan aktif. Arsipkan relasi pasangan saat ini untuk menambah yang baru.
         </p>
       ) : null}
@@ -235,11 +226,13 @@ export default async function MemberProfilePage({ params, searchParams }: Member
         canManage={false}
       />
 
+      <MemberStoriesSection personId={member.id} stories={relatedStories} canManage={canManageMember} />
+
       {canManageMember ? (
         <div>
           <Link
             href={`/anggota/${member.id}/edit`}
-            className="inline-block rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800"
+            className="inline-flex min-h-12 w-full items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50 sm:w-auto"
           >
             Edit / Arsipkan Anggota
           </Link>
