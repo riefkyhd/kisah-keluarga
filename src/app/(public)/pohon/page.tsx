@@ -32,7 +32,7 @@ export default async function TreeViewPage({ searchParams }: TreeViewPageProps) 
       <SectionHeader
         eyebrow="Mode Visual"
         title="Pohon Keluarga"
-        description="Gunakan tampilan ini untuk memahami struktur keluarga secara cepat. Direktori dan profil tetap menjadi alur utama untuk pencarian dan pengelolaan data."
+        description="Mode ini membantu membaca hubungan inti dengan cepat. Untuk pencarian dan pengelolaan data, tetap gunakan direktori dan profil anggota."
       />
       <h2 data-testid="tree-page-heading" className="sr-only">
         Pohon Keluarga
@@ -48,27 +48,29 @@ export default async function TreeViewPage({ searchParams }: TreeViewPageProps) 
       </div>
 
       {treeData.focusCandidates.length > 0 ? (
-        <Card className="rounded-[1.75rem] border-stone-100 p-5 sm:p-6">
+        <Card className="rounded-[1.75rem] border-stone-100 p-5 shadow-sm sm:p-6">
           <form action="/pohon" method="get" className="space-y-4">
             <label htmlFor="tree-focus-person" className="block text-base font-semibold text-stone-900">
               Fokus anggota
             </label>
             <p className="text-sm leading-relaxed text-stone-600">
-              Pilih satu anggota agar tampilan pohon lebih ringkas dan mudah dibaca dari HP maupun desktop.
+              Pilih satu anggota agar pohon tampil lebih ringkas, nyaman dibaca di HP, dan tidak terasa padat.
             </p>
-            <select
-              id="tree-focus-person"
-              name="personId"
-              defaultValue={treeData.focusPerson?.id ?? ""}
-              className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 focus:border-amber-400 focus:ring-2"
-            >
-              {treeData.focusCandidates.map((candidate) => (
-                <option key={candidate.id} value={candidate.id}>
-                  {candidate.full_name}
-                </option>
-              ))}
-            </select>
-            <Button type="submit">Tampilkan Pohon</Button>
+            <div className="flex flex-wrap gap-3">
+              <select
+                id="tree-focus-person"
+                name="personId"
+                defaultValue={treeData.focusPerson?.id ?? ""}
+                className="min-h-12 flex-1 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 focus:border-amber-400 focus:ring-2"
+              >
+                {treeData.focusCandidates.map((candidate) => (
+                  <option key={candidate.id} value={candidate.id}>
+                    {candidate.full_name}
+                  </option>
+                ))}
+              </select>
+              <Button type="submit">Tampilkan Pohon</Button>
+            </div>
           </form>
         </Card>
       ) : null}

@@ -43,7 +43,7 @@ export default async function EditMemberPage({ params, searchParams }: EditMembe
     <section className="space-y-6">
       <Link
         href={`/keluarga/${personId}`}
-        className="inline-flex rounded-xl px-3 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50"
+        className="inline-flex min-h-10 items-center rounded-xl px-2 py-1 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
       >
         ← Kembali ke profil anggota
       </Link>
@@ -69,27 +69,34 @@ export default async function EditMemberPage({ params, searchParams }: EditMembe
         initialValues={member}
       />
 
-      <Card className="space-y-3 rounded-[2rem] border-stone-100 p-5">
+      <Card className="space-y-4 rounded-[2rem] border-stone-100 p-5 sm:p-6">
         <h3 className="text-base font-semibold text-stone-900">Arsip / Pulihkan</h3>
         <p className="text-sm leading-relaxed text-stone-600">
           Penghapusan permanen tidak disediakan di fase ini. Gunakan arsip untuk menjaga keamanan data keluarga.
         </p>
-
-        {member.is_archived ? (
-          <form action={restoreMemberAction}>
-            <input type="hidden" name="person_id" value={personId} />
-            <Button type="submit" className="w-full bg-emerald-600 text-white hover:bg-emerald-700">
-              Pulihkan Anggota
-            </Button>
-          </form>
-        ) : (
-          <form action={archiveMemberAction}>
-            <input type="hidden" name="person_id" value={personId} />
-            <Button type="submit" className="w-full bg-amber-700 text-white hover:bg-amber-800">
-              Arsipkan Anggota
-            </Button>
-          </form>
-        )}
+        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+          {member.is_archived ? (
+            <form action={restoreMemberAction} className="space-y-3">
+              <input type="hidden" name="person_id" value={personId} />
+              <p className="text-sm leading-relaxed text-stone-700">
+                Anggota ini sedang diarsipkan. Pulihkan jika ingin menampilkannya kembali di direktori aktif.
+              </p>
+              <Button type="submit" className="w-full bg-emerald-600 text-white hover:bg-emerald-700">
+                Pulihkan Anggota
+              </Button>
+            </form>
+          ) : (
+            <form action={archiveMemberAction} className="space-y-3">
+              <input type="hidden" name="person_id" value={personId} />
+              <p className="text-sm leading-relaxed text-stone-700">
+                Arsipkan anggota jika datanya tetap ingin disimpan tetapi tidak ditampilkan di daftar utama.
+              </p>
+              <Button type="submit" className="w-full bg-amber-700 text-white hover:bg-amber-800">
+                Arsipkan Anggota
+              </Button>
+            </form>
+          )}
+        </div>
       </Card>
     </section>
   );

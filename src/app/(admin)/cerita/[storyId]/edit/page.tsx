@@ -45,7 +45,7 @@ export default async function EditStoryPage({ params, searchParams }: EditStoryP
     <section className="space-y-6">
       <Link
         href={`/cerita/${story.id}`}
-        className="inline-flex rounded-xl px-3 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-50"
+        className="inline-flex min-h-10 items-center rounded-xl px-2 py-1 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
       >
         ← Kembali ke detail cerita
       </Link>
@@ -78,17 +78,20 @@ export default async function EditStoryPage({ params, searchParams }: EditStoryP
       />
 
       {!story.is_archived ? (
-        <Card className="space-y-4 rounded-[1.75rem] border-stone-100 p-5">
+        <Card className="space-y-4 rounded-[1.75rem] border-stone-100 p-5 sm:p-6">
           <h3 className="text-base font-semibold text-stone-900">Arsip Cerita</h3>
-          <p className="text-sm leading-relaxed text-stone-700">
-            Penghapusan permanen tidak disediakan di fase ini. Gunakan arsip agar cerita tetap aman.
-          </p>
-          <form action={archiveStoryAction}>
-            <input type="hidden" name="story_id" value={story.id} />
-            <Button type="submit" variant="secondary" className="w-full bg-amber-50 text-amber-900 hover:bg-amber-100">
-              Arsipkan Cerita
-            </Button>
-          </form>
+          <div className="space-y-3 rounded-2xl border border-stone-200 bg-stone-50 p-4">
+            <p className="text-sm leading-relaxed text-stone-700">
+              Penghapusan permanen tidak disediakan di fase ini. Gunakan arsip agar cerita tetap aman namun tidak lagi
+              tampil di timeline utama.
+            </p>
+            <form action={archiveStoryAction}>
+              <input type="hidden" name="story_id" value={story.id} />
+              <Button type="submit" variant="secondary" className="w-full bg-amber-100 text-amber-900 hover:bg-amber-200">
+                Arsipkan Cerita
+              </Button>
+            </form>
+          </div>
         </Card>
       ) : (
         <StatusBanner

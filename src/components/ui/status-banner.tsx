@@ -27,10 +27,15 @@ export function StatusBanner({ variant, message, className }: StatusBannerProps)
   const Icon = variantIcons[variant];
 
   return (
-    <div className={cn("flex items-start gap-2 rounded-xl border px-4 py-3 text-sm", variantStyles[variant], className)}>
+    <div
+      className={cn(
+        "flex items-start gap-2 rounded-2xl border px-4 py-3.5 text-sm leading-relaxed",
+        variantStyles[variant],
+        className
+      )}
+    >
       <Icon className="mt-0.5 h-4 w-4 shrink-0" />
       <p className="leading-relaxed">{message}</p>
     </div>
   );
 }
-

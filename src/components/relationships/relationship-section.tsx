@@ -54,16 +54,22 @@ export function RelationshipSection({
           {emptyText}
         </p>
       ) : (
-        <ul className="space-y-3">
+        <ul className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
           {items.map((item) => (
             <li
               key={item.person_id + (hasRelationshipId(item) ? `-${item.relationship_id}` : "")}
-              className="rounded-2xl border border-stone-200 bg-stone-50 p-3.5"
+              className="border-b border-stone-100 p-4 last:border-b-0"
             >
               <div className="flex items-center justify-between gap-3">
-                <Link href={`/keluarga/${item.person_id}`} className="font-medium text-stone-900 hover:text-amber-800">
-                  {item.full_name}
-                </Link>
+                <div className="min-w-0">
+                  <Link
+                    href={`/keluarga/${item.person_id}`}
+                    className="block truncate font-semibold text-stone-900 transition-colors hover:text-amber-800"
+                  >
+                    {item.full_name}
+                  </Link>
+                  <p className="text-xs font-medium uppercase tracking-wide text-stone-500">{title}</p>
+                </div>
                 {canManage && archiveAction && hasRelationshipId(item) ? (
                   <form action={archiveAction}>
                     <input type="hidden" name="person_id" value={currentPersonId} />

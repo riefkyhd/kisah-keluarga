@@ -47,8 +47,8 @@ export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-[#F9F7F4] text-stone-800 pb-24 md:pb-0">
-      <header className="sticky top-0 z-50 hidden border-b border-stone-200/70 bg-white/85 px-8 py-4 backdrop-blur md:flex md:items-center md:justify-between">
+    <div className="min-h-screen bg-[#F9F7F4] pb-24 text-stone-800 md:pb-0">
+      <header className="sticky top-0 z-50 hidden border-b border-stone-200/60 bg-white/80 px-8 py-4 backdrop-blur-md md:flex md:items-center md:justify-between">
         <div className="flex items-center gap-2">
           <div className="rounded-xl bg-amber-100 p-2">
             <Heart className="h-5 w-5 fill-amber-700 text-amber-700" />
@@ -88,11 +88,11 @@ export function AppShell({ children }: AppShellProps) {
         </div>
       </header>
 
-      <main className="mx-auto min-h-[100dvh] w-full max-w-3xl px-4 pb-8 pt-6 md:px-8 md:pb-12 md:pt-10">
+      <main className="mx-auto min-h-[100dvh] w-full max-w-3xl px-4 pb-8 pt-6 md:px-8 md:pb-12 md:pt-12">
         {children}
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-stone-100 bg-white/95 pb-2 pt-2 backdrop-blur md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-stone-100 bg-white/95 pb-2 pt-2 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] backdrop-blur-lg md:hidden">
         <div className="flex h-20 items-center justify-around px-2">
           {mobileNavItems.map((item) => {
             const active = isNavActive(pathname, item.href);
@@ -123,4 +123,3 @@ export function AppShell({ children }: AppShellProps) {
     </div>
   );
 }
-

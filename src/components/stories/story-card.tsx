@@ -6,6 +6,7 @@ type StoryCardProps = {
   story: StoryListItem;
   showPerson?: boolean;
   canManage?: boolean;
+  variant?: "default" | "timeline";
 };
 
 function buildStoryPreview(body: string) {
@@ -17,13 +18,30 @@ function buildStoryPreview(body: string) {
   return `${normalized.slice(0, 177)}...`;
 }
 
-export function StoryCard({ story, showPerson = true, canManage = false }: StoryCardProps) {
+export function StoryCard({
+  story,
+  showPerson = true,
+  canManage = false,
+  variant = "default"
+}: StoryCardProps) {
+  const eventYear = story.event_date ? String(new Date(story.event_date).getFullYear()) : "Momen";
+  const actionClass =
+    "inline-flex min-h-10 items-center rounded-xl px-4 py-2 text-sm font-semibold transition-colors sm:text-base";
+
   return (
     <Card className="rounded-[1.75rem] border-stone-100 p-5 sm:p-6">
       <article className="space-y-4">
         <header className="space-y-2">
+          {variant === "timeline" ? (
+            <span className="inline-flex rounded-lg bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-800">
+              {eventYear}
+            </span>
+          ) : null}
           <h3 className="text-xl font-semibold text-stone-900">
-            <Link href={`/cerita/${story.id}`} className="transition-colors hover:text-amber-700">
+            <Link
+              href={`/cerita/${story.id}`}
+              className="transition-colors hover:text-amber-700"
+            >
               {story.title}
             </Link>
           </h3>
@@ -43,17 +61,11 @@ export function StoryCard({ story, showPerson = true, canManage = false }: Story
         <p className="text-base leading-relaxed text-stone-700">{buildStoryPreview(story.body)}</p>
 
         <div className="flex flex-wrap gap-2 text-sm font-semibold sm:text-base">
-          <Link
-            href={`/cerita/${story.id}`}
-            className="inline-flex min-h-10 items-center rounded-xl bg-amber-50 px-4 py-2 text-amber-800 transition-colors hover:bg-amber-100"
-          >
+          <Link href={`/cerita/${story.id}`} className={`${actionClass} bg-amber-50 text-amber-800 hover:bg-amber-100`}>
             Buka detail cerita
           </Link>
           {canManage ? (
-            <Link
-              href={`/cerita/${story.id}/edit`}
-              className="inline-flex min-h-10 items-center rounded-xl border border-stone-200 bg-white px-4 py-2 text-stone-700 transition-colors hover:bg-stone-50"
-            >
+            <Link href={`/cerita/${story.id}/edit`} className={`${actionClass} border border-stone-200 bg-white text-stone-700 hover:bg-stone-50`}>
               Edit Cerita
             </Link>
           ) : null}

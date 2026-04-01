@@ -2,10 +2,12 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SectionHeader } from "@/components/ui/section-header";
+import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import { MemberCard } from "@/components/members/member-card";
 import { MemberSearchForm } from "@/components/members/member-search-form";
 import { requireViewer } from "@/lib/permissions/guards";
 import { listActiveMembers } from "@/server/queries/members";
+import { Plus } from "lucide-react";
 
 type FamilyDirectoryPageProps = {
   searchParams: Promise<{ q?: string }>;
@@ -30,7 +32,7 @@ export default async function FamilyDirectoryPage({ searchParams }: FamilyDirect
       <SectionHeader
         eyebrow="Direktori Keluarga"
         title="Daftar Anggota"
-        description="Temukan anggota keluarga dengan cepat berdasarkan nama atau panggilan. Anggota yang diarsipkan tidak ditampilkan di daftar utama."
+        description="Cari dan jelajahi profil anggota keluarga dengan nyaman. Anggota yang diarsipkan tidak ditampilkan di daftar utama."
       />
 
       <MemberSearchForm value={searchQuery} />
@@ -84,6 +86,13 @@ export default async function FamilyDirectoryPage({ searchParams }: FamilyDirect
           ))}
         </ul>
       )}
+
+      <FloatingActionButton
+        href="/anggota-baru"
+        label="Tambah Anggota (Editor/Admin)"
+        icon={Plus}
+        className="md:hidden"
+      />
     </section>
   );
 }

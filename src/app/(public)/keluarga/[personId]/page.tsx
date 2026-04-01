@@ -2,7 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCurrentUserRole, requireViewer } from "@/lib/permissions/guards";
 import { hasMinimumRole } from "@/lib/auth/roles";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { SectionHeader } from "@/components/ui/section-header";
 import { StatusBanner } from "@/components/ui/status-banner";
 import { getMemberById } from "@/server/queries/members";
 import { MemberAvatar } from "@/components/members/member-avatar";
@@ -93,52 +95,64 @@ export default async function MemberProfilePage({ params, searchParams }: Member
 
   return (
     <section className="space-y-6">
-      <div className="flex flex-wrap gap-2 text-sm font-medium text-amber-700">
-        <Link href="/keluarga" className="rounded-xl px-3 py-2 hover:bg-amber-50">
-          ← Kembali ke direktori
+      <div className="flex items-center justify-between">
+        <Link
+          href="/keluarga"
+          className="inline-flex min-h-10 items-center rounded-xl px-2 py-1 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
+        >
+          ← Kembali
         </Link>
-        <Link href={`/pohon?personId=${personId}`} className="rounded-xl px-3 py-2 hover:bg-amber-50">
-          Lihat di mode pohon
-        </Link>
-        <Link href="/timeline" className="rounded-xl px-3 py-2 hover:bg-amber-50">
-          Lihat timeline keluarga
-        </Link>
+        {canManageMember ? (
+          <Link href={`/anggota/${member.id}/edit`}>
+            <Button variant="secondary" size="sm" className="font-medium">
+              Edit Profil
+            </Button>
+          </Link>
+        ) : null}
       </div>
 
-      <Card className="space-y-4 rounded-[2rem] border-stone-100 p-5 sm:p-6">
-        <div className="flex flex-wrap items-center gap-4">
-          <MemberAvatar
-            fullName={member.full_name}
-            photoUrl={member.profile_photo_url}
-            size="lg"
-            testId="member-photo-image"
-          />
-          <div className="min-w-0 space-y-1">
-            <h2 className="break-words text-3xl font-semibold tracking-tight text-stone-900">{member.full_name}</h2>
-            {member.nickname ? <p className="text-base text-stone-600">Panggilan: {member.nickname}</p> : null}
-          </div>
+      <Card className="space-y-6 rounded-[2.25rem] border-stone-100 p-6 text-center sm:p-8">
+        <div className="mx-auto">
+          <MemberAvatar fullName={member.full_name} photoUrl={member.profile_photo_url} size="lg" testId="member-photo-image" />
+        </div>
+        <div className="space-y-1.5">
+          <h1 className="break-words text-3xl font-semibold tracking-tight text-stone-900">{member.full_name}</h1>
+          {member.nickname ? <p className="text-base text-stone-500">Panggilan: {member.nickname}</p> : null}
         </div>
 
         {member.is_archived ? (
           <StatusBanner variant="warning" message="Anggota ini sedang diarsipkan." />
         ) : null}
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Card className="rounded-2xl border-stone-100 bg-stone-50 p-4 shadow-none">
+            <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">Status</p>
+            <p className="mt-1 text-base font-semibold text-stone-900">
+              {member.is_living ? "Masih hidup" : "Sudah wafat"}
+            </p>
+          </Card>
+          <Card className="rounded-2xl border-stone-100 bg-stone-50 p-4 shadow-none">
+            <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">Tanggal Lahir</p>
+            <p className="mt-1 text-base font-semibold text-stone-900">{member.birth_date ?? "Belum diisi"}</p>
+          </Card>
+        </div>
       </Card>
 
       <Card className="space-y-2 rounded-[2rem] border-stone-100 p-5 text-base leading-relaxed text-stone-700 sm:p-6">
-        <p>Status: {member.is_living ? "Masih hidup" : "Sudah wafat"}</p>
-        {member.birth_date ? <p>Tanggal lahir: {member.birth_date}</p> : null}
+        <SectionHeader
+          eyebrow="Informasi Dasar"
+          title="Profil Anggota"
+          description="Data dasar anggota keluarga ini disimpan agar mudah dipahami lintas generasi."
+          className="pb-1"
+        />
         {member.death_date ? <p>Tanggal wafat: {member.death_date}</p> : null}
         {member.gender ? (
           <p>
             Jenis kelamin:{" "}
-            {member.gender === "male"
-              ? "Laki-laki"
-              : member.gender === "female"
-                ? "Perempuan"
-                : "Lainnya"}
+            {member.gender === "male" ? "Laki-laki" : member.gender === "female" ? "Perempuan" : "Lainnya"}
           </p>
         ) : null}
-        {member.bio ? <p>Catatan: {member.bio}</p> : null}
+        {member.bio ? <p>Catatan: {member.bio}</p> : <p>Catatan: Belum ada catatan keluarga tambahan.</p>}
       </Card>
 
       {relationshipErrorMessage ? (
@@ -228,16 +242,28 @@ export default async function MemberProfilePage({ params, searchParams }: Member
 
       <MemberStoriesSection personId={member.id} stories={relatedStories} canManage={canManageMember} />
 
-      {canManageMember ? (
-        <div>
+      <div className="flex flex-wrap gap-3">
+        <Link
+          href={`/pohon?personId=${personId}`}
+          className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
+        >
+          Lihat di mode pohon
+        </Link>
+        <Link
+          href="/timeline"
+          className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
+        >
+          Lihat timeline keluarga
+        </Link>
+        {canManageMember ? (
           <Link
             href={`/anggota/${member.id}/edit`}
-            className="inline-flex min-h-12 w-full items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50 sm:w-auto"
+            className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-amber-700 px-5 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-amber-800"
           >
             Edit / Arsipkan Anggota
           </Link>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </section>
   );
 }

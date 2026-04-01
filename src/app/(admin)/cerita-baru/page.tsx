@@ -30,7 +30,7 @@ export default async function NewStoryPage({ searchParams }: NewStoryPageProps) 
     <section className="space-y-6">
       <Link
         href="/timeline"
-        className="inline-flex rounded-xl px-3 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-50"
+        className="inline-flex min-h-10 items-center rounded-xl px-2 py-1 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
       >
         ← Kembali ke timeline
       </Link>

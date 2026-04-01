@@ -4,8 +4,8 @@
   color-scheme: light;
   --kk-bg: #f9f7f4;
   --kk-surface: #ffffff;
-  --kk-text: #1c1917;
-  --kk-muted: #57534e;
+  --kk-text: #292524;
+  --kk-muted: #78716c;
   --kk-border: #e7e5e4;
   --kk-accent: #b45309;
   --kk-accent-strong: #92400e;
@@ -13,6 +13,8 @@
   --kk-success: #047857;
   --kk-focus: #f59e0b;
   --kk-shadow-soft: 0 1px 2px rgb(0 0 0 / 0.06);
+  --kk-shadow-card: 0 6px 24px rgb(28 25 23 / 0.06);
+  --kk-shadow-float: 0 14px 36px rgb(28 25 23 / 0.16);
   --kk-radius-control: 1rem;
   --kk-radius-card: 2rem;
   --kk-radius-hero: 2.5rem;
@@ -23,8 +25,8 @@ body {
   min-height: 100vh;
   background: var(--kk-bg);
   color: var(--kk-text);
-  font-family: "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;
-  line-height: 1.55;
+  font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -41,4 +43,9 @@ a {
 :focus-visible {
   outline: 3px solid var(--kk-focus);
   outline-offset: 2px;
+}
+
+::selection {
+  background: #fde68a;
+  color: #78350f;
 }

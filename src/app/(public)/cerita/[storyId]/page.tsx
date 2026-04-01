@@ -31,60 +31,68 @@ export default async function StoryDetailPage({ params, searchParams }: StoryDet
 
   const query = await searchParams;
   const statusMessage = query.status ? statusMessages[query.status] : "";
+  const eventYear = story.event_date ? String(new Date(story.event_date).getFullYear()) : "Momen";
 
   return (
     <section className="space-y-6">
-      <div className="flex flex-wrap gap-2 text-sm font-medium text-amber-700">
-        <Link className="inline-flex rounded-xl px-3 py-2 transition-colors hover:bg-amber-50" href="/timeline">
+      <div className="flex items-center justify-between">
+        <Link
+          className="inline-flex min-h-10 items-center rounded-xl px-2 py-1 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
+          href="/timeline"
+        >
           ← Kembali ke timeline
         </Link>
-        <Link
-          className="inline-flex rounded-xl px-3 py-2 transition-colors hover:bg-amber-50"
-          href={`/keluarga/${story.person_id}`}
-        >
-          Buka profil anggota terkait
-        </Link>
+        {canManageStories ? (
+          <Link
+            href={`/cerita/${story.id}/edit`}
+            className="inline-flex min-h-10 items-center rounded-xl bg-stone-200 px-4 py-2 text-sm font-medium text-stone-800 transition-colors hover:bg-stone-300"
+          >
+            Edit Cerita
+          </Link>
+        ) : null}
       </div>
 
       {statusMessage ? (
         <StatusBanner variant="success" message={statusMessage} />
       ) : null}
 
-      <Card className="space-y-4 rounded-[1.75rem] border-stone-100 p-5 sm:p-6">
+      <Card className="space-y-5 rounded-[2rem] border-stone-100 p-6 sm:p-8">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="inline-flex rounded-lg bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-800">
+            {eventYear}
+          </span>
+          <p className="text-sm font-medium text-stone-500">
+            Terkait anggota:{" "}
+            <Link href={`/keluarga/${story.person_id}`} className="font-semibold text-stone-700 hover:text-amber-700">
+              {story.person_full_name}
+            </Link>
+          </p>
+        </div>
         <SectionHeader
           title={story.title}
           description={story.event_date ? `Tanggal kejadian: ${story.event_date}` : "Tanggal kejadian belum diisi"}
           eyebrow="Cerita Keluarga"
         />
 
-        <p className="text-sm leading-relaxed text-stone-600">
-          Terkait anggota:{" "}
-          <Link href={`/keluarga/${story.person_id}`} className="font-medium text-stone-700 hover:text-amber-700">
-            {story.person_full_name}
-          </Link>
-        </p>
-
         {story.is_archived ? (
           <StatusBanner variant="warning" message="Cerita ini sedang diarsipkan." />
         ) : null}
       </Card>
 
-      <Card className="rounded-[1.75rem] border-stone-100 p-5 sm:p-6">
-        <article className="prose prose-stone max-w-none text-base leading-relaxed">
+      <Card className="rounded-[2rem] border-stone-100 p-6 sm:p-8">
+        <article className="prose prose-stone max-w-none text-base leading-relaxed sm:prose-lg">
           <p className="whitespace-pre-wrap text-stone-800">{story.body}</p>
         </article>
       </Card>
 
-      {canManageStories ? (
-        <div className="pt-1">
-          <Link
-            href={`/cerita/${story.id}/edit`}
-            className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
-          >
-            Edit Cerita
-          </Link>
-        </div>
-      ) : null}
+      <div className="flex flex-wrap gap-3">
+        <Link
+          href={`/keluarga/${story.person_id}`}
+          className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
+        >
+          Buka profil anggota terkait
+        </Link>
+      </div>
     </section>
   );
 }

@@ -24,7 +24,7 @@ function getInitials(fullName: string) {
 
 function getSizeClasses(size: "sm" | "md" | "lg") {
   if (size === "sm") {
-    return "h-12 w-12 text-sm";
+    return "h-14 w-14 text-sm";
   }
   if (size === "lg") {
     return "h-28 w-28 text-2xl";
@@ -33,14 +33,23 @@ function getSizeClasses(size: "sm" | "md" | "lg") {
   return "h-20 w-20 text-lg";
 }
 
+function getRadiusClasses(size: "sm" | "md" | "lg") {
+  if (size === "lg") {
+    return "rounded-[2rem]";
+  }
+
+  return "rounded-full";
+}
+
 export function MemberAvatar({ fullName, photoUrl, size = "md", testId }: MemberAvatarProps) {
   const sizeClasses = getSizeClasses(size);
+  const radiusClasses = getRadiusClasses(size);
   const initials = getInitials(fullName);
   const imageAlt = `Foto profil ${fullName}`;
 
   if (photoUrl) {
     return (
-      <div data-testid={testId} className={`relative overflow-hidden rounded-full border border-stone-200 ${sizeClasses}`}>
+      <div data-testid={testId} className={`relative overflow-hidden border border-stone-200 ${sizeClasses} ${radiusClasses}`}>
         <Image src={photoUrl} alt={imageAlt} fill sizes="112px" className="object-cover" />
       </div>
     );
@@ -49,7 +58,7 @@ export function MemberAvatar({ fullName, photoUrl, size = "md", testId }: Member
   return (
     <div
       data-testid={testId}
-      className={`flex items-center justify-center rounded-full border border-stone-200 bg-stone-100 font-semibold text-stone-700 ${sizeClasses}`}
+      className={`flex items-center justify-center border border-stone-200 bg-stone-100 font-semibold text-stone-700 ${sizeClasses} ${radiusClasses}`}
       aria-label={imageAlt}
     >
       {initials}

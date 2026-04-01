@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import type { StoryListItem } from "@/server/queries/stories";
 
 type MemberStoriesSectionProps = {
@@ -10,10 +11,7 @@ type MemberStoriesSectionProps = {
 
 export function MemberStoriesSection({ personId, stories, canManage }: MemberStoriesSectionProps) {
   return (
-    <Card
-      data-testid="member-stories-section"
-      className="space-y-4 rounded-[2rem] border-stone-100 p-5 sm:p-6"
-    >
+    <Card data-testid="member-stories-section" className="space-y-4 rounded-[2rem] border-stone-100 p-5 sm:p-6">
       <header className="space-y-1">
         <h3 className="text-lg font-semibold text-stone-900">Cerita & Kenangan</h3>
         <p className="text-sm leading-relaxed text-stone-600">
@@ -22,15 +20,17 @@ export function MemberStoriesSection({ personId, stories, canManage }: MemberSto
       </header>
 
       {stories.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 px-4 py-3 text-sm leading-relaxed text-stone-600">
-          Belum ada cerita untuk anggota ini.
-        </p>
+        <EmptyState
+          title="Belum ada cerita"
+          description="Belum ada cerita untuk anggota ini."
+          className="rounded-2xl border-stone-300 bg-stone-50 py-5"
+        />
       ) : (
-        <ul className="space-y-3">
+        <ul className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
           {stories.map((story) => (
-            <li key={story.id} className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-              <div className="space-y-1">
-                <Link href={`/cerita/${story.id}`} className="font-medium text-stone-900 hover:text-amber-800">
+            <li key={story.id} className="border-b border-stone-100 p-4 last:border-b-0">
+              <div className="space-y-1.5">
+                <Link href={`/cerita/${story.id}`} className="font-semibold text-stone-900 hover:text-amber-800">
                   {story.title}
                 </Link>
                 <p className="text-sm leading-relaxed text-stone-600">
@@ -39,7 +39,9 @@ export function MemberStoriesSection({ personId, stories, canManage }: MemberSto
               </div>
               {canManage ? (
                 <div className="mt-3 text-sm font-semibold text-stone-700">
-                  <Link href={`/cerita/${story.id}/edit`}>Edit Cerita</Link>
+                  <Link href={`/cerita/${story.id}/edit`} className="hover:text-amber-800">
+                    Edit Cerita
+                  </Link>
                 </div>
               ) : null}
             </li>

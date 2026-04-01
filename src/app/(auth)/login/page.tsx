@@ -48,9 +48,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
         <header className="space-y-2">
           <p className="text-sm font-medium uppercase tracking-wide text-amber-700">Login Keluarga</p>
-          <h2 className="text-3xl font-semibold leading-tight text-stone-900">Masuk dengan link sekali klik</h2>
+          <h2 className="text-3xl font-semibold leading-tight text-stone-900">Masuk ke Ruang Keluarga</h2>
           <p className="text-base leading-relaxed text-stone-600">
-            Masukkan email Anda. Kami akan kirim tautan login yang aman dan mudah dipakai dari HP.
+            Masukkan email Anda untuk menerima tautan masuk yang aman. Tidak perlu kata sandi.
           </p>
           <p className="text-sm leading-relaxed text-stone-500">
             Jika email belum masuk, tunggu sebentar lalu cek folder spam/promosi.

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -10,19 +11,22 @@ export function MemberSearchForm({ value }: MemberSearchFormProps) {
   const hasQuery = value.length > 0;
 
   return (
-    <Card className="rounded-[2rem] border-stone-100 p-5 sm:p-6">
+    <Card className="rounded-[2rem] border-stone-100 p-5 shadow-sm sm:p-6">
       <form action="/keluarga" method="get" className="space-y-4">
         <div className="space-y-2">
           <label htmlFor="directory-search" className="text-base font-semibold text-stone-900">
             Cari nama atau panggilan
           </label>
-          <input
-            id="directory-search"
-            name="q"
-            defaultValue={value}
-            placeholder="Contoh: Rina, Pak Budi, atau panggilan"
-            className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 placeholder:text-stone-400 focus:border-amber-400 focus:ring-2"
-          />
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-400" />
+            <input
+              id="directory-search"
+              name="q"
+              defaultValue={value}
+              placeholder="Contoh: Rina, Pak Budi, atau panggilan"
+              className="w-full rounded-2xl border border-stone-200 bg-stone-50 pl-12 pr-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 placeholder:text-stone-400 focus:border-amber-400 focus:ring-2"
+            />
+          </div>
         </div>
 
         <p className="text-sm leading-relaxed text-stone-600">

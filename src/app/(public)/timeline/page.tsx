@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { FileText } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SectionHeader } from "@/components/ui/section-header";
+import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import { getCurrentUserRole, requireViewer } from "@/lib/permissions/guards";
 import { hasMinimumRole } from "@/lib/auth/roles";
 import { StoryCard } from "@/components/stories/story-card";
@@ -47,14 +49,24 @@ export default async function TimelinePage() {
           description="Editor atau admin dapat menambahkan cerita pertama agar momen keluarga mulai terdokumentasi."
         />
       ) : (
-        <ul className="space-y-4" data-testid="timeline-story-list">
-          {stories.map((story) => (
-            <li key={story.id}>
-              <StoryCard story={story} canManage={canManageStories} />
+        <ul
+          className="relative space-y-7 before:absolute before:inset-y-3 before:left-5 before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-stone-200 before:to-transparent md:before:left-1/2 md:before:-ml-px"
+          data-testid="timeline-story-list"
+        >
+          {stories.map((story, index) => (
+            <li key={story.id} className="relative flex md:justify-normal md:odd:flex-row-reverse">
+              <div className="absolute left-5 top-8 z-10 h-3 w-3 -translate-x-1/2 rounded-full border-4 border-[#F9F7F4] bg-amber-700 md:left-1/2" />
+              <div className="ml-10 w-[calc(100%-2.5rem)] md:ml-0 md:w-[calc(50%-2.5rem)]">
+                <StoryCard story={story} canManage={canManageStories} variant="timeline" showPerson={index % 2 === 0} />
+              </div>
             </li>
           ))}
         </ul>
       )}
+
+      {canManageStories ? (
+        <FloatingActionButton href="/cerita-baru" label="Tambah Cerita" icon={FileText} className="md:hidden" />
+      ) : null}
     </section>
   );
 }
