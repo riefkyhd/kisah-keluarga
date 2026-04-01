@@ -41,7 +41,17 @@ export type TreeFocusPerson = {
 export type TreeViewData = {
   focusPerson: TreeFocusPerson | null;
   focusCandidates: TreeFocusPerson[];
+  grandparents: RelationshipListItem[];
   parents: RelationshipListItem[];
+  parentSpouses: RelationshipListItem[];
+  grandparentParentLinks: Array<{
+    grandparent_person_id: string;
+    parent_person_id: string;
+  }>;
+  parentSpouseLinks: Array<{
+    parent_person_id: string;
+    spouse_person_id: string;
+  }>;
   spouse: RelationshipListItem[];
   children: RelationshipListItem[];
 };
@@ -75,6 +85,12 @@ async function getPeopleRows(ids: string[]) {
   }
 
   return (data ?? []) as PersonRow[];
+}
+
+function normalizeSpousePair(firstId: string, secondId: string) {
+  return firstId < secondId
+    ? { firstId, secondId }
+    : { firstId: secondId, secondId: firstId };
 }
 
 export async function listRelationshipCandidates(personId: string) {
@@ -238,7 +254,11 @@ export async function getTreeViewData(focusPersonId?: string): Promise<TreeViewD
     return {
       focusPerson: null,
       focusCandidates: [],
+      grandparents: [],
       parents: [],
+      parentSpouses: [],
+      grandparentParentLinks: [],
+      parentSpouseLinks: [],
       spouse: [],
       children: []
     };
@@ -249,10 +269,172 @@ export async function getTreeViewData(focusPersonId?: string): Promise<TreeViewD
     focusCandidates[0];
 
   const relationships = await getProfileRelationships(selectedFocusPerson.id, false);
+  const parentIds = relationships.parents.map((parent) => parent.person_id);
+  const grandparentParentLinks: Array<{
+    grandparent_person_id: string;
+    parent_person_id: string;
+  }> = [];
+  const parentSpouseLinks: Array<{
+    parent_person_id: string;
+    spouse_person_id: string;
+  }> = [];
+  let grandparents: RelationshipListItem[] = [];
+  let parentSpouses: RelationshipListItem[] = [];
+
+  if (parentIds.length > 0) {
+    const { data: grandparentEdges, error: grandparentEdgesError } = await supabase
+      .from("relationships")
+      .select("id, from_person_id, to_person_id")
+      .eq("is_archived", false)
+      .eq("relationship_type", "parent")
+      .in("to_person_id", parentIds);
+
+    if (grandparentEdgesError) {
+      throw new Error("Gagal memuat relasi kakek-nenek.");
+    }
+
+    const grandparentRows = (grandparentEdges ?? []) as Array<{
+      id: string;
+      from_person_id: string;
+      to_person_id: string;
+    }>;
+
+    const grandparentIds = Array.from(
+      new Set(grandparentRows.map((row) => row.from_person_id))
+    );
+    const grandparentMap = mapPeopleById(await getPeopleRows(grandparentIds));
+    grandparents = sortByName(
+      grandparentRows
+        .map((row) => {
+          const person = grandparentMap.get(row.from_person_id);
+          if (!person || person.is_archived) {
+            return null;
+          }
+
+          grandparentParentLinks.push({
+            grandparent_person_id: person.id,
+            parent_person_id: row.to_person_id
+          });
+
+          return {
+            relationship_id: row.id,
+            person_id: person.id,
+            full_name: person.full_name,
+            is_archived: person.is_archived
+          } as RelationshipListItem;
+        })
+        .filter((row): row is RelationshipListItem => row !== null)
+    );
+
+    const { data: parentSpouseEdges, error: parentSpouseEdgesError } = await supabase
+      .from("relationships")
+      .select("id, from_person_id, to_person_id")
+      .eq("is_archived", false)
+      .eq("relationship_type", "spouse")
+      .or(
+        `from_person_id.in.(${parentIds.join(",")}),to_person_id.in.(${parentIds.join(",")})`
+      );
+
+    if (parentSpouseEdgesError) {
+      throw new Error("Gagal memuat pasangan orang tua.");
+    }
+
+    const parentSpouseRows = (parentSpouseEdges ?? []) as Array<{
+      id: string;
+      from_person_id: string;
+      to_person_id: string;
+    }>;
+
+    const parentSpouseIds = Array.from(
+      new Set(
+        parentSpouseRows.flatMap((row) => {
+          if (parentIds.includes(row.from_person_id)) {
+            return [row.to_person_id];
+          }
+
+          return [row.from_person_id];
+        })
+      )
+    ).filter(
+      (personId) =>
+        personId !== selectedFocusPerson.id && !parentIds.includes(personId)
+    );
+    const parentSpouseMap = mapPeopleById(await getPeopleRows(parentSpouseIds));
+    const seenSpousePairs = new Set<string>();
+
+    parentSpouses = sortByName(
+      parentSpouseRows
+        .map((row) => {
+          const parentId = parentIds.includes(row.from_person_id)
+            ? row.from_person_id
+            : row.to_person_id;
+          const spouseId = parentId === row.from_person_id ? row.to_person_id : row.from_person_id;
+
+          if (
+            spouseId === selectedFocusPerson.id ||
+            parentIds.includes(spouseId)
+          ) {
+            return null;
+          }
+
+          const person = parentSpouseMap.get(spouseId);
+          if (!person || person.is_archived) {
+            return null;
+          }
+
+          const pairKey = `${parentId}-${spouseId}`;
+          if (seenSpousePairs.has(pairKey)) {
+            return null;
+          }
+
+          seenSpousePairs.add(pairKey);
+          parentSpouseLinks.push({
+            parent_person_id: parentId,
+            spouse_person_id: spouseId
+          });
+
+          return {
+            relationship_id: row.id,
+            person_id: person.id,
+            full_name: person.full_name,
+            is_archived: person.is_archived
+          } as RelationshipListItem;
+        })
+        .filter((row): row is RelationshipListItem => row !== null)
+    );
+  }
+
+  const dedupedGrandparents = Array.from(
+    new Map(grandparents.map((item) => [item.person_id, item])).values()
+  );
+  const dedupedParentSpouses = Array.from(
+    new Map(parentSpouses.map((item) => [item.person_id, item])).values()
+  );
+  const dedupedGrandparentLinks = Array.from(
+    new Map(
+      grandparentParentLinks.map((link) => [
+        `${link.grandparent_person_id}-${link.parent_person_id}`,
+        link
+      ])
+    ).values()
+  );
+  const dedupedParentSpouseLinks = Array.from(
+    new Map(
+      parentSpouseLinks.map((link) => {
+        const pair = normalizeSpousePair(link.parent_person_id, link.spouse_person_id);
+        return [`${pair.firstId}-${pair.secondId}`, link];
+      })
+    ).values()
+  );
+
   return {
     focusPerson: selectedFocusPerson,
     focusCandidates,
+    grandparents: dedupedGrandparents,
     parents: relationships.parents,
+    parentSpouses: dedupedParentSpouses,
+    grandparentParentLinks: dedupedGrandparentLinks,
+    parentSpouseLinks: dedupedParentSpouseLinks,
     spouse: relationships.spouse,
     children: relationships.children
   };

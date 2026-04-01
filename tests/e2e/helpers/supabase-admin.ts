@@ -219,7 +219,9 @@ export async function createMemberFixture(
   options: CreateMemberFixtureOptions = {}
 ): Promise<TestMember> {
   const admin = getAdminClient();
-  const fullName = `${label} ${Date.now()}-${Math.floor(Math.random() * 10_000)}`;
+  const normalizedLabel = label.trim().replace(/\s+/g, " ");
+  const fullNameBase = normalizedLabel.startsWith("[TEST]") ? normalizedLabel : `[TEST] ${normalizedLabel}`;
+  const fullName = `${fullNameBase} ${Date.now()}-${Math.floor(Math.random() * 10_000)}`;
 
   const { data, error } = await admin
     .from("people")

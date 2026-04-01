@@ -1,103 +1,167 @@
-import Image from "next/image";
 import Link from "next/link";
-import { BookOpen, LogOut, Settings, TreeDeciduous, Users } from "lucide-react";
+import { ArrowRight, BookOpen, Sparkles, TreeDeciduous, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { SectionHeader } from "@/components/ui/section-header";
 import { InstallAppPrompt } from "@/components/pwa/install-app-prompt";
 import { Button } from "@/components/ui/button";
 
+const stats = [
+  {
+    label: "Anggota",
+    value: "Profil keluarga tersusun rapi"
+  },
+  {
+    label: "Generasi",
+    value: "Relasi lintas orang tua dan anak"
+  },
+  {
+    label: "Cerita",
+    value: "Momen tersimpan per waktu"
+  }
+];
+
+const quickNavItems = [
+  {
+    href: "/keluarga",
+    title: "Direktori Keluarga",
+    description: "Temukan profil anggota dengan cepat.",
+    icon: Users
+  },
+  {
+    href: "/pohon",
+    title: "Pohon Keluarga",
+    description: "Lihat relasi antar generasi secara visual.",
+    icon: TreeDeciduous
+  },
+  {
+    href: "/timeline",
+    title: "Cerita Keluarga",
+    description: "Baca kenangan keluarga dalam urutan waktu.",
+    icon: BookOpen
+  }
+];
+
 export default function PublicHomePage() {
   return (
-    <section className="space-y-8">
-      <header className="flex items-center justify-between py-1 md:hidden">
-        <div className="flex items-center gap-2">
-          <div className="overflow-hidden rounded-xl border border-stone-200 bg-white p-1">
-            <Image
-              src="/icons/icon-192.png"
-              alt="Logo Kisah Keluarga"
-              width={28}
-              height={28}
-              className="h-7 w-7 rounded-lg object-cover"
-              priority
-            />
+    <section className="space-y-8 md:space-y-10">
+      <div className="grid items-center gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+        <Card className="space-y-6 border-[color:var(--color-sand)] bg-gradient-to-br from-white via-[color:var(--color-cream)] to-[color:var(--color-warm)] px-6 py-7 shadow-[0_12px_34px_rgba(74,55,40,0.09)] sm:px-8 sm:py-9">
+          <p className="inline-flex w-fit items-center gap-2 rounded-full border border-[color:var(--color-sand)] bg-white/80 px-3 py-1 text-xs font-medium uppercase tracking-[0.14em] text-[color:var(--color-clay)]">
+            <Sparkles className="h-3.5 w-3.5" />
+            Arsip Keluarga
+          </p>
+          <div className="space-y-4">
+            <h1 className="text-4xl leading-tight text-[color:var(--color-bark)] sm:text-5xl">
+              Simpan kisah keluarga dalam ruang yang hangat dan mudah dipahami.
+            </h1>
+            <p className="max-w-xl text-base leading-relaxed text-[color:var(--color-clay)] sm:text-lg">
+              Kelola profil anggota, relasi keluarga, foto, dan cerita berharga dalam satu aplikasi yang tenang
+              untuk semua generasi.
+            </p>
           </div>
-          <span className="text-lg font-semibold text-stone-900">Kisah Keluarga</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link href="/admin" className="rounded-full bg-white p-2 text-stone-400 shadow-sm">
-            <Settings className="h-5 w-5" />
-          </Link>
-          <Link href="/login" className="rounded-full bg-white p-2 text-stone-400 shadow-sm">
-            <LogOut className="h-5 w-5" />
-          </Link>
-        </div>
-      </header>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/keluarga">
+              <Button className="min-w-[12rem] bg-[color:var(--color-clay)] text-[color:var(--color-cream)] hover:bg-[color:var(--color-bark)]">
+                Buka Direktori
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="/timeline">
+              <Button
+                variant="outline"
+                className="min-w-[12rem] border-[color:var(--color-sand)] bg-white/90 text-[color:var(--color-bark)] hover:bg-[color:var(--color-warm)]"
+              >
+                Jelajahi Cerita
+              </Button>
+            </Link>
+          </div>
+        </Card>
 
-      <SectionHeader
-        eyebrow="Ruang Keluarga"
-        title="Selamat Datang, Keluarga Tercinta"
-        description="Ruang hangat untuk melihat anggota keluarga, memahami relasi, dan menyimpan momen penting lintas generasi."
-      />
+        <Card className="relative overflow-hidden border-[color:var(--color-sand)] bg-[linear-gradient(160deg,#fff_10%,#f6efe4_100%)] px-5 py-6 shadow-[0_10px_24px_rgba(74,55,40,0.10)]">
+          <p className="mb-4 text-sm font-medium uppercase tracking-[0.12em] text-[color:var(--color-clay)]">
+            Pratinjau Pohon Mini
+          </p>
+          <div className="space-y-4">
+            <div className="flex items-center justify-center gap-3">
+              <div className="rounded-2xl border border-[color:var(--color-sand)] bg-white px-3 py-2 text-sm font-medium text-[color:var(--color-bark)]">
+                Ali
+              </div>
+              <div className="text-sm text-[color:var(--color-clay)]">↔</div>
+              <div className="rounded-2xl border border-[color:var(--color-sand)] bg-white px-3 py-2 text-sm font-medium text-[color:var(--color-bark)]">
+                Wuri
+              </div>
+            </div>
+            <div className="mx-auto h-5 w-px bg-[color:var(--color-sand)]" />
+            <div className="mx-auto h-px w-32 bg-[color:var(--color-sand)]" />
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="rounded-xl border border-[color:var(--color-sand)] bg-white px-2 py-2 text-xs font-medium text-[color:var(--color-bark)]">
+                Dina
+              </div>
+              <div className="rounded-xl border border-[color:var(--color-sand)] bg-white px-2 py-2 text-xs font-medium text-[color:var(--color-bark)]">
+                Raka
+              </div>
+              <div className="rounded-xl border border-[color:var(--color-sand)] bg-white px-2 py-2 text-xs font-medium text-[color:var(--color-bark)]">
+                Nala
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <Link href="/keluarga" className="block">
-          <Card className="flex h-full flex-col items-center justify-center gap-3 border-orange-100/70 bg-gradient-to-br from-amber-50 to-orange-50/60 p-6 text-center">
-            <div className="rounded-2xl bg-white p-4 shadow-sm">
-              <Users className="h-8 w-8 text-amber-700" />
-            </div>
-            <div>
-              <h3 className="font-medium text-stone-900">Anggota</h3>
-              <p className="mt-1 text-xs text-stone-500">Lihat Direktori</p>
-            </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        {stats.map((stat) => (
+          <Card
+            key={stat.label}
+            className="border-[color:var(--color-sand)] bg-white/90 px-4 py-4 shadow-[0_4px_12px_rgba(74,55,40,0.05)]"
+          >
+            <p className="text-xs font-medium uppercase tracking-[0.12em] text-[color:var(--color-clay)]">{stat.label}</p>
+            <p className="mt-2 text-sm leading-relaxed text-[color:var(--color-bark)]">{stat.value}</p>
           </Card>
-        </Link>
-        <Link href="/pohon" className="block">
-          <Card className="flex h-full flex-col items-center justify-center gap-3 border-emerald-100/70 bg-gradient-to-br from-emerald-50 to-teal-50/60 p-6 text-center">
-            <div className="rounded-2xl bg-white p-4 shadow-sm">
-              <TreeDeciduous className="h-8 w-8 text-emerald-700" />
-            </div>
-            <div>
-              <h3 className="font-medium text-stone-900">Pohon</h3>
-              <p className="mt-1 text-xs text-stone-500">Mode Visual</p>
-            </div>
-          </Card>
-        </Link>
+        ))}
       </div>
 
       <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-stone-800">Cerita Keluarga</h2>
-          <Link href="/timeline" className="text-sm font-medium text-amber-700">
-            Lihat Semua
-          </Link>
+        <div className="space-y-2">
+          <h2 className="text-3xl text-[color:var(--color-bark)]">Akses Cepat</h2>
+          <p className="text-[color:var(--color-clay)]">Pilih jalur yang paling nyaman untuk memulai.</p>
         </div>
-        <Link href="/timeline" className="block">
-          <Card className="flex items-center gap-4 p-4">
-            <div className="rounded-2xl bg-amber-50 p-3 text-amber-700">
-              <BookOpen className="h-6 w-6" />
-            </div>
-            <div className="min-w-0">
-              <h3 className="font-semibold text-stone-900">Buka Timeline Keluarga</h3>
-              <p className="mt-1 text-sm text-stone-500">
-                Jelajahi memori keluarga yang sudah ditulis dan tersusun rapi menurut waktu.
-              </p>
-            </div>
-          </Card>
-        </Link>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {quickNavItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link key={item.href} href={item.href} className="block">
+                <Card className="h-full border-[color:var(--color-sand)] bg-white/95 p-5 transition-all hover:-translate-y-0.5 hover:shadow-md">
+                  <div className="mb-4 inline-flex rounded-2xl bg-[color:var(--color-warm)] p-3 text-[color:var(--color-clay)]">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-[color:var(--color-bark)]">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[color:var(--color-clay)]">{item.description}</p>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
       </section>
 
-      <Card className="space-y-3 p-5 sm:p-6">
-        <h3 className="text-lg font-semibold text-stone-900">Mulai dari alur paling sederhana</h3>
-        <p className="text-base leading-relaxed text-stone-600">
-          Untuk melihat data, gunakan menu <strong>Keluarga</strong>, <strong>Pohon</strong>, atau{" "}
-          <strong>Cerita</strong>. Untuk mengubah data, gunakan akun dengan izin editor/admin.
+      <Card className="border-[color:var(--color-sand)] bg-white/90 p-5 sm:p-6">
+        <h3 className="text-2xl text-[color:var(--color-bark)]">Mulai dengan alur sederhana</h3>
+        <p className="mt-3 text-base leading-relaxed text-[color:var(--color-clay)]">
+          Gunakan menu <strong>Keluarga</strong>, <strong>Pohon</strong>, dan <strong>Cerita</strong> untuk membaca
+          data. Untuk menambah atau mengubah informasi, gunakan akun dengan peran editor atau admin.
         </p>
-        <div className="flex flex-wrap gap-2 pt-1">
+        <div className="mt-4 flex flex-wrap gap-3">
           <Link href="/keluarga">
-            <Button>Buka Direktori Keluarga</Button>
+            <Button className="bg-[color:var(--color-clay)] text-[color:var(--color-cream)] hover:bg-[color:var(--color-bark)]">
+              Buka Direktori Keluarga
+            </Button>
           </Link>
-          <Link href="/anggota-baru">
-            <Button variant="secondary">Tambah Anggota (Editor/Admin)</Button>
+          <Link href="/login">
+            <Button
+              variant="outline"
+              className="border-[color:var(--color-sand)] bg-white/90 text-[color:var(--color-bark)] hover:bg-[color:var(--color-warm)]"
+            >
+              Masuk sebagai Pengelola
+            </Button>
           </Link>
         </div>
       </Card>

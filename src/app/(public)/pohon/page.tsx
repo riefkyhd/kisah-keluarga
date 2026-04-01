@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SectionHeader } from "@/components/ui/section-header";
 import { requireViewer } from "@/lib/permissions/guards";
-import { FamilyTreeFocus } from "@/components/tree/family-tree-focus";
+import { FamilyTree } from "@/components/FamilyTree";
+import { FocusPersonCombobox } from "@/components/tree/focus-person-combobox";
 import { getTreeViewData } from "@/server/queries/relationships";
 
 type TreeViewPageProps = {
@@ -49,37 +49,22 @@ export default async function TreeViewPage({ searchParams }: TreeViewPageProps) 
 
       {treeData.focusCandidates.length > 0 ? (
         <Card className="rounded-[1.75rem] border-stone-100 p-5 shadow-sm sm:p-6">
-          <form action="/pohon" method="get" className="space-y-4">
-            <label htmlFor="tree-focus-person" className="block text-base font-semibold text-stone-900">
-              Fokus anggota
-            </label>
-            <p className="text-sm leading-relaxed text-stone-600">
-              Pilih satu anggota agar pohon tampil lebih ringkas, nyaman dibaca di HP, dan tidak terasa padat.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <select
-                id="tree-focus-person"
-                name="personId"
-                defaultValue={treeData.focusPerson?.id ?? ""}
-                className="min-h-12 flex-1 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 focus:border-amber-400 focus:ring-2"
-              >
-                {treeData.focusCandidates.map((candidate) => (
-                  <option key={candidate.id} value={candidate.id}>
-                    {candidate.full_name}
-                  </option>
-                ))}
-              </select>
-              <Button type="submit">Tampilkan Pohon</Button>
-            </div>
-          </form>
+          <FocusPersonCombobox
+            candidates={treeData.focusCandidates}
+            selectedPersonId={treeData.focusPerson?.id ?? ""}
+          />
         </Card>
       ) : null}
 
       {treeData.focusPerson ? (
         <>
-          <FamilyTreeFocus
+          <FamilyTree
             focusPerson={treeData.focusPerson}
+            grandparents={treeData.grandparents}
             parents={treeData.parents}
+            parentSpouses={treeData.parentSpouses}
+            grandparentParentLinks={treeData.grandparentParentLinks}
+            parentSpouseLinks={treeData.parentSpouseLinks}
             spouse={treeData.spouse}
             childMembers={treeData.children}
           />

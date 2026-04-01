@@ -1,7 +1,25 @@
 import type { Metadata, Viewport } from "next";
+import { DM_Sans, Lora } from "next/font/google";
 import { AppShell } from "@/components/layout/app-shell";
 import { PwaRegister } from "@/components/pwa/pwa-register";
+import { getCurrentUser } from "@/lib/auth/session";
+import { appThemeColor } from "@/lib/design-tokens";
 import "./globals.css";
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  variable: "--font-dm-sans",
+  display: "swap"
+});
+
+const lora = Lora({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-lora",
+  display: "swap"
+});
 
 export const metadata: Metadata = {
   title: "Kisah Keluarga",
@@ -25,19 +43,21 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f9f7f4"
+  themeColor: appThemeColor
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getCurrentUser();
+
   return (
     <html lang="id">
-      <body>
+      <body className={`${dmSans.variable} ${lora.variable}`}>
         <PwaRegister />
-        <AppShell>{children}</AppShell>
+        <AppShell hasSession={Boolean(user)}>{children}</AppShell>
       </body>
     </html>
   );

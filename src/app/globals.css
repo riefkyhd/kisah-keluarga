@@ -2,16 +2,24 @@
 
 :root {
   color-scheme: light;
-  --kk-bg: #f9f7f4;
+  --color-cream: #faf7f2;
+  --color-warm: #f0eae0;
+  --color-bark: #4a3728;
+  --color-clay: #8b5e3c;
+  --color-sage: #6b7c5e;
+  --color-rust: #c4623a;
+  --color-sand: #d4b896;
+
+  --kk-bg: var(--color-cream);
   --kk-surface: #ffffff;
-  --kk-text: #292524;
-  --kk-muted: #78716c;
-  --kk-border: #e7e5e4;
-  --kk-accent: #b45309;
-  --kk-accent-strong: #92400e;
-  --kk-danger: #b91c1c;
-  --kk-success: #047857;
-  --kk-focus: #f59e0b;
+  --kk-text: var(--color-bark);
+  --kk-muted: #796759;
+  --kk-border: #e4d8ca;
+  --kk-accent: var(--color-clay);
+  --kk-accent-strong: #74472b;
+  --kk-danger: #9b3022;
+  --kk-success: #3f5c45;
+  --kk-focus: var(--color-rust);
   --kk-shadow-soft: 0 1px 2px rgb(0 0 0 / 0.06);
   --kk-shadow-card: 0 6px 24px rgb(28 25 23 / 0.06);
   --kk-shadow-float: 0 14px 36px rgb(28 25 23 / 0.16);
@@ -23,12 +31,19 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--kk-bg);
+  background: var(--color-cream);
   color: var(--kk-text);
-  font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-dm-sans), "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   line-height: 1.6;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-lora), Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
 a {
@@ -46,6 +61,6 @@ a {
 }
 
 ::selection {
-  background: #fde68a;
-  color: #78350f;
+  background: #f3ddc5;
+  color: #4a3728;
 }

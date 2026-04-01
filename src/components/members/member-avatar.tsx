@@ -1,10 +1,12 @@
 import Image from "next/image";
+import { getAvatarFallbackStyle } from "@/lib/people";
 
 type MemberAvatarProps = {
   fullName: string;
   photoUrl?: string | null;
   size?: "sm" | "md" | "lg";
   testId?: string;
+  coloredFallback?: boolean;
 };
 
 function getInitials(fullName: string) {
@@ -33,6 +35,30 @@ function getSizeClasses(size: "sm" | "md" | "lg") {
   return "h-20 w-20 text-lg";
 }
 
+function getRequestedImageSize(size: "sm" | "md" | "lg") {
+  if (size === "sm") {
+    return {
+      width: 128,
+      height: 128,
+      sizes: "64px"
+    };
+  }
+
+  if (size === "lg") {
+    return {
+      width: 400,
+      height: 400,
+      sizes: "112px"
+    };
+  }
+
+  return {
+    width: 192,
+    height: 192,
+    sizes: "80px"
+  };
+}
+
 function getRadiusClasses(size: "sm" | "md" | "lg") {
   if (size === "lg") {
     return "rounded-[2rem]";
@@ -41,16 +67,33 @@ function getRadiusClasses(size: "sm" | "md" | "lg") {
   return "rounded-full";
 }
 
-export function MemberAvatar({ fullName, photoUrl, size = "md", testId }: MemberAvatarProps) {
+export function MemberAvatar({
+  fullName,
+  photoUrl,
+  size = "md",
+  testId,
+  coloredFallback = false
+}: MemberAvatarProps) {
   const sizeClasses = getSizeClasses(size);
+  const requestSize = getRequestedImageSize(size);
   const radiusClasses = getRadiusClasses(size);
   const initials = getInitials(fullName);
   const imageAlt = `Foto profil ${fullName}`;
 
   if (photoUrl) {
     return (
-      <div data-testid={testId} className={`relative overflow-hidden border border-stone-200 ${sizeClasses} ${radiusClasses}`}>
-        <Image src={photoUrl} alt={imageAlt} fill sizes="112px" className="object-cover" />
+      <div
+        data-testid={testId}
+        className={`overflow-hidden border border-stone-200 ${sizeClasses} ${radiusClasses}`}
+      >
+        <Image
+          src={photoUrl}
+          alt={imageAlt}
+          width={requestSize.width}
+          height={requestSize.height}
+          sizes={requestSize.sizes}
+          className={`h-full w-full object-cover ${radiusClasses}`}
+        />
       </div>
     );
   }
@@ -58,7 +101,16 @@ export function MemberAvatar({ fullName, photoUrl, size = "md", testId }: Member
   return (
     <div
       data-testid={testId}
-      className={`flex items-center justify-center border border-stone-200 bg-stone-100 font-semibold text-stone-700 ${sizeClasses} ${radiusClasses}`}
+      className={`flex items-center justify-center border font-semibold ${sizeClasses} ${radiusClasses}`}
+      style={
+        coloredFallback
+          ? getAvatarFallbackStyle(fullName)
+          : {
+              borderColor: "#e7e5e4",
+              backgroundColor: "#f5f5f4",
+              color: "#57534e"
+            }
+      }
       aria-label={imageAlt}
     >
       {initials}
