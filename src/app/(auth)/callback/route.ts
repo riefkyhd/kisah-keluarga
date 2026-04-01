@@ -15,8 +15,18 @@ function getOtpType(rawValue: string | null): EmailOtpType | null {
     return null;
   }
 
-  const validTypes: EmailOtpType[] = ["email", "recovery", "invite", "magiclink", "email_change"];
-  return validTypes.includes(rawValue as EmailOtpType) ? (rawValue as EmailOtpType) : null;
+  const validTypes = [
+    "signup",
+    "email",
+    "recovery",
+    "invite",
+    "magiclink",
+    "email_change"
+  ] as const;
+
+  return validTypes.includes(rawValue as (typeof validTypes)[number])
+    ? (rawValue as EmailOtpType)
+    : null;
 }
 
 export async function GET(request: NextRequest) {
