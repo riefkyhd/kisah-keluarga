@@ -18,26 +18,26 @@ function buildStoryPreview(body: string) {
 
 export function StoryCard({ story, showPerson = true, canManage = false }: StoryCardProps) {
   return (
-    <article className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+    <article className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
       <header className="space-y-1">
         <h3 className="text-lg font-semibold text-slate-900">
           <Link href={`/cerita/${story.id}`} className="hover:text-amber-700">
             {story.title}
           </Link>
         </h3>
-        <p className="text-sm text-slate-600">
+        <p className="text-sm leading-relaxed text-slate-600">
           {story.event_date ? `Tanggal kejadian: ${story.event_date}` : "Tanggal kejadian belum diisi"}
         </p>
         {showPerson ? (
-          <p className="text-sm text-slate-600">
+          <p className="text-sm leading-relaxed text-slate-600">
             Terkait anggota: <Link href={`/keluarga/${story.person_id}`}>{story.person_full_name}</Link>
           </p>
         ) : null}
       </header>
 
-      <p className="text-sm leading-relaxed text-slate-700">{buildStoryPreview(story.body)}</p>
+      <p className="text-base leading-relaxed text-slate-700">{buildStoryPreview(story.body)}</p>
 
-      <div className="flex flex-wrap gap-3 text-sm font-semibold">
+      <div className="flex flex-wrap gap-3 text-base font-semibold">
         <Link href={`/cerita/${story.id}`} className="text-amber-700">
           Buka detail cerita
         </Link>

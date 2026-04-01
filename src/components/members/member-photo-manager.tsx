@@ -14,9 +14,9 @@ export function MemberPhotoManager({
   removeAction
 }: MemberPhotoManagerProps) {
   return (
-    <section data-testid="member-photo-manager" className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
-      <h3 className="text-base font-semibold text-slate-900">Foto Profil</h3>
-      <p className="text-sm text-slate-700">
+    <section data-testid="member-photo-manager" className="space-y-4 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+      <h3 className="text-lg font-semibold text-slate-900">Foto Profil</h3>
+      <p className="text-sm leading-relaxed text-slate-700">
         Foto membantu keluarga mengenali anggota dengan lebih mudah.
       </p>
 
@@ -24,7 +24,7 @@ export function MemberPhotoManager({
         <div className="space-y-3">
           <form action={uploadAction} className="space-y-3">
             <input type="hidden" name="person_id" value={personId} />
-            <label className="block space-y-2 text-sm font-medium text-slate-800">
+            <label className="block space-y-2 text-base font-semibold text-slate-800">
               Pilih foto
               <input
                 data-testid="member-photo-upload-input"
@@ -37,7 +37,7 @@ export function MemberPhotoManager({
             </label>
             <button
               type="submit"
-              className="w-full rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white"
+              className="w-full rounded-lg bg-amber-500 px-4 py-3 text-base font-semibold text-white"
             >
               {hasPhoto ? "Ganti Foto" : "Unggah Foto"}
             </button>
@@ -48,7 +48,7 @@ export function MemberPhotoManager({
               <input type="hidden" name="person_id" value={personId} />
               <button
                 type="submit"
-                className="w-full rounded-lg border border-rose-300 bg-white px-4 py-2 text-sm font-semibold text-rose-700"
+                className="w-full rounded-lg border border-rose-300 bg-white px-4 py-3 text-base font-semibold text-rose-700"
               >
                 Hapus Foto
               </button>
@@ -56,7 +56,7 @@ export function MemberPhotoManager({
           ) : null}
         </div>
       ) : (
-        <p className="text-sm text-slate-600">Hanya editor/admin yang dapat mengubah foto profil.</p>
+        <p className="text-sm leading-relaxed text-slate-600">Hanya editor/admin yang dapat mengubah foto profil.</p>
       )}
     </section>
   );

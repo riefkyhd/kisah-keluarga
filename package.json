@@ -9,7 +9,10 @@
     "lint": "next lint",
     "test": "npm run test:e2e",
     "test:e2e": "cross-env NODE_ENV=test ENABLE_TEST_AUTH_BOOTSTRAP=true playwright test",
-    "test:smoke": "cross-env NODE_ENV=test ENABLE_TEST_AUTH_BOOTSTRAP=true playwright test tests/e2e/smoke.spec.ts"
+    "test:smoke": "cross-env NODE_ENV=test ENABLE_TEST_AUTH_BOOTSTRAP=true playwright test tests/e2e/smoke.spec.ts",
+    "test:e2e:dev-login": "npm run test:e2e:dev-login:disabled && npm run test:e2e:dev-login:enabled",
+    "test:e2e:dev-login:disabled": "cross-env NODE_ENV=test ENABLE_TEST_AUTH_BOOTSTRAP=true ENABLE_DEV_DUMMY_LOGIN=false playwright test tests/e2e/dev-login-disabled.spec.ts",
+    "test:e2e:dev-login:enabled": "cross-env NODE_ENV=test ENABLE_TEST_AUTH_BOOTSTRAP=true ENABLE_DEV_DUMMY_LOGIN=true playwright test tests/e2e/dev-login-enabled.spec.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

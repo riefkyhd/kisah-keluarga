@@ -11,17 +11,17 @@ export function MemberStoriesSection({ personId, stories, canManage }: MemberSto
   return (
     <section
       data-testid="member-stories-section"
-      className="space-y-3 rounded-xl border border-slate-200 bg-white p-4"
+      className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 sm:p-5"
     >
       <header className="space-y-1">
         <h3 className="text-lg font-semibold text-slate-900">Cerita & Kenangan</h3>
-        <p className="text-sm text-slate-700">
+        <p className="text-sm leading-relaxed text-slate-700">
           Kumpulan momen penting yang terkait dengan anggota ini.
         </p>
       </header>
 
       {stories.length === 0 ? (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm leading-relaxed text-slate-500">
           Belum ada cerita untuk anggota ini.
         </p>
       ) : (
@@ -32,7 +32,7 @@ export function MemberStoriesSection({ personId, stories, canManage }: MemberSto
                 <Link href={`/cerita/${story.id}`} className="font-medium text-slate-900">
                   {story.title}
                 </Link>
-                <p className="text-sm text-slate-600">
+                <p className="text-sm leading-relaxed text-slate-600">
                   {story.event_date ? `Tanggal kejadian: ${story.event_date}` : "Tanggal kejadian belum diisi"}
                 </p>
               </div>
@@ -50,7 +50,7 @@ export function MemberStoriesSection({ personId, stories, canManage }: MemberSto
         <div>
           <Link
             href={`/cerita-baru?personId=${personId}`}
-            className="inline-block rounded-lg bg-amber-500 px-4 py-3 text-sm font-semibold text-white"
+            className="inline-block rounded-lg bg-amber-500 px-5 py-3 text-base font-semibold text-white"
           >
             Tambah Cerita
           </Link>

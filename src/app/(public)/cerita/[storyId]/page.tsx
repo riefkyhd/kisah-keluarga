@@ -30,10 +30,14 @@ export default async function StoryDetailPage({ params, searchParams }: StoryDet
   const statusMessage = query.status ? statusMessages[query.status] : "";
 
   return (
-    <section className="space-y-4">
-      <div className="flex flex-wrap gap-3 text-sm font-medium text-amber-700">
-        <Link href="/timeline">← Kembali ke timeline</Link>
-        <Link href={`/keluarga/${story.person_id}`}>Buka profil anggota terkait</Link>
+    <section className="space-y-5">
+      <div className="flex flex-wrap gap-2 text-sm font-medium text-amber-700">
+        <Link className="rounded-lg px-2 py-2" href="/timeline">
+          ← Kembali ke timeline
+        </Link>
+        <Link className="rounded-lg px-2 py-2" href={`/keluarga/${story.person_id}`}>
+          Buka profil anggota terkait
+        </Link>
       </div>
 
       {statusMessage ? (
@@ -42,12 +46,12 @@ export default async function StoryDetailPage({ params, searchParams }: StoryDet
         </div>
       ) : null}
 
-      <header className="space-y-1 rounded-xl border border-slate-200 bg-white p-4">
+      <header className="space-y-2 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
         <h2 className="text-2xl font-semibold text-slate-900">{story.title}</h2>
-        <p className="text-sm text-slate-600">
+        <p className="text-sm leading-relaxed text-slate-600">
           {story.event_date ? `Tanggal kejadian: ${story.event_date}` : "Tanggal kejadian belum diisi"}
         </p>
-        <p className="text-sm text-slate-600">
+        <p className="text-sm leading-relaxed text-slate-600">
           Terkait anggota: <Link href={`/keluarga/${story.person_id}`}>{story.person_full_name}</Link>
         </p>
         {story.is_archived ? (
@@ -57,7 +61,7 @@ export default async function StoryDetailPage({ params, searchParams }: StoryDet
         ) : null}
       </header>
 
-      <article className="rounded-xl border border-slate-200 bg-white p-4 text-base leading-relaxed text-slate-800">
+      <article className="rounded-xl border border-slate-200 bg-white p-4 text-base leading-relaxed text-slate-800 sm:p-5">
         <p className="whitespace-pre-wrap">{story.body}</p>
       </article>
 
@@ -65,7 +69,7 @@ export default async function StoryDetailPage({ params, searchParams }: StoryDet
         <div>
           <Link
             href={`/cerita/${story.id}/edit`}
-            className="inline-block rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800"
+            className="inline-block rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800"
           >
             Edit Cerita
           </Link>

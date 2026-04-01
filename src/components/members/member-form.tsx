@@ -15,10 +15,10 @@ type MemberFormProps = {
 
 export function MemberForm({ action, submitLabel, personId, initialValues }: MemberFormProps) {
   return (
-    <form action={action} className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
+    <form action={action} className="space-y-4 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
       {personId ? <input type="hidden" name="person_id" value={personId} /> : null}
 
-      <label className="block space-y-2 text-sm font-medium text-slate-800">
+      <label className="block space-y-2 text-base font-semibold text-slate-800">
         Nama lengkap
         <input
           required
@@ -29,7 +29,7 @@ export function MemberForm({ action, submitLabel, personId, initialValues }: Mem
         />
       </label>
 
-      <label className="block space-y-2 text-sm font-medium text-slate-800">
+      <label className="block space-y-2 text-base font-semibold text-slate-800">
         Nama panggilan (opsional)
         <input
           name="nickname"
@@ -39,7 +39,7 @@ export function MemberForm({ action, submitLabel, personId, initialValues }: Mem
         />
       </label>
 
-      <label className="block space-y-2 text-sm font-medium text-slate-800">
+      <label className="block space-y-2 text-base font-semibold text-slate-800">
         Jenis kelamin (opsional)
         <select
           name="gender"
@@ -54,7 +54,7 @@ export function MemberForm({ action, submitLabel, personId, initialValues }: Mem
       </label>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="block space-y-2 text-sm font-medium text-slate-800">
+        <label className="block space-y-2 text-base font-semibold text-slate-800">
           Tanggal lahir (opsional)
           <input
             type="date"
@@ -64,7 +64,7 @@ export function MemberForm({ action, submitLabel, personId, initialValues }: Mem
           />
         </label>
 
-        <label className="block space-y-2 text-sm font-medium text-slate-800">
+        <label className="block space-y-2 text-base font-semibold text-slate-800">
           Tanggal wafat (opsional)
           <input
             type="date"
@@ -75,7 +75,7 @@ export function MemberForm({ action, submitLabel, personId, initialValues }: Mem
         </label>
       </div>
 
-      <label className="block space-y-2 text-sm font-medium text-slate-800">
+      <label className="block space-y-2 text-base font-semibold text-slate-800">
         Status kehidupan
         <select
           name="is_living"
@@ -87,7 +87,7 @@ export function MemberForm({ action, submitLabel, personId, initialValues }: Mem
         </select>
       </label>
 
-      <label className="block space-y-2 text-sm font-medium text-slate-800">
+      <label className="block space-y-2 text-base font-semibold text-slate-800">
         Catatan singkat (opsional)
         <textarea
           name="bio"

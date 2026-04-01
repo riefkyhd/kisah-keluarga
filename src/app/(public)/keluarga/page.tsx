@@ -23,19 +23,19 @@ export default async function FamilyDirectoryPage({ searchParams }: FamilyDirect
   const members = await listActiveMembers(searchQuery);
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-5">
       <p className="text-sm font-medium uppercase tracking-wide text-amber-700">
         Direktori Keluarga
       </p>
       <h2 className="text-2xl font-semibold text-slate-900">Daftar Anggota</h2>
-      <p className="text-slate-700">
+      <p className="max-w-2xl text-base leading-relaxed text-slate-700">
         Lihat anggota keluarga yang aktif. Anggota yang diarsipkan tidak
         ditampilkan di daftar utama.
       </p>
       <MemberSearchForm value={searchQuery} />
 
       {searchQuery ? (
-        <p className="text-sm text-slate-700">
+        <p className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm leading-relaxed text-slate-700">
           Menampilkan {members.length} hasil untuk: <span className="font-semibold">&quot;{searchQuery}&quot;</span>
         </p>
       ) : null}
@@ -43,26 +43,26 @@ export default async function FamilyDirectoryPage({ searchParams }: FamilyDirect
       <div className="flex flex-wrap gap-3">
         <Link
           href="/pohon"
-          className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800"
+          className="rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800"
         >
           Lihat Mode Pohon
         </Link>
         <Link
           href="/timeline"
-          className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800"
+          className="rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800"
         >
           Lihat Timeline Cerita
         </Link>
         <Link
           href="/anggota-baru"
-          className="rounded-lg bg-amber-500 px-4 py-3 text-sm font-semibold text-white"
+          className="rounded-lg bg-amber-500 px-5 py-3 text-base font-semibold text-white"
         >
           Tambah Anggota (Editor/Admin)
         </Link>
       </div>
 
       {members.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-5 text-slate-700">
+        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-5 text-base leading-relaxed text-slate-700">
           {searchQuery
             ? "Belum ada anggota yang cocok dengan pencarian Anda. Coba nama atau panggilan lain."
             : "Belum ada anggota aktif. Editor atau admin bisa menambahkan anggota pertama dari tombol di atas."}

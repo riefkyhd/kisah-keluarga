@@ -90,21 +90,20 @@ export default async function MemberProfilePage({ params, searchParams }: Member
   const photoStatusMessage = query.photo_status ? photoStatusMessages[query.photo_status] : "";
 
   return (
-    <section className="space-y-4">
-      <Link href="/keluarga" className="inline-block text-sm font-medium text-amber-700">
-        ← Kembali ke direktori
-      </Link>
-      <Link
-        href={`/pohon?personId=${personId}`}
-        className="inline-block text-sm font-medium text-amber-700"
-      >
-        Lihat di mode pohon
-      </Link>
-      <Link href="/timeline" className="inline-block text-sm font-medium text-amber-700">
-        Lihat timeline keluarga
-      </Link>
+    <section className="space-y-5">
+      <div className="flex flex-wrap gap-2 text-sm font-medium text-amber-700">
+        <Link href="/keluarga" className="rounded-lg px-2 py-2">
+          ← Kembali ke direktori
+        </Link>
+        <Link href={`/pohon?personId=${personId}`} className="rounded-lg px-2 py-2">
+          Lihat di mode pohon
+        </Link>
+        <Link href="/timeline" className="rounded-lg px-2 py-2">
+          Lihat timeline keluarga
+        </Link>
+      </div>
 
-      <header className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+      <header className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
         <div className="flex items-center gap-4">
           <MemberAvatar
             fullName={member.full_name}
@@ -114,7 +113,7 @@ export default async function MemberProfilePage({ params, searchParams }: Member
           />
           <div className="space-y-1">
             <h2 className="text-2xl font-semibold text-slate-900">{member.full_name}</h2>
-            {member.nickname ? <p className="text-slate-700">Panggilan: {member.nickname}</p> : null}
+            {member.nickname ? <p className="text-base text-slate-700">Panggilan: {member.nickname}</p> : null}
           </div>
         </div>
         {member.is_archived ? (
@@ -124,7 +123,7 @@ export default async function MemberProfilePage({ params, searchParams }: Member
         ) : null}
       </header>
 
-      <div className="space-y-2 rounded-xl border border-slate-200 bg-white p-4 text-slate-700">
+      <div className="space-y-2 rounded-xl border border-slate-200 bg-white p-4 text-base leading-relaxed text-slate-700 sm:p-5">
         <p>Status: {member.is_living ? "Masih hidup" : "Sudah wafat"}</p>
         {member.birth_date ? <p>Tanggal lahir: {member.birth_date}</p> : null}
         {member.death_date ? <p>Tanggal wafat: {member.death_date}</p> : null}
@@ -240,7 +239,7 @@ export default async function MemberProfilePage({ params, searchParams }: Member
         <div>
           <Link
             href={`/anggota/${member.id}/edit`}
-            className="inline-block rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800"
+            className="inline-block rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800"
           >
             Edit / Arsipkan Anggota
           </Link>

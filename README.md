@@ -51,6 +51,8 @@ Yang **belum** diimplementasikan:
    cp .env.example .env.local
    ```
 3. Isi nilai Supabase pada `.env.local`.
+   - Untuk mode QA lokal tanpa OTP inbox (opsional):
+     - set `ENABLE_DEV_DUMMY_LOGIN=true`
 4. Di Supabase Dashboard, pastikan Auth Redirect URLs memuat:
    - `http://localhost:3000/callback`
    - URL deploy kamu + `/callback` (contoh: `https://your-app.vercel.app/callback`)
@@ -70,6 +72,24 @@ Yang **belum** diimplementasikan:
    ```bash
    npm run lint
    ```
+
+## Dev Dummy Login (Manual QA Lokal)
+Mode ini membantu QA lokal login cepat sebagai `viewer`, `editor`, atau `admin` tanpa kirim OTP email, tetapi tetap membentuk session Supabase normal via `/callback`.
+
+Cara pakai:
+1. Pastikan `.env.local` berisi:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `ENABLE_DEV_DUMMY_LOGIN=true`
+2. Jalankan app (`npm run dev`) di host lokal (`localhost` / `127.0.0.1`).
+3. Buka `/login` lalu klik **Buka Mode Pengujian Lokal**, atau buka langsung `/dev-login`.
+
+Guardrails keamanan:
+- Hanya aktif jika `ENABLE_DEV_DUMMY_LOGIN=true`.
+- Otomatis nonaktif di `NODE_ENV=production`.
+- Route `/dev-login` hard-deny di host non-lokal.
+- `SUPABASE_SERVICE_ROLE_KEY` dipakai server-only, tidak dipakai browser/client.
 
 ## Automated Testing (E2E)
 Testing otomatis menggunakan Playwright dengan auth bootstrap **khusus test runner** (Node-side), tanpa route backdoor di app runtime.
@@ -95,6 +115,7 @@ Perintah test:
 ```bash
 npm run test:smoke
 npm run test:e2e
+npm run test:e2e:dev-login
 ```
 
 Catatan keamanan:
@@ -105,6 +126,7 @@ Catatan keamanan:
 ## Initial Routes
 - `/` -> public home placeholder
 - `/login` -> kirim magic link login
+- `/dev-login` -> login dummy lokal (dev-only, guard ketat)
 - `/callback` -> tukar auth code menjadi session
 - `/keluarga` -> direktori anggota aktif
 - `/pohon` -> tampilan pohon keluarga (fokus anggota)

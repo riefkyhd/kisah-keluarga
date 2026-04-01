@@ -2,37 +2,40 @@ import Link from "next/link";
 
 export default function PublicHomePage() {
   return (
-    <section className="space-y-4">
+    <section className="space-y-5">
       <p className="text-sm font-medium uppercase tracking-wide text-amber-700">
         Phase 7 Stories & Timeline
       </p>
       <h2 className="text-2xl font-semibold leading-tight text-slate-900">
         Selamat datang di Kisah Keluarga
       </h2>
-      <p className="max-w-xl text-base leading-relaxed text-slate-700">
-        Profil keluarga kini dilengkapi timeline cerita agar momen penting keluarga
-        tetap hangat, mudah dicari, dan aman dikelola sesuai peran.
+      <p className="max-w-2xl text-base leading-relaxed text-slate-700">
+        Aplikasi ini membantu keluarga melihat profil anggota, relasi, pohon keluarga,
+        dan cerita penting dengan alur yang sederhana. Mulai dari direktori dulu, lalu buka profil yang dibutuhkan.
       </p>
       <div className="flex flex-wrap gap-3">
         <Link
           href="/keluarga"
-          className="rounded-lg bg-amber-500 px-4 py-3 text-sm font-semibold text-white"
+          className="rounded-lg bg-amber-500 px-5 py-3 text-base font-semibold text-white"
         >
           Buka Direktori Keluarga
         </Link>
         <Link
           href="/timeline"
-          className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800"
+          className="rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800"
         >
           Buka Timeline Cerita
         </Link>
         <Link
           href="/anggota-baru"
-          className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800"
+          className="rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800"
         >
           Tambah Anggota (Editor/Admin)
         </Link>
       </div>
+      <p className="text-sm leading-relaxed text-slate-600">
+        Jika hanya ingin melihat data, cukup gunakan menu <strong>Keluarga</strong>, <strong>Timeline</strong>, atau <strong>Pohon</strong>.
+      </p>
     </section>
   );
 }

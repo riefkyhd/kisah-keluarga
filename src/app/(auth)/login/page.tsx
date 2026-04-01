@@ -1,4 +1,7 @@
+import Link from "next/link";
+import { headers } from "next/headers";
 import { requestMagicLink } from "./actions";
+import { getDevDummyLoginContext } from "@/server/dev-auth/config";
 
 type LoginPageProps = {
   searchParams: Promise<{
@@ -25,13 +28,15 @@ function sanitizeNextPath(next: string | undefined) {
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const requestHeaders = await headers();
+  const devDummyLogin = getDevDummyLoginContext(requestHeaders);
   const params = await searchParams;
   const nextPath = sanitizeNextPath(params.next);
   const hasSentLink = params.sent === "1";
   const errorMessage = params.error ? errorMessages[params.error] : "";
 
   return (
-    <section className="mx-auto w-full max-w-md space-y-4">
+    <section className="mx-auto w-full max-w-md space-y-5">
       <p className="text-sm font-medium uppercase tracking-wide text-amber-700">
         Login Keluarga
       </p>
@@ -41,6 +46,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       <p className="text-base leading-relaxed text-slate-700">
         Masukkan email Anda. Kami akan kirim tautan login yang aman dan mudah
         dipakai dari HP.
+      </p>
+      <p className="text-sm leading-relaxed text-slate-600">
+        Jika email belum masuk, tunggu sebentar lalu cek folder spam/promosi.
       </p>
 
       {hasSentLink ? (
@@ -55,10 +63,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </div>
       ) : null}
 
-      <form action={requestMagicLink} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+      <form action={requestMagicLink} className="space-y-4 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
         <input type="hidden" name="next" value={nextPath} />
 
-        <label className="block space-y-2 text-sm font-medium text-slate-800">
+        <label className="block space-y-2 text-base font-semibold text-slate-800">
           Email
           <input
             required
@@ -77,6 +85,18 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           Kirim Link Login
         </button>
       </form>
+
+      {devDummyLogin.canUse ? (
+        <div className="rounded-lg border border-slate-300 bg-white p-4 text-sm text-slate-700">
+          <p className="font-medium text-slate-900">Butuh login cepat untuk QA lokal?</p>
+          <Link
+            href={`/dev-login?next=${encodeURIComponent(nextPath)}`}
+            className="mt-2 inline-block rounded-md px-1 py-1 text-sm font-semibold text-amber-700"
+          >
+            Buka Mode Pengujian Lokal
+          </Link>
+        </div>
+      ) : null}
     </section>
   );
 }

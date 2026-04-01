@@ -24,34 +24,37 @@ export default async function TreeViewPage({ searchParams }: TreeViewPageProps) 
   const treeData = await getTreeViewData(focusPersonId);
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-5">
       <p className="text-sm font-medium uppercase tracking-wide text-amber-700">Mode Visual</p>
       <h2 data-testid="tree-page-heading" className="text-2xl font-semibold text-slate-900">
         Pohon Keluarga
       </h2>
-      <p className="text-slate-700">
+      <p className="max-w-2xl text-base leading-relaxed text-slate-700">
         Gunakan tampilan ini untuk memahami struktur keluarga secara cepat. Direktori dan profil tetap menjadi alur utama untuk pencarian dan pengelolaan data.
       </p>
 
       <div className="flex flex-wrap gap-3">
         <Link
           href="/keluarga"
-          className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800"
+          className="rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800"
         >
           Buka Direktori Keluarga
         </Link>
       </div>
 
       {treeData.focusCandidates.length > 0 ? (
-        <form action="/pohon" method="get" className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
-          <label htmlFor="tree-focus-person" className="block text-sm font-semibold text-slate-900">
+        <form action="/pohon" method="get" className="space-y-4 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+          <label htmlFor="tree-focus-person" className="block text-base font-semibold text-slate-900">
             Fokus anggota
           </label>
+          <p className="text-sm text-slate-600">
+            Pilih satu anggota agar pohon lebih ringkas dan mudah dibaca.
+          </p>
           <select
             id="tree-focus-person"
             name="personId"
             defaultValue={treeData.focusPerson?.id ?? ""}
-            className="w-full rounded-lg border border-slate-300 px-3 py-3 text-base text-slate-900"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-base text-slate-900"
           >
             {treeData.focusCandidates.map((candidate) => (
               <option key={candidate.id} value={candidate.id}>
@@ -61,7 +64,7 @@ export default async function TreeViewPage({ searchParams }: TreeViewPageProps) 
           </select>
           <button
             type="submit"
-            className="rounded-lg bg-amber-500 px-4 py-3 text-sm font-semibold text-white"
+            className="rounded-lg bg-amber-500 px-5 py-3 text-base font-semibold text-white"
           >
             Tampilkan Pohon
           </button>
@@ -79,7 +82,7 @@ export default async function TreeViewPage({ searchParams }: TreeViewPageProps) 
           <div>
             <Link
               href={`/keluarga/${treeData.focusPerson.id}`}
-              className="inline-block rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800"
+              className="inline-block rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800"
             >
               Buka Profil Anggota Fokus
             </Link>

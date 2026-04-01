@@ -25,7 +25,7 @@ function TreePersonNode({ personId, fullName, tone = "default", testId }: TreePe
     <Link
       href={`/keluarga/${personId}`}
       data-testid={testId}
-      className={`block rounded-xl border px-4 py-3 text-sm font-semibold leading-snug shadow-sm ${toneClasses}`}
+      className={`block min-h-[64px] rounded-xl border px-4 py-3 text-base font-semibold leading-snug shadow-sm ${toneClasses}`}
     >
       {fullName}
     </Link>
@@ -34,8 +34,8 @@ function TreePersonNode({ personId, fullName, tone = "default", testId }: TreePe
 
 export function FamilyTreeFocus({ focusPerson, parents, spouse, childMembers }: FamilyTreeFocusProps) {
   return (
-    <section data-testid="family-tree-visual" className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
-      <p className="text-sm text-slate-600">
+    <section data-testid="family-tree-visual" className="space-y-4 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+      <p className="text-sm leading-relaxed text-slate-600">
         Tampilan ini membantu melihat hubungan inti secara cepat. Untuk pencarian lengkap, tetap gunakan direktori keluarga.
       </p>
 

@@ -31,12 +31,12 @@ export function MemberCard({ member }: MemberCardProps) {
     <li>
       <Link
         href={`/keluarga/${member.id}`}
-        className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 hover:border-amber-300"
+        className="flex min-h-[80px] items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 hover:border-amber-300"
       >
         <MemberAvatar fullName={member.full_name} photoUrl={member.profile_photo_url} size="sm" />
         <div className="min-w-0">
-          <h3 className="break-words text-base font-semibold text-slate-900">{member.full_name}</h3>
-          {subtitle ? <p className="mt-1 break-words text-sm text-slate-600">{subtitle}</p> : null}
+          <h3 className="break-words text-base font-semibold leading-snug text-slate-900">{member.full_name}</h3>
+          {subtitle ? <p className="mt-1 break-words text-sm leading-relaxed text-slate-600">{subtitle}</p> : null}
         </div>
       </Link>
     </li>

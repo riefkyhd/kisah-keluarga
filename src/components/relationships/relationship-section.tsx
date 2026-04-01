@@ -41,14 +41,14 @@ export function RelationshipSection({
   const showAdd = canManage && showAddForm && Boolean(addAction);
 
   return (
-    <section data-testid={testId} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+    <section data-testid={testId} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
       <header className="space-y-1">
         <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
-        <p className="text-sm text-slate-700">{description}</p>
+        <p className="text-sm leading-relaxed text-slate-700">{description}</p>
       </header>
 
       {items.length === 0 ? (
-        <p className="text-sm text-slate-500">{emptyText}</p>
+        <p className="text-sm leading-relaxed text-slate-500">{emptyText}</p>
       ) : (
         <ul className="space-y-2">
           {items.map((item) => (
@@ -66,7 +66,7 @@ export function RelationshipSection({
                     <input type="hidden" name="relationship_id" value={item.relationship_id} />
                     <button
                       type="submit"
-                      className="rounded-md border border-amber-300 bg-white px-3 py-1 text-xs font-semibold text-amber-800"
+                      className="rounded-md border border-amber-300 bg-white px-3 py-2 text-xs font-semibold text-amber-800"
                     >
                       Arsipkan Relasi
                     </button>
@@ -80,9 +80,9 @@ export function RelationshipSection({
 
       {showAdd ? (
         candidates.length > 0 ? (
-          <form action={addAction} className="space-y-2 rounded-lg border border-slate-200 p-3">
+          <form action={addAction} className="space-y-3 rounded-lg border border-slate-200 p-3">
             <input type="hidden" name="person_id" value={currentPersonId} />
-            <label className="block space-y-2 text-sm font-medium text-slate-800">
+            <label className="block space-y-2 text-sm font-semibold text-slate-800">
               {addLabel}
               <select
                 required
@@ -99,7 +99,7 @@ export function RelationshipSection({
             </label>
             <button
               type="submit"
-              className="w-full rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white"
+              className="w-full rounded-lg bg-amber-500 px-4 py-3 text-base font-semibold text-white"
             >
               {submitLabel}
             </button>

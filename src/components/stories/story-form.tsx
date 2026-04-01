@@ -15,10 +15,10 @@ type StoryFormProps = {
 
 export function StoryForm({ action, submitLabel, members, storyId, initialValues }: StoryFormProps) {
   return (
-    <form action={action} className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
+    <form action={action} className="space-y-4 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
       {storyId ? <input type="hidden" name="story_id" value={storyId} /> : null}
 
-      <label className="block space-y-2 text-sm font-medium text-slate-800">
+      <label className="block space-y-2 text-base font-semibold text-slate-800">
         Anggota yang terkait
         <select
           required
@@ -35,7 +35,7 @@ export function StoryForm({ action, submitLabel, members, storyId, initialValues
         </select>
       </label>
 
-      <label className="block space-y-2 text-sm font-medium text-slate-800">
+      <label className="block space-y-2 text-base font-semibold text-slate-800">
         Judul cerita
         <input
           required
@@ -46,7 +46,7 @@ export function StoryForm({ action, submitLabel, members, storyId, initialValues
         />
       </label>
 
-      <label className="block space-y-2 text-sm font-medium text-slate-800">
+      <label className="block space-y-2 text-base font-semibold text-slate-800">
         Tanggal kejadian (opsional)
         <input
           type="date"
@@ -56,7 +56,7 @@ export function StoryForm({ action, submitLabel, members, storyId, initialValues
         />
       </label>
 
-      <label className="block space-y-2 text-sm font-medium text-slate-800">
+      <label className="block space-y-2 text-base font-semibold text-slate-800">
         Cerita singkat
         <textarea
           required
