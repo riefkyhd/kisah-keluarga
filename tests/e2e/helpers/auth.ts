@@ -1,8 +1,12 @@
 import type { Page } from "@playwright/test";
-import { getMagicLinkForRole, type AppRole } from "./supabase-admin";
+import { getPasswordCredentialsForRole, type AppRole } from "./supabase-admin";
 
 export async function loginAsRole(page: Page, role: AppRole, nextPath = "/keluarga") {
-  const actionLink = await getMagicLinkForRole(role, nextPath);
-  await page.goto(actionLink);
+  const credentials = await getPasswordCredentialsForRole(role);
+
+  await page.goto(`/login?next=${encodeURIComponent(nextPath)}`);
+  await page.getByLabel("Alamat Email").fill(credentials.email);
+  await page.getByLabel("Kata Sandi").fill(credentials.password);
+  await page.getByRole("button", { name: "Masuk ke Akun" }).click();
   await page.waitForLoadState("networkidle");
 }

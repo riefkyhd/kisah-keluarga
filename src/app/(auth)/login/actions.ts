@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 8;
 
 function sanitizeNextPath(rawValue: FormDataEntryValue | null) {
   if (typeof rawValue !== "string") {
@@ -67,4 +68,32 @@ export async function requestMagicLink(formData: FormData) {
   }
 
   redirect(`/login?sent=1&next=${encodeURIComponent(nextPath)}`);
+}
+
+export async function loginWithPasswordAction(formData: FormData) {
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
+  const password = String(formData.get("password") ?? "");
+  const nextPath = sanitizeNextPath(formData.get("next"));
+
+  if (!EMAIL_PATTERN.test(email)) {
+    redirect(`/login?error=invalid_email&next=${encodeURIComponent(nextPath)}`);
+  }
+
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    redirect(`/login?error=invalid_password_format&next=${encodeURIComponent(nextPath)}`);
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    redirect(`/login?error=invalid_credentials&next=${encodeURIComponent(nextPath)}`);
+  }
+
+  redirect(nextPath);
 }

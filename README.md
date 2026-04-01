@@ -2,7 +2,7 @@
 
 Fondasi awal web app keluarga besar yang **mobile-first** dan **ramah lansia**.
 
-Phase aktif saat ini: **TASK-10 Deployment & Hardening**.
+Phase aktif saat ini: **TASK-11 Password Auth & Admin User Management**.
 
 ## Stack
 - Next.js (App Router) + TypeScript
@@ -10,13 +10,14 @@ Phase aktif saat ini: **TASK-10 Deployment & Hardening**.
 - Supabase (Postgres, Auth, Storage)
 - Vercel (preview + production deployment)
 
-## Scope TASK-00 + TASK-01 + TASK-02 + TASK-03 + TASK-04 + TASK-05 + TASK-06 + TASK-07 + TASK-09 + TASK-10
+## Scope TASK-00 + TASK-01 + TASK-02 + TASK-03 + TASK-04 + TASK-05 + TASK-06 + TASK-07 + TASK-09 + TASK-10 + TASK-11
 Yang sudah disiapkan:
 - bootstrap app Next.js
 - setup Tailwind + konfigurasi dasar shadcn/ui
 - helper Supabase client/server
-- login flow sederhana (email magic link)
+- login flow utama email + password
 - auth callback route (`/callback`)
+- fallback login link email (sekunder)
 - role guard server-side untuk route admin
 - migration awal `user_roles`
 - migration awal `people`
@@ -41,6 +42,9 @@ Yang sudah disiapkan:
 - hardening env production (`.env.example` public/server/dev-test separation)
 - hardening header baseline di Next.js + cache-control aman untuk `/sw.js`
 - deployment/security/launch checklist untuk Vercel + Supabase (`docs/07-delivery/TASK-10_DEPLOYMENT_HARDENING.md`)
+- auth utama email + password (`/login`) dengan link login email sebagai fallback
+- manajemen akun admin-only (`/admin/pengguna`) untuk create user, role update, reset password, aktif/nonaktif
+- script bootstrap admin sekali jalan (`npm run bootstrap:admin`)
 - baseline folder `supabase/` (`migrations`, `seeds`, `policies`)
 - `.env.example`
 
@@ -57,30 +61,45 @@ Yang **belum** diimplementasikan:
    cp .env.example .env.local
    ```
 3. Isi nilai Supabase pada `.env.local`.
-   - Untuk mode QA lokal tanpa OTP inbox (opsional):
+   - Untuk mode QA lokal tanpa login manual (opsional):
      - set `ENABLE_DEV_DUMMY_LOGIN=true`
 4. Di Supabase Dashboard, pastikan Auth Redirect URLs memuat:
    - `http://localhost:3000/callback`
    - URL deploy kamu + `/callback` (contoh: `https://your-app.vercel.app/callback`)
-5. (Opsional, untuk admin pertama) jalankan template:
+5. Bootstrap admin pertama (sekali saja):
+   ```bash
+   npm run bootstrap:admin -- --email admin@keluarga.com --password "GantiDenganPasswordKuat!"
+   ```
+6. (Opsional, untuk seed SQL lama) jalankan template:
    - `supabase/seeds/001_initial_admin_template.sql`
    - ganti `<AUTH_USER_UUID>` dengan user id dari Supabase Auth
-6. Jalankan migration:
+7. Jalankan migration:
    - `supabase/migrations/20260331113000_create_people.sql`
    - `supabase/migrations/20260401013000_create_relationships.sql`
    - `supabase/migrations/20260401030000_add_profile_photo_to_people_and_member_photos_bucket.sql`
    - `supabase/migrations/20260401103000_create_stories.sql`
-7. Jalankan app:
+8. Jalankan app:
    ```bash
    npm run dev
    ```
-8. Validasi lint:
+9. Validasi lint:
    ```bash
    npm run lint
    ```
 
+## Login & Account Management
+- Login utama: **email + password** dari halaman `/login`.
+- Login link email tetap tersedia sebagai **cadangan** (bukan jalur utama).
+- Tidak ada public signup.
+- Akun baru dikelola oleh admin dari `/admin/pengguna`.
+- Admin dapat:
+  - membuat akun + set role (`viewer`, `contributor`, `editor`, `admin`)
+  - mengubah role
+  - reset kata sandi
+  - menonaktifkan / mengaktifkan kembali akun
+
 ## Dev Dummy Login (Manual QA Lokal)
-Mode ini membantu QA lokal login cepat sebagai `viewer`, `editor`, atau `admin` tanpa kirim OTP email, tetapi tetap membentuk session Supabase normal via `/callback`.
+Mode ini membantu QA lokal login cepat sebagai `viewer`, `editor`, atau `admin` tanpa input password manual, tetapi tetap membentuk session Supabase normal via `/callback`.
 
 Cara pakai:
 1. Pastikan `.env.local` berisi:
@@ -125,13 +144,14 @@ npm run test:e2e:dev-login
 ```
 
 Catatan keamanan:
-- Auth produksi tetap magic-link biasa.
+- Auth produksi utama memakai email + password.
+- Magic-link hanya fallback cadangan.
 - `ENABLE_TEST_AUTH_BOOTSTRAP=true` hanya dipakai oleh script test untuk helper Node-side.
 - `SUPABASE_SERVICE_ROLE_KEY` tidak dipakai di browser/client bundle.
 
 ## Initial Routes
 - `/` -> public home placeholder
-- `/login` -> kirim magic link login
+- `/login` -> login email + password (magic-link fallback)
 - `/dev-login` -> login dummy lokal (dev-only, guard ketat)
 - `/callback` -> tukar auth code menjadi session
 - `/keluarga` -> direktori anggota aktif
@@ -144,6 +164,7 @@ Catatan keamanan:
 - `/cerita-baru` -> form tambah cerita (editor/admin)
 - `/cerita/[storyId]/edit` -> form edit + arsip cerita (editor/admin)
 - `/admin` -> route terlindungi admin (server-side guard)
+- `/admin/pengguna` -> manajemen akun pengguna (admin-only)
 
 ## PWA & Installability (TASK-09)
 Yang tersedia sekarang:

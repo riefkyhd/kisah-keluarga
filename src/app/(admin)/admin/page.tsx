@@ -21,6 +21,13 @@ export default async function AdminPage() {
         </p>
         <div className="grid gap-3 sm:grid-cols-2">
           <Link
+            href="/admin/pengguna"
+            className="rounded-2xl border border-stone-200 bg-white px-4 py-4 transition-colors hover:bg-stone-50 sm:col-span-2"
+          >
+            <p className="font-semibold text-stone-900">Kelola Pengguna</p>
+            <p className="mt-1 text-sm text-stone-600">Buat akun baru, atur role, dan ubah kata sandi pengguna.</p>
+          </Link>
+          <Link
             href="/keluarga"
             className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-4 transition-colors hover:bg-stone-100"
           >

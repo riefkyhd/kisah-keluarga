@@ -6,6 +6,7 @@ type TestUser = {
   id: string;
   email: string;
   role: AppRole;
+  password: string;
 };
 
 type TestMember = {
@@ -88,6 +89,10 @@ function getRoleEmail(role: AppRole) {
   return `e2e.${role}@kisah-keluarga.local`;
 }
 
+function getRolePassword(role: AppRole) {
+  return `${role}-E2E-Temp-123!`;
+}
+
 async function findUserByEmail(email: string) {
   const admin = getAdminClient();
   const { data, error } = await admin.auth.admin.listUsers({
@@ -105,12 +110,13 @@ async function findUserByEmail(email: string) {
 export async function ensureRoleUser(role: AppRole): Promise<TestUser> {
   const admin = getAdminClient();
   const email = getRoleEmail(role);
+  const password = getRolePassword(role);
   let user = await findUserByEmail(email);
 
   if (!user) {
     const { data, error } = await admin.auth.admin.createUser({
       email,
-      password: `${role}-E2E-Temp-123!`,
+      password,
       email_confirm: true,
       user_metadata: {
         testing: true,
@@ -129,6 +135,16 @@ export async function ensureRoleUser(role: AppRole): Promise<TestUser> {
     throw new Error(`User test ${email} tidak ditemukan setelah bootstrap.`);
   }
 
+  const { error: updateError } = await admin.auth.admin.updateUserById(user.id, {
+    password,
+    email_confirm: true,
+    ban_duration: "none"
+  });
+
+  if (updateError) {
+    throw new Error(`Gagal sinkron password test user ${email}: ${updateError.message}`);
+  }
+
   const { error: roleError } = await admin
     .from("user_roles")
     .upsert({ user_id: user.id, role }, { onConflict: "user_id" });
@@ -140,7 +156,16 @@ export async function ensureRoleUser(role: AppRole): Promise<TestUser> {
   return {
     id: user.id,
     email,
-    role
+    role,
+    password
+  };
+}
+
+export async function getPasswordCredentialsForRole(role: AppRole) {
+  const user = await ensureRoleUser(role);
+  return {
+    email: user.email,
+    password: user.password
   };
 }
 

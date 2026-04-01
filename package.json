@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "bootstrap:admin": "node scripts/bootstrap-admin-user.mjs",
     "test": "npm run test:e2e",
     "test:e2e": "cross-env NODE_ENV=test ENABLE_TEST_AUTH_BOOTSTRAP=true playwright test",
     "test:smoke": "cross-env NODE_ENV=test ENABLE_TEST_AUTH_BOOTSTRAP=true playwright test tests/e2e/smoke.spec.ts",
