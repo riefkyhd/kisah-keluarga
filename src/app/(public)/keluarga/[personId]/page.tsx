@@ -6,6 +6,7 @@ import { getMemberById } from "@/server/queries/members";
 import { MemberAvatar } from "@/components/members/member-avatar";
 import { MemberPhotoManager } from "@/components/members/member-photo-manager";
 import { RelationshipSection } from "@/components/relationships/relationship-section";
+import { MemberStoriesSection } from "@/components/stories/member-stories-section";
 import {
   archiveRelationshipAction,
   addChildRelationshipAction,
@@ -17,6 +18,7 @@ import {
   uploadOrReplaceMemberPhotoAction
 } from "@/server/actions/member-photos";
 import { getProfileRelationships, listRelationshipCandidates } from "@/server/queries/relationships";
+import { listStoriesByPersonId } from "@/server/queries/stories";
 
 type MemberProfilePageProps = {
   params: Promise<{ personId: string }>;
@@ -76,6 +78,7 @@ export default async function MemberProfilePage({ params, searchParams }: Member
 
   const relationshipData = await getProfileRelationships(personId, canManageMember);
   const relationshipCandidates = canManageMember ? await listRelationshipCandidates(personId) : [];
+  const relatedStories = await listStoriesByPersonId(personId, false);
   const query = await searchParams;
   const relationshipErrorMessage = query.relationship_error
     ? relationshipErrorMessages[query.relationship_error]
@@ -96,6 +99,9 @@ export default async function MemberProfilePage({ params, searchParams }: Member
         className="inline-block text-sm font-medium text-amber-700"
       >
         Lihat di mode pohon
+      </Link>
+      <Link href="/timeline" className="inline-block text-sm font-medium text-amber-700">
+        Lihat timeline keluarga
       </Link>
 
       <header className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
@@ -166,6 +172,8 @@ export default async function MemberProfilePage({ params, searchParams }: Member
         uploadAction={uploadOrReplaceMemberPhotoAction}
         removeAction={removeMemberPhotoAction}
       />
+
+      <MemberStoriesSection personId={member.id} stories={relatedStories} canManage={canManageMember} />
 
       <RelationshipSection
         testId="parents-section"

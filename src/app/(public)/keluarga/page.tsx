@@ -48,6 +48,12 @@ export default async function FamilyDirectoryPage({ searchParams }: FamilyDirect
           Lihat Mode Pohon
         </Link>
         <Link
+          href="/timeline"
+          className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800"
+        >
+          Lihat Timeline Cerita
+        </Link>
+        <Link
           href="/anggota-baru"
           className="rounded-lg bg-amber-500 px-4 py-3 text-sm font-semibold text-white"
         >

@@ -2,7 +2,7 @@
 
 Fondasi awal web app keluarga besar yang **mobile-first** dan **ramah lansia**.
 
-Phase aktif saat ini: **TASK-06 Tree View**.
+Phase aktif saat ini: **TASK-07 Stories & Timeline**.
 
 ## Stack
 - Next.js (App Router) + TypeScript
@@ -10,7 +10,7 @@ Phase aktif saat ini: **TASK-06 Tree View**.
 - Supabase (Postgres, Auth, Storage)
 - Vercel (deployment nanti, belum dibahas di phase ini)
 
-## Scope TASK-00 + TASK-01 + TASK-02 + TASK-03 + TASK-04 + TASK-05 + TASK-06
+## Scope TASK-00 + TASK-01 + TASK-02 + TASK-03 + TASK-04 + TASK-05 + TASK-06 + TASK-07
 Yang sudah disiapkan:
 - bootstrap app Next.js
 - setup Tailwind + konfigurasi dasar shadcn/ui
@@ -30,11 +30,14 @@ Yang sudah disiapkan:
 - tampilan foto profil pada kartu direktori dan halaman profil anggota
 - pencarian direktori berbasis server (`?q=`) untuk nama lengkap dan panggilan
 - tampilan pohon keluarga fokus (read-only) untuk orang tua/pasangan/anak
+- timeline cerita keluarga (`/timeline`)
+- detail cerita keluarga (`/cerita/[storyId]`)
+- tambah/edit/arsip cerita untuk editor/admin
+- cerita terkait pada halaman profil anggota
 - baseline folder `supabase/` (`migrations`, `seeds`, `policies`)
 - `.env.example`
 
 Yang **belum** diimplementasikan:
-- stories/timeline
 - PWA
 - production hardening/deployment logic
 
@@ -58,6 +61,7 @@ Yang **belum** diimplementasikan:
    - `supabase/migrations/20260331113000_create_people.sql`
    - `supabase/migrations/20260401013000_create_relationships.sql`
    - `supabase/migrations/20260401030000_add_profile_photo_to_people_and_member_photos_bucket.sql`
+   - `supabase/migrations/20260401103000_create_stories.sql`
 7. Jalankan app:
    ```bash
    npm run dev
@@ -81,6 +85,7 @@ Prasyarat:
    - `supabase/migrations/20260331113000_create_people.sql`
    - `supabase/migrations/20260401013000_create_relationships.sql`
    - `supabase/migrations/20260401030000_add_profile_photo_to_people_and_member_photos_bucket.sql`
+   - `supabase/migrations/20260401103000_create_stories.sql`
 3. Install browser Playwright (sekali):
    ```bash
    npx playwright install chromium
@@ -103,9 +108,13 @@ Catatan keamanan:
 - `/callback` -> tukar auth code menjadi session
 - `/keluarga` -> direktori anggota aktif
 - `/pohon` -> tampilan pohon keluarga (fokus anggota)
+- `/timeline` -> timeline cerita/momen keluarga
+- `/cerita/[storyId]` -> detail cerita keluarga
 - `/keluarga/[personId]` -> profil anggota
 - `/anggota-baru` -> form tambah anggota (editor/admin)
 - `/anggota/[personId]/edit` -> form edit + arsip/pulihkan (editor/admin)
+- `/cerita-baru` -> form tambah cerita (editor/admin)
+- `/cerita/[storyId]/edit` -> form edit + arsip cerita (editor/admin)
 - `/admin` -> route terlindungi admin (server-side guard)
 
 ## Dokumen Referensi

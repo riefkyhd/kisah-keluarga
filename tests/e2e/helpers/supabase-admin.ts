@@ -28,6 +28,19 @@ type TestRelationship = {
   relationship_type: RelationshipType;
 };
 
+type TestStory = {
+  id: string;
+  person_id: string;
+  title: string;
+  is_archived: boolean;
+};
+
+type CreateStoryFixtureOptions = {
+  eventDate?: string | null;
+  isArchived?: boolean;
+  body?: string;
+};
+
 type TestUploadFile = {
   name: string;
   mimeType: string;
@@ -233,6 +246,38 @@ export async function createRelationshipFixture(params: {
   }
 
   return data as TestRelationship;
+}
+
+export async function createStoryFixture(
+  label: string,
+  personId: string,
+  createdByUserId?: string,
+  options: CreateStoryFixtureOptions = {}
+): Promise<TestStory> {
+  const admin = getAdminClient();
+  const title = `${label} ${Date.now()}-${Math.floor(Math.random() * 10_000)}`;
+
+  const { data, error } = await admin
+    .from("stories")
+    .insert({
+      person_id: personId,
+      title,
+      body:
+        options.body ??
+        "Cerita fixture untuk pengujian otomatis timeline keluarga.",
+      event_date: options.eventDate ?? null,
+      is_archived: options.isArchived ?? false,
+      created_by: createdByUserId ?? null,
+      updated_by: createdByUserId ?? null
+    })
+    .select("id, person_id, title, is_archived")
+    .single();
+
+  if (error || !data) {
+    throw new Error(`Gagal membuat story fixture: ${error?.message ?? "unknown error"}`);
+  }
+
+  return data as TestStory;
 }
 
 export function createTinyPngUpload(name = "photo.png"): TestUploadFile {

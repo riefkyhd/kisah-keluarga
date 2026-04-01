@@ -22,6 +22,7 @@ export default function RootLayout({
               <nav className="flex items-center gap-4 text-sm text-slate-700">
                 <Link href="/">Beranda</Link>
                 <Link href="/keluarga">Keluarga</Link>
+                <Link href="/timeline">Timeline</Link>
                 <Link href="/pohon">Pohon</Link>
                 <Link href="/login">Login</Link>
                 <Link href="/admin">Admin</Link>
