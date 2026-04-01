@@ -4,6 +4,10 @@ import { MemberForm } from "@/components/members/member-form";
 import { requireEditor } from "@/lib/permissions/guards";
 import { archiveMemberAction, restoreMemberAction, updateMemberAction } from "@/server/actions/members";
 import { getMemberById } from "@/server/queries/members";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { SectionHeader } from "@/components/ui/section-header";
+import { StatusBanner } from "@/components/ui/status-banner";
 
 type EditMemberPageProps = {
   params: Promise<{ personId: string }>;
@@ -36,24 +40,26 @@ export default async function EditMemberPage({ params, searchParams }: EditMembe
   const statusMessage = query.status ? statusMessages[query.status] : "";
 
   return (
-    <section className="space-y-4">
-      <Link href={`/keluarga/${personId}`} className="inline-block text-sm font-medium text-amber-700">
+    <section className="space-y-6">
+      <Link
+        href={`/keluarga/${personId}`}
+        className="inline-flex rounded-xl px-3 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50"
+      >
         ← Kembali ke profil anggota
       </Link>
 
-      <h2 className="text-2xl font-semibold text-slate-900">Edit Anggota</h2>
-      <p className="text-slate-700">Perbarui data anggota atau lakukan arsip/pemulihan dengan aman.</p>
+      <SectionHeader
+        title="Edit Anggota"
+        description="Perbarui data anggota dengan tenang. Gunakan arsip/pulihkan untuk menjaga keamanan data keluarga."
+        eyebrow="Form Anggota"
+      />
 
       {errorMessage ? (
-        <div className="rounded-lg border border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
-          {errorMessage}
-        </div>
+        <StatusBanner variant="error" message={errorMessage} />
       ) : null}
 
       {statusMessage ? (
-        <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-800">
-          {statusMessage}
-        </div>
+        <StatusBanner variant="success" message={statusMessage} />
       ) : null}
 
       <MemberForm
@@ -63,34 +69,28 @@ export default async function EditMemberPage({ params, searchParams }: EditMembe
         initialValues={member}
       />
 
-      <section className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
-        <h3 className="text-base font-semibold text-slate-900">Arsip / Pulihkan</h3>
-        <p className="text-sm text-slate-700">
+      <Card className="space-y-3 rounded-[2rem] border-stone-100 p-5">
+        <h3 className="text-base font-semibold text-stone-900">Arsip / Pulihkan</h3>
+        <p className="text-sm leading-relaxed text-stone-600">
           Penghapusan permanen tidak disediakan di fase ini. Gunakan arsip untuk menjaga keamanan data keluarga.
         </p>
 
         {member.is_archived ? (
           <form action={restoreMemberAction}>
             <input type="hidden" name="person_id" value={personId} />
-            <button
-              type="submit"
-              className="w-full rounded-lg bg-emerald-600 px-4 py-3 text-sm font-semibold text-white"
-            >
+            <Button type="submit" className="w-full bg-emerald-600 text-white hover:bg-emerald-700">
               Pulihkan Anggota
-            </button>
+            </Button>
           </form>
         ) : (
           <form action={archiveMemberAction}>
             <input type="hidden" name="person_id" value={personId} />
-            <button
-              type="submit"
-              className="w-full rounded-lg bg-amber-600 px-4 py-3 text-sm font-semibold text-white"
-            >
+            <Button type="submit" className="w-full bg-amber-700 text-white hover:bg-amber-800">
               Arsipkan Anggota
-            </button>
+            </Button>
           </form>
         )}
-      </section>
+      </Card>
     </section>
   );
 }

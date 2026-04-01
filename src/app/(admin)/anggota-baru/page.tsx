@@ -2,6 +2,8 @@ import Link from "next/link";
 import { MemberForm } from "@/components/members/member-form";
 import { requireEditor } from "@/lib/permissions/guards";
 import { createMemberAction } from "@/server/actions/members";
+import { SectionHeader } from "@/components/ui/section-header";
+import { StatusBanner } from "@/components/ui/status-banner";
 
 type NewMemberPageProps = {
   searchParams: Promise<{ error?: string }>;
@@ -18,19 +20,19 @@ export default async function NewMemberPage({ searchParams }: NewMemberPageProps
   const errorMessage = params.error ? errorMessages[params.error] : "";
 
   return (
-    <section className="space-y-4">
-      <Link href="/keluarga" className="inline-block text-sm font-medium text-amber-700">
+    <section className="space-y-6">
+      <Link href="/keluarga" className="inline-flex rounded-xl px-3 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">
         ← Kembali ke direktori
       </Link>
-      <h2 className="text-2xl font-semibold text-slate-900">Tambah Anggota Baru</h2>
-      <p className="text-slate-700">
-        Isi data dasar dulu agar cepat. Detail lain bisa ditambahkan nanti.
-      </p>
+
+      <SectionHeader
+        title="Tambah Anggota Baru"
+        description="Isi data dasar dulu agar proses cepat dan mudah dipahami. Detail lain dapat ditambahkan nanti."
+        eyebrow="Form Anggota"
+      />
 
       {errorMessage ? (
-        <div className="rounded-lg border border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
-          {errorMessage}
-        </div>
+        <StatusBanner variant="error" message={errorMessage} />
       ) : null}
 
       <MemberForm action={createMemberAction} submitLabel="Simpan Anggota" />
