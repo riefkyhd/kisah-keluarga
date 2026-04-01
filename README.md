@@ -2,7 +2,7 @@
 
 Fondasi awal web app keluarga besar yang **mobile-first** dan **ramah lansia**.
 
-Phase aktif saat ini: **TASK-07 Stories & Timeline**.
+Phase aktif saat ini: **TASK-09 PWA & Installability**.
 
 ## Stack
 - Next.js (App Router) + TypeScript
@@ -10,7 +10,7 @@ Phase aktif saat ini: **TASK-07 Stories & Timeline**.
 - Supabase (Postgres, Auth, Storage)
 - Vercel (deployment nanti, belum dibahas di phase ini)
 
-## Scope TASK-00 + TASK-01 + TASK-02 + TASK-03 + TASK-04 + TASK-05 + TASK-06 + TASK-07
+## Scope TASK-00 + TASK-01 + TASK-02 + TASK-03 + TASK-04 + TASK-05 + TASK-06 + TASK-07 + TASK-09
 Yang sudah disiapkan:
 - bootstrap app Next.js
 - setup Tailwind + konfigurasi dasar shadcn/ui
@@ -34,11 +34,14 @@ Yang sudah disiapkan:
 - detail cerita keluarga (`/cerita/[storyId]`)
 - tambah/edit/arsip cerita untuk editor/admin
 - cerita terkait pada halaman profil anggota
+- web app manifest untuk installability
+- icon app untuk browser install + apple touch icon
+- dukungan install prompt ringan di beranda saat browser mendukung
+- offline fallback dasar (`/offline.html`) via service worker network-first (tanpa cache data privat)
 - baseline folder `supabase/` (`migrations`, `seeds`, `policies`)
 - `.env.example`
 
 Yang **belum** diimplementasikan:
-- PWA
 - production hardening/deployment logic
 
 ## Local Setup
@@ -138,6 +141,27 @@ Catatan keamanan:
 - `/cerita-baru` -> form tambah cerita (editor/admin)
 - `/cerita/[storyId]/edit` -> form edit + arsip cerita (editor/admin)
 - `/admin` -> route terlindungi admin (server-side guard)
+
+## PWA & Installability (TASK-09)
+Yang tersedia sekarang:
+- Manifest: `/manifest.webmanifest`
+- Icon app: `/icon`, `/icons/icon-192`, `/icons/icon-512`, `/icons/icon-maskable-512`
+- Apple icon: `/apple-icon`
+- Service worker: `/sw.js` (register otomatis hanya saat production)
+- Offline fallback page: `/offline.html`
+
+Cara verifikasi cepat:
+1. Jalankan build production:
+   ```bash
+   npm run build
+   npm run start
+   ```
+2. Buka aplikasi dari browser mobile/supported browser, lalu cek opsi **Add to Home Screen / Install App**.
+3. Untuk cek fallback offline, matikan koneksi lalu buka route aplikasi: service worker akan fallback ke `/offline.html` saat request navigasi gagal.
+
+Catatan:
+- Fallback offline di phase ini sengaja dasar dan aman-privasi.
+- Tidak ada cache API/data Supabase agar tidak menyimpan data keluarga secara stale/offline.
 
 ## Dokumen Referensi
 Urutan dokumen utama sebelum lanjut ke task berikutnya:

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/section-header";
+import { InstallAppPrompt } from "@/components/pwa/install-app-prompt";
 
 export default function PublicHomePage() {
   return (
@@ -39,6 +40,8 @@ export default function PublicHomePage() {
           <strong>Pohon</strong>. Untuk mengubah data, silakan login dengan akun yang memiliki izin editor/admin.
         </p>
       </Card>
+
+      <InstallAppPrompt />
     </section>
   );
 }

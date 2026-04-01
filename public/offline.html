@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kisah Keluarga - Offline</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #f9f7f4;
+        color: #1c1917;
+        font-family: "Segoe UI", Inter, "Helvetica Neue", Arial, sans-serif;
+        padding: 24px;
+      }
+      .card {
+        width: min(520px, 100%);
+        border: 1px solid #e7e5e4;
+        border-radius: 24px;
+        background: #ffffff;
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+        padding: 24px;
+      }
+      .eyebrow {
+        margin: 0 0 8px;
+        color: #b45309;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+      h1 {
+        margin: 0 0 12px;
+        font-size: 28px;
+        line-height: 1.2;
+      }
+      p {
+        margin: 0;
+        color: #57534e;
+        line-height: 1.6;
+      }
+      .actions {
+        margin-top: 18px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      a,
+      button {
+        border: 0;
+        border-radius: 14px;
+        padding: 12px 16px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      a {
+        background: #b45309;
+        color: #ffffff;
+        text-decoration: none;
+      }
+      button {
+        background: #f5f5f4;
+        color: #44403c;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <p class="eyebrow">Mode Offline</p>
+      <h1>Koneksi internet sedang tidak tersedia</h1>
+      <p>
+        Kisah Keluarga perlu internet untuk menampilkan data terbaru keluarga. Saat koneksi kembali normal, Anda bisa
+        lanjutkan dari halaman yang sama.
+      </p>
+      <div class="actions">
+        <a href="/">Kembali ke Beranda</a>
+        <button type="button" onclick="window.location.reload()">Coba Lagi</button>
+      </div>
+    </main>
+  </body>
+</html>
