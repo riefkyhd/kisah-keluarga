@@ -98,6 +98,19 @@ Yang **belum** diimplementasikan:
   - reset kata sandi
   - menonaktifkan / mengaktifkan kembali akun
 
+## Temporary Auth Bypass (Phase/Demo Only)
+- Untuk fase demo/internal sementara, kamu bisa bypass login total:
+  - `ENABLE_AUTH_BYPASS=true`
+- Saat aktif:
+  - semua guard diperlakukan sebagai `admin`
+  - akses data server memakai `SUPABASE_SERVICE_ROLE_KEY`
+  - login tidak lagi wajib untuk mengakses app
+- Opsional:
+  - `AUTH_BYPASS_USER_ID=<auth_user_uuid>` untuk actor id yang dipakai audit field `created_by/updated_by`
+  - `AUTH_BYPASS_EMAIL=<label_email>`
+- **Wajib dimatikan kembali** setelah fase demo:
+  - set `ENABLE_AUTH_BYPASS=false`
+
 ## Dev Dummy Login (Manual QA Lokal)
 Mode ini membantu QA lokal login cepat sebagai `viewer`, `editor`, atau `admin` tanpa input password manual, tetapi tetap membentuk session Supabase normal via `/callback`.
 

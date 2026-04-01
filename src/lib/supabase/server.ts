@@ -1,5 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient as createServiceRoleClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import { isAuthBypassEnabled } from "@/lib/auth/bypass";
 
 function getSupabaseEnv() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -14,9 +16,29 @@ function getSupabaseEnv() {
   return { supabaseUrl, supabaseAnonKey };
 }
 
+function getServiceRoleKey() {
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceRoleKey) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY wajib diisi saat ENABLE_AUTH_BYPASS=true.");
+  }
+
+  return serviceRoleKey;
+}
+
 export async function createClient() {
-  const cookieStore = await cookies();
   const { supabaseUrl, supabaseAnonKey } = getSupabaseEnv();
+
+  if (isAuthBypassEnabled()) {
+    const serviceRoleKey = getServiceRoleKey();
+    return createServiceRoleClient(supabaseUrl, serviceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    });
+  }
+
+  const cookieStore = await cookies();
   type CookieToSet = {
     name: string;
     value: string;
