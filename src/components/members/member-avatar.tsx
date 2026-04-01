@@ -40,7 +40,7 @@ export function MemberAvatar({ fullName, photoUrl, size = "md", testId }: Member
 
   if (photoUrl) {
     return (
-      <div data-testid={testId} className={`relative overflow-hidden rounded-full border border-slate-200 ${sizeClasses}`}>
+      <div data-testid={testId} className={`relative overflow-hidden rounded-full border border-stone-200 ${sizeClasses}`}>
         <Image src={photoUrl} alt={imageAlt} fill sizes="112px" className="object-cover" />
       </div>
     );
@@ -49,7 +49,7 @@ export function MemberAvatar({ fullName, photoUrl, size = "md", testId }: Member
   return (
     <div
       data-testid={testId}
-      className={`flex items-center justify-center rounded-full border border-slate-200 bg-slate-100 font-semibold text-slate-700 ${sizeClasses}`}
+      className={`flex items-center justify-center rounded-full border border-stone-200 bg-stone-100 font-semibold text-stone-700 ${sizeClasses}`}
       aria-label={imageAlt}
     >
       {initials}
