@@ -2,15 +2,15 @@
 
 Fondasi awal web app keluarga besar yang **mobile-first** dan **ramah lansia**.
 
-Phase aktif saat ini: **TASK-09 PWA & Installability**.
+Phase aktif saat ini: **TASK-10 Deployment & Hardening**.
 
 ## Stack
 - Next.js (App Router) + TypeScript
 - Tailwind CSS + shadcn/ui foundation
 - Supabase (Postgres, Auth, Storage)
-- Vercel (deployment nanti, belum dibahas di phase ini)
+- Vercel (preview + production deployment)
 
-## Scope TASK-00 + TASK-01 + TASK-02 + TASK-03 + TASK-04 + TASK-05 + TASK-06 + TASK-07 + TASK-09
+## Scope TASK-00 + TASK-01 + TASK-02 + TASK-03 + TASK-04 + TASK-05 + TASK-06 + TASK-07 + TASK-09 + TASK-10
 Yang sudah disiapkan:
 - bootstrap app Next.js
 - setup Tailwind + konfigurasi dasar shadcn/ui
@@ -38,11 +38,14 @@ Yang sudah disiapkan:
 - icon app untuk browser install + apple touch icon
 - dukungan install prompt ringan di beranda saat browser mendukung
 - offline fallback dasar (`/offline.html`) via service worker network-first (tanpa cache data privat)
+- hardening env production (`.env.example` public/server/dev-test separation)
+- hardening header baseline di Next.js + cache-control aman untuk `/sw.js`
+- deployment/security/launch checklist untuk Vercel + Supabase (`docs/07-delivery/TASK-10_DEPLOYMENT_HARDENING.md`)
 - baseline folder `supabase/` (`migrations`, `seeds`, `policies`)
 - `.env.example`
 
 Yang **belum** diimplementasikan:
-- production hardening/deployment logic
+- automation infra lanjutan (IaC penuh, observability/monitoring lanjutan)
 
 ## Local Setup
 1. Install dependency:
@@ -162,6 +165,42 @@ Cara verifikasi cepat:
 Catatan:
 - Fallback offline di phase ini sengaja dasar dan aman-privasi.
 - Tidak ada cache API/data Supabase agar tidak menyimpan data keluarga secara stale/offline.
+
+## Deployment & Hardening (TASK-10)
+Hasil utama:
+- Konfigurasi env dipisah jelas untuk public/server/dev-test.
+- Header hardening baseline aktif di Next.js.
+- `poweredByHeader` dinonaktifkan.
+- `/sw.js` diberi cache policy no-store agar update service worker lebih aman.
+- Review RLS/policy + security findings didokumentasikan.
+
+Dokumen operator:
+- `docs/07-delivery/TASK-10_DEPLOYMENT_HARDENING.md`
+
+### Environment Variables untuk Vercel
+Set variabel ini di Vercel untuk **Preview** dan **Production** (nilai domain menyesuaikan environment):
+
+- Public (boleh diekspos ke browser):
+  - `NEXT_PUBLIC_APP_URL`
+  - `NEXT_PUBLIC_SUPABASE_URL`
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- Server-only (rahasia):
+  - `SUPABASE_SERVICE_ROLE_KEY`
+- Dev/Test flags (wajib aman di env publik):
+  - `ENABLE_DEV_DUMMY_LOGIN=false`
+  - `ENABLE_TEST_AUTH_BOOTSTRAP=false`
+
+### Preview vs Production Domain Requirements
+- Preview:
+  - `NEXT_PUBLIC_APP_URL` = URL preview deployment aktif.
+  - Tambahkan `https://<preview-domain>/callback` di Supabase Auth Redirect URLs.
+- Production:
+  - `NEXT_PUBLIC_APP_URL` = domain produksi final.
+  - Tambahkan `https://<production-domain>/callback` di Supabase Auth Redirect URLs.
+
+### Launch Quick Notes
+- Verifikasi smoke checklist penuh dari dokumen TASK-10 sebelum go-live.
+- Pastikan Leaked Password Protection di Supabase Auth diaktifkan.
 
 ## Dokumen Referensi
 Urutan dokumen utama sebelum lanjut ke task berikutnya:

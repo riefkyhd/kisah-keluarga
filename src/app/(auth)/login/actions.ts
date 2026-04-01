@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -18,11 +19,29 @@ function sanitizeNextPath(rawValue: FormDataEntryValue | null) {
   return value;
 }
 
-function getAppUrl() {
+function getFirstHeaderValue(rawValue: string | null) {
+  if (!rawValue) {
+    return null;
+  }
+
+  return rawValue.split(",")[0]?.trim() || null;
+}
+
+function getAppUrl(requestHeaders: Headers) {
+  const forwardedHost = getFirstHeaderValue(requestHeaders.get("x-forwarded-host"));
+  const host = forwardedHost ?? getFirstHeaderValue(requestHeaders.get("host"));
+  const proto = getFirstHeaderValue(requestHeaders.get("x-forwarded-proto"));
+
+  if (host) {
+    const resolvedProto = proto ?? (host.includes("localhost") || host.startsWith("127.0.0.1") ? "http" : "https");
+    return `${resolvedProto}://${host}`;
+  }
+
   return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 }
 
 export async function requestMagicLink(formData: FormData) {
+  const requestHeaders = await headers();
   const email = String(formData.get("email") ?? "")
     .trim()
     .toLowerCase();
@@ -32,7 +51,7 @@ export async function requestMagicLink(formData: FormData) {
     redirect(`/login?error=invalid_email&next=${encodeURIComponent(nextPath)}`);
   }
 
-  const callbackUrl = new URL("/callback", getAppUrl());
+  const callbackUrl = new URL("/callback", getAppUrl(requestHeaders));
   callbackUrl.searchParams.set("next", nextPath);
 
   const supabase = await createClient();
