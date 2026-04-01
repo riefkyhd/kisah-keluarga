@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MemberAvatar } from "@/components/members/member-avatar";
+import { Card } from "@/components/ui/card";
 import type { MemberListItem } from "@/server/queries/members";
 
 type MemberCardProps = {
@@ -29,15 +30,21 @@ export function MemberCard({ member }: MemberCardProps) {
 
   return (
     <li>
-      <Link
-        href={`/keluarga/${member.id}`}
-        className="flex min-h-[80px] items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 hover:border-amber-300"
-      >
-        <MemberAvatar fullName={member.full_name} photoUrl={member.profile_photo_url} size="sm" />
-        <div className="min-w-0">
-          <h3 className="break-words text-base font-semibold leading-snug text-slate-900">{member.full_name}</h3>
-          {subtitle ? <p className="mt-1 break-words text-sm leading-relaxed text-slate-600">{subtitle}</p> : null}
-        </div>
+      <Link href={`/keluarga/${member.id}`} className="block">
+        <Card
+          clickable
+          className="flex min-h-[92px] items-center gap-4 rounded-[1.5rem] border-stone-200 p-4 transition-colors hover:border-amber-200"
+        >
+          <MemberAvatar fullName={member.full_name} photoUrl={member.profile_photo_url} size="sm" />
+          <div className="min-w-0 space-y-1">
+            <h3 className="break-words text-base font-semibold leading-snug text-stone-900">{member.full_name}</h3>
+            {subtitle ? <p className="break-words text-sm leading-relaxed text-stone-600">{subtitle}</p> : null}
+          </div>
+
+          <span className="ml-auto hidden rounded-xl bg-stone-100 px-3 py-1.5 text-xs font-medium text-stone-600 sm:inline">
+            Profil
+          </span>
+        </Card>
       </Link>
     </li>
   );

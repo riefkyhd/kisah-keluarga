@@ -2,8 +2,20 @@
 
 :root {
   color-scheme: light;
-  --kk-bg: #fffbeb;
-  --kk-text: #0f172a;
+  --kk-bg: #f9f7f4;
+  --kk-surface: #ffffff;
+  --kk-text: #1c1917;
+  --kk-muted: #57534e;
+  --kk-border: #e7e5e4;
+  --kk-accent: #b45309;
+  --kk-accent-strong: #92400e;
+  --kk-danger: #b91c1c;
+  --kk-success: #047857;
+  --kk-focus: #f59e0b;
+  --kk-shadow-soft: 0 1px 2px rgb(0 0 0 / 0.06);
+  --kk-radius-control: 1rem;
+  --kk-radius-card: 2rem;
+  --kk-radius-hero: 2.5rem;
 }
 
 body {
@@ -11,8 +23,10 @@ body {
   min-height: 100vh;
   background: var(--kk-bg);
   color: var(--kk-text);
-  font-family: Arial, Helvetica, sans-serif;
-  line-height: 1.5;
+  font-family: "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.55;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 a {
@@ -25,6 +39,6 @@ a {
 }
 
 :focus-visible {
-  outline: 3px solid #f59e0b;
+  outline: 3px solid var(--kk-focus);
   outline-offset: 2px;
 }

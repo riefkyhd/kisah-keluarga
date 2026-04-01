@@ -1,41 +1,44 @@
 import Link from "next/link";
+import { Card } from "@/components/ui/card";
+import { SectionHeader } from "@/components/ui/section-header";
 
 export default function PublicHomePage() {
   return (
-    <section className="space-y-5">
-      <p className="text-sm font-medium uppercase tracking-wide text-amber-700">
-        Phase 7 Stories & Timeline
-      </p>
-      <h2 className="text-2xl font-semibold leading-tight text-slate-900">
-        Selamat datang di Kisah Keluarga
-      </h2>
-      <p className="max-w-2xl text-base leading-relaxed text-slate-700">
-        Aplikasi ini membantu keluarga melihat profil anggota, relasi, pohon keluarga,
-        dan cerita penting dengan alur yang sederhana. Mulai dari direktori dulu, lalu buka profil yang dibutuhkan.
-      </p>
+    <section className="space-y-8">
+      <SectionHeader
+        eyebrow="Ruang Keluarga"
+        title="Selamat Datang di Kisah Keluarga"
+        description="Tempat hangat untuk melihat anggota keluarga, memahami relasi, dan menyimpan cerita penting. Mulai dari direktori, lalu buka profil yang Anda butuhkan."
+      />
+
       <div className="flex flex-wrap gap-3">
         <Link
           href="/keluarga"
-          className="rounded-lg bg-amber-500 px-5 py-3 text-base font-semibold text-white"
+          className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-amber-700 px-5 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-amber-800"
         >
           Buka Direktori Keluarga
         </Link>
         <Link
           href="/timeline"
-          className="rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800"
+          className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
         >
           Buka Timeline Cerita
         </Link>
         <Link
           href="/anggota-baru"
-          className="rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800"
+          className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-stone-200 px-5 py-3 text-base font-semibold text-stone-800 transition-colors hover:bg-stone-300"
         >
           Tambah Anggota (Editor/Admin)
         </Link>
       </div>
-      <p className="text-sm leading-relaxed text-slate-600">
-        Jika hanya ingin melihat data, cukup gunakan menu <strong>Keluarga</strong>, <strong>Timeline</strong>, atau <strong>Pohon</strong>.
-      </p>
+
+      <Card className="space-y-3 p-5 sm:p-6">
+        <h3 className="text-lg font-semibold text-stone-900">Mulai dengan alur yang paling sederhana</h3>
+        <p className="text-base leading-relaxed text-stone-600">
+          Jika ingin melihat data saja, gunakan menu <strong>Keluarga</strong>, <strong>Timeline</strong>, atau{" "}
+          <strong>Pohon</strong>. Untuk mengubah data, silakan login dengan akun yang memiliki izin editor/admin.
+        </p>
+      </Card>
     </section>
   );
 }

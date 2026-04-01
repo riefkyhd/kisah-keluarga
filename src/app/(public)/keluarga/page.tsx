@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { SectionHeader } from "@/components/ui/section-header";
 import { MemberCard } from "@/components/members/member-card";
 import { MemberSearchForm } from "@/components/members/member-search-form";
 import { requireViewer } from "@/lib/permissions/guards";
@@ -23,50 +26,57 @@ export default async function FamilyDirectoryPage({ searchParams }: FamilyDirect
   const members = await listActiveMembers(searchQuery);
 
   return (
-    <section className="space-y-5">
-      <p className="text-sm font-medium uppercase tracking-wide text-amber-700">
-        Direktori Keluarga
-      </p>
-      <h2 className="text-2xl font-semibold text-slate-900">Daftar Anggota</h2>
-      <p className="max-w-2xl text-base leading-relaxed text-slate-700">
-        Lihat anggota keluarga yang aktif. Anggota yang diarsipkan tidak
-        ditampilkan di daftar utama.
-      </p>
+    <section className="space-y-6">
+      <SectionHeader
+        eyebrow="Direktori Keluarga"
+        title="Daftar Anggota"
+        description="Temukan anggota keluarga dengan cepat berdasarkan nama atau panggilan. Anggota yang diarsipkan tidak ditampilkan di daftar utama."
+      />
+
       <MemberSearchForm value={searchQuery} />
 
       {searchQuery ? (
-        <p className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm leading-relaxed text-slate-700">
-          Menampilkan {members.length} hasil untuk: <span className="font-semibold">&quot;{searchQuery}&quot;</span>
-        </p>
+        <Card className="rounded-2xl border-stone-200 p-4">
+          <p className="text-sm leading-relaxed text-stone-700">
+            Menampilkan <span className="font-semibold">{members.length}</span> hasil untuk{" "}
+            <span className="font-semibold">&quot;{searchQuery}&quot;</span>.
+          </p>
+        </Card>
       ) : null}
 
       <div className="flex flex-wrap gap-3">
         <Link
           href="/pohon"
-          className="rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800"
+          className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
         >
           Lihat Mode Pohon
         </Link>
         <Link
           href="/timeline"
-          className="rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800"
+          className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
         >
           Lihat Timeline Cerita
         </Link>
         <Link
           href="/anggota-baru"
-          className="rounded-lg bg-amber-500 px-5 py-3 text-base font-semibold text-white"
+          className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-amber-700 px-5 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-amber-800"
         >
           Tambah Anggota (Editor/Admin)
         </Link>
       </div>
 
       {members.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-5 text-base leading-relaxed text-slate-700">
-          {searchQuery
-            ? "Belum ada anggota yang cocok dengan pencarian Anda. Coba nama atau panggilan lain."
-            : "Belum ada anggota aktif. Editor atau admin bisa menambahkan anggota pertama dari tombol di atas."}
-        </div>
+        searchQuery ? (
+          <EmptyState
+            title="Anggota belum ditemukan"
+            description="Belum ada anggota yang cocok dengan pencarian Anda. Coba nama atau panggilan lain."
+          />
+        ) : (
+          <EmptyState
+            title="Belum ada anggota aktif"
+            description="Editor atau admin bisa menambahkan anggota pertama dari tombol di atas."
+          />
+        )
       ) : (
         <ul className="space-y-3">
           {members.map((member) => (
