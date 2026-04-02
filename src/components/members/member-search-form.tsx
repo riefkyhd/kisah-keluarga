@@ -56,29 +56,29 @@ export function MemberSearchForm({ value }: MemberSearchFormProps) {
   const showSearchingIndicator = isPending || isSearching;
 
   return (
-    <Card className="rounded-[2rem] border-stone-100 p-5 shadow-sm sm:p-6">
+    <Card className="border-[color:rgba(212,184,150,0.4)]">
       <div className="space-y-4">
         <div className="space-y-2">
-          <label htmlFor="directory-search" className="text-base font-semibold text-stone-900">
+          <label htmlFor="directory-search" className="text-base font-medium text-[color:var(--color-bark)]">
             Cari nama atau panggilan
           </label>
           <div className="relative">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-400" />
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[color:var(--kk-muted)]" />
             <input
               id="directory-search"
               name="q"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Contoh: Rina, Pak Budi, atau panggilan"
-              className="w-full rounded-2xl border border-stone-200 bg-stone-50 py-3.5 pl-12 pr-11 text-base text-stone-900 outline-none ring-amber-200 placeholder:text-stone-400 focus:border-amber-400 focus:ring-2"
+              className="w-full rounded-[var(--kk-radius-sm)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] py-3 pl-12 pr-11 text-base text-[color:var(--color-bark)] outline-none placeholder:text-[color:var(--kk-muted)] focus:ring-2 focus:ring-[color:var(--kk-focus)]"
             />
             {showSearchingIndicator ? (
-              <Loader2 className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-stone-500" />
+              <Loader2 className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[color:var(--color-clay)]" />
             ) : null}
           </div>
         </div>
 
-        <p className="text-sm leading-relaxed text-stone-600">
+        <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
           Hasil akan diperbarui otomatis sekitar 300ms setelah Anda berhenti mengetik.
         </p>
 
@@ -87,7 +87,7 @@ export function MemberSearchForm({ value }: MemberSearchFormProps) {
             <button
               type="button"
               onClick={() => setQuery("")}
-              className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
+              className="inline-flex min-h-12 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-5 py-3 text-base font-medium text-[color:var(--color-clay)] hover:bg-[color:var(--color-warm)]"
             >
               Reset
             </button>

@@ -47,21 +47,21 @@ export function MemberPhotoManager({
   }
 
   return (
-    <Card data-testid="member-photo-manager" className="space-y-4 rounded-[2rem] border-stone-100 p-5 sm:p-6">
+    <Card data-testid="member-photo-manager" className="space-y-4 border-[color:rgba(212,184,150,0.4)]">
       <header className="space-y-1">
-        <h3 className="text-lg font-semibold text-stone-900">Foto Profil</h3>
-        <p className="text-sm leading-relaxed text-stone-600">
+        <h3 className="text-lg text-[color:var(--color-bark)]">Foto Profil</h3>
+        <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
           Foto membantu keluarga mengenali anggota dengan lebih mudah.
         </p>
       </header>
 
       {canManage ? (
         <div className="space-y-3">
-          <form action={uploadAction} className="space-y-3 rounded-2xl border border-stone-200 bg-white p-4">
+          <form action={uploadAction} className="space-y-3 rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] p-4">
             <input type="hidden" name="person_id" value={personId} />
-            <label className="block space-y-2 text-base font-semibold text-stone-800">
+            <label className="block space-y-2 text-base font-medium text-[color:var(--color-bark)]">
               Pilih foto
-              <span className="block rounded-2xl border-2 border-dashed border-stone-300 bg-stone-50 px-4 py-4">
+              <span className="block rounded-[var(--kk-radius-md)] border-2 border-dashed border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-4 py-4">
                 <input
                   data-testid="member-photo-upload-input"
                   required
@@ -69,13 +69,13 @@ export function MemberPhotoManager({
                   name="photo"
                   accept="image/png,image/jpeg,image/webp"
                   onChange={handlePhotoFileChange}
-                  className="block w-full text-sm text-stone-900 file:mr-3 file:rounded-xl file:border-0 file:bg-amber-100 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-amber-800 hover:file:bg-amber-200"
+                  className="block w-full text-sm text-[color:var(--color-bark)] file:mr-3 file:rounded-[var(--kk-radius-sm)] file:border-0 file:bg-[color:var(--color-warm)] file:px-3 file:py-2 file:text-sm file:font-medium file:text-[color:var(--color-bark)] hover:file:bg-[color:#e7dfd3]"
                 />
               </span>
             </label>
-            <p className="text-xs text-stone-500">Format JPG/PNG/WEBP, ukuran maksimal 4MB.</p>
+            <p className="text-xs font-normal text-[color:var(--kk-muted)]">Format JPG/PNG/WEBP, ukuran maksimal 4MB.</p>
             {uploadError ? (
-              <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{uploadError}</p>
+              <p className="rounded-[var(--kk-radius-sm)] border border-[color:#f3c7c1] bg-[color:#fdf2f0] px-3 py-2 text-sm text-[color:#9b3022]">{uploadError}</p>
             ) : null}
             <FormSubmitButton type="submit" className="w-full" pendingLabel="Memproses foto...">
               {hasPhoto ? "Ganti Foto" : "Unggah Foto"}
@@ -92,7 +92,7 @@ export function MemberPhotoManager({
           ) : null}
         </div>
       ) : (
-        <p className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm leading-relaxed text-stone-600">
+        <p className="rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-4 py-3 text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
           Hanya editor/admin yang dapat mengubah foto profil.
         </p>
       )}

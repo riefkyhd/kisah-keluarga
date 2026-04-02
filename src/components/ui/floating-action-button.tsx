@@ -20,7 +20,7 @@ export function FloatingActionButton({
       aria-label={label}
       title={label}
       className={cn(
-        "fixed bottom-24 right-6 z-20 inline-flex h-14 w-14 items-center justify-center rounded-full bg-amber-700 text-white shadow-[0_10px_26px_rgb(180,83,9,0.35)] transition-all hover:-translate-y-0.5 hover:bg-amber-800 active:scale-95 md:bottom-8",
+        "kk-interactive fixed bottom-24 right-6 z-20 inline-flex h-14 w-14 items-center justify-center rounded-full border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--color-clay)] text-[color:var(--color-cream)] shadow-[var(--kk-shadow-float)] hover:-translate-y-0.5 hover:bg-[color:var(--color-bark)] active:scale-[0.98] md:bottom-8",
         className
       )}
     >

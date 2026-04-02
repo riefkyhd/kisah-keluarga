@@ -44,32 +44,32 @@ export function RelationshipSection({
   const showAdd = canManage && showAddForm && Boolean(addAction);
 
   return (
-    <Card data-testid={testId} className="space-y-4 rounded-[2rem] border-stone-100 p-5 sm:p-6">
+    <Card data-testid={testId} className="space-y-4 border-[color:rgba(212,184,150,0.4)]">
       <header className="space-y-1">
-        <h3 className="text-lg font-semibold text-stone-900">{title}</h3>
-        <p className="text-sm leading-relaxed text-stone-600">{description}</p>
+        <h3 className="text-lg text-[color:var(--color-bark)]">{title}</h3>
+        <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">{description}</p>
       </header>
 
       {items.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 px-4 py-3 text-sm leading-relaxed text-stone-600">
+        <p className="rounded-[var(--kk-radius-md)] border border-dashed border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-4 py-3 text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
           {emptyText}
         </p>
       ) : (
-        <ul className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+        <ul className="overflow-hidden rounded-[var(--kk-radius-md)] border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)]">
           {items.map((item) => (
             <li
               key={item.person_id + (hasRelationshipId(item) ? `-${item.relationship_id}` : "")}
-              className="border-b border-stone-100 p-4 last:border-b-0"
+              className="border-b border-[color:rgba(212,184,150,0.4)] p-4 last:border-b-0"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <Link
                     href={`/keluarga/${item.person_id}`}
-                    className="block truncate font-semibold text-stone-900 transition-colors hover:text-amber-800"
+                    className="block truncate font-medium text-[color:var(--color-bark)] hover:text-[color:var(--color-clay)]"
                   >
                     {item.full_name}
                   </Link>
-                  <p className="text-xs font-medium uppercase tracking-wide text-stone-500">{title}</p>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[color:var(--color-clay)]">{title}</p>
                 </div>
                 {canManage && archiveAction && hasRelationshipId(item) ? (
                   <RelationshipActionsMenu
@@ -89,14 +89,14 @@ export function RelationshipSection({
 
       {showAdd ? (
         candidates.length > 0 ? (
-          <form action={addAction} className="space-y-3 rounded-2xl border border-stone-200 bg-stone-50 p-4">
+          <form action={addAction} className="space-y-3 rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] p-4">
             <input type="hidden" name="person_id" value={currentPersonId} />
-            <label className="block space-y-2 text-sm font-semibold text-stone-800">
+            <label className="block space-y-2 text-sm font-medium text-[color:var(--color-bark)]">
               {addLabel}
               <select
                 required
                 name="related_person_id"
-                className="w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 outline-none ring-amber-200 focus:border-amber-400 focus:ring-2"
+                className="w-full rounded-[var(--kk-radius-sm)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-4 py-3 text-sm text-[color:var(--color-bark)] outline-none focus:ring-2 focus:ring-[color:var(--kk-focus)]"
               >
                 <option value="">Pilih anggota keluarga</option>
                 {candidates.map((candidate) => (
@@ -111,7 +111,7 @@ export function RelationshipSection({
             </FormSubmitButton>
           </form>
         ) : (
-          <p className="text-sm text-stone-500">Belum ada kandidat anggota lain untuk ditautkan.</p>
+          <p className="text-sm font-normal text-[color:var(--kk-muted)]">Belum ada kandidat anggota lain untuk ditautkan.</p>
         )
       ) : null}
     </Card>

@@ -17,7 +17,7 @@ export function MemberCard({ member }: MemberCardProps) {
       <Link href={`/keluarga/${member.id}`} className="group block">
         <Card
           clickable
-          className="space-y-4 rounded-[1.5rem] border-stone-200 p-4 transition-colors hover:border-amber-200"
+          className="space-y-4 border-[color:rgba(212,184,150,0.4)] p-4 hover:border-[color:var(--color-sand)]"
         >
           <div className="flex items-start gap-4">
             <MemberAvatar
@@ -28,39 +28,39 @@ export function MemberCard({ member }: MemberCardProps) {
             />
             <div className="min-w-0 flex-1 space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="break-words text-base font-semibold leading-snug text-stone-900 transition-colors group-hover:text-amber-700">
+                <h3 className="break-words text-base leading-snug text-[color:var(--color-bark)] group-hover:text-[color:var(--color-clay)]">
                   {member.full_name}
                 </h3>
                 {member.nickname ? (
-                  <span className="rounded-full bg-stone-100 px-2.5 py-1 text-xs font-medium text-stone-700">
+                  <span className="rounded-full bg-[color:var(--color-warm)] px-3 py-1 text-xs font-medium text-[color:var(--color-clay)]">
                     Panggilan: {member.nickname}
                   </span>
                 ) : null}
               </div>
               <div className="flex flex-wrap gap-2">
                 {member.generation ? (
-                  <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">
+                  <span className="rounded-full bg-[color:var(--color-warm)] px-3 py-1 text-xs font-medium text-[color:var(--color-bark)]">
                     Gen {member.generation}
                   </span>
                 ) : null}
-                <span className="rounded-full bg-stone-100 px-2.5 py-1 text-xs font-semibold text-stone-700">
+                <span className="rounded-full bg-[color:#f7f3ed] px-3 py-1 text-xs font-medium text-[color:var(--color-clay)]">
                   {member.primary_relationship_label}
                 </span>
               </div>
             </div>
 
-            <span className="ml-auto hidden rounded-lg bg-stone-50 px-3 py-1.5 text-xs font-medium text-stone-600 sm:inline">
+            <span className="ml-auto hidden rounded-[var(--kk-radius-sm)] bg-[color:var(--color-warm)] px-3 py-1.5 text-xs font-medium text-[color:var(--color-clay)] sm:inline">
               Profil
             </span>
           </div>
 
-          <div className="grid gap-2 text-sm text-stone-600 sm:grid-cols-2">
+          <div className="grid gap-2 text-sm font-normal text-[color:var(--kk-muted)] sm:grid-cols-2">
             <p>
-              <span className="font-medium text-stone-700">Lahir:</span>{" "}
+              <span className="font-medium text-[color:var(--color-bark)]">Lahir:</span>{" "}
               {birthDateLabel ?? "Belum diisi"}
             </p>
             <p>
-              <span className="font-medium text-stone-700">Keluarga inti:</span> {childCountLabel}
+              <span className="font-medium text-[color:var(--color-bark)]">Keluarga inti:</span> {childCountLabel}
             </p>
           </div>
         </Card>

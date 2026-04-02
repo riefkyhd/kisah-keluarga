@@ -10,6 +10,7 @@ type StatusToastProps = {
 
 export function StatusToast({ variant, message }: StatusToastProps) {
   const hasShownRef = useRef(false);
+  const durationMs = 3200;
 
   useEffect(() => {
     if (!message || hasShownRef.current) {
@@ -18,16 +19,16 @@ export function StatusToast({ variant, message }: StatusToastProps) {
 
     hasShownRef.current = true;
     if (variant === "success") {
-      toast.success(message);
+      toast.success(message, { duration: durationMs });
       return;
     }
 
     if (variant === "warning") {
-      toast.warning(message);
+      toast.warning(message, { duration: durationMs });
       return;
     }
 
-    toast.error(message);
+    toast.error(message, { duration: durationMs });
   }, [message, variant]);
 
   return null;

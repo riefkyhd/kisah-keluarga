@@ -45,10 +45,10 @@ export function GenerationFilter({ selectedGeneration }: GenerationFilterProps) 
             type="button"
             onClick={() => updateGenerationFilter(option.value)}
             className={cn(
-              "min-h-11 rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+              "min-h-11 rounded-full border px-4 py-2 text-sm font-medium",
               active
-                ? "border-[color:var(--color-clay)] bg-[color:var(--color-warm)] text-[color:var(--color-bark)]"
-                : "border-[color:var(--color-sand)] bg-white text-[color:var(--color-clay)] hover:bg-[color:var(--color-warm)]/60"
+                ? "border-[color:var(--color-clay)] bg-[color:var(--color-warm)] text-[color:var(--color-bark)] shadow-[var(--kk-shadow-soft)]"
+                : "border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] text-[color:var(--color-clay)] hover:bg-[color:var(--color-warm)]"
             )}
             aria-pressed={active}
           >

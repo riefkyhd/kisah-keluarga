@@ -45,7 +45,13 @@ export function RelationshipActionsMenu({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button type="button" size="icon" variant="ghost" aria-label="Buka menu aksi relasi">
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            className="border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] hover:bg-[color:var(--color-warm)]"
+            aria-label="Buka menu aksi relasi"
+          >
             <MoreHorizontal className="h-5 w-5" aria-hidden="true" />
           </Button>
         </DropdownMenuTrigger>

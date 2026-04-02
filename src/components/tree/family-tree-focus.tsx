@@ -19,17 +19,17 @@ type TreePersonNodeProps = {
 function TreePersonNode({ personId, fullName, roleLabel, tone = "default", testId }: TreePersonNodeProps) {
   const toneClasses =
     tone === "focus"
-      ? "border-amber-300 bg-amber-50 text-amber-900 shadow-amber-100"
-      : "border-stone-200 bg-white text-stone-900 shadow-stone-100";
+      ? "border-[color:var(--color-sand)] bg-[color:var(--color-warm)] text-[color:var(--color-bark)]"
+      : "border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] text-[color:var(--color-bark)]";
 
   return (
     <Link
       href={`/keluarga/${personId}`}
       data-testid={testId}
-      className={`block min-h-[84px] min-w-[164px] rounded-[1.25rem] border px-4 py-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:bg-stone-50 ${toneClasses}`}
+      className={`kk-interactive block min-h-[84px] min-w-[164px] rounded-[var(--kk-radius-lg)] border px-4 py-3 text-center shadow-[var(--kk-shadow-soft)] hover:-translate-y-0.5 hover:bg-[color:var(--color-warm)] ${toneClasses}`}
     >
-      <p className="text-sm font-semibold leading-snug">{fullName}</p>
-      {roleLabel ? <p className="mt-1 text-xs font-medium text-stone-500">{roleLabel}</p> : null}
+      <p className="text-sm font-medium leading-snug">{fullName}</p>
+      {roleLabel ? <p className="mt-1 text-xs font-medium text-[color:var(--color-clay)]">{roleLabel}</p> : null}
     </Link>
   );
 }
@@ -38,16 +38,16 @@ export function FamilyTreeFocus({ focusPerson, parents, spouse, childMembers }: 
   return (
     <section
       data-testid="family-tree-visual"
-      className="space-y-8 overflow-x-auto rounded-[2rem] border border-stone-100 bg-white p-6 shadow-sm sm:p-8"
+      className="space-y-8 overflow-x-auto rounded-[var(--kk-radius-xl)] border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] p-6 shadow-[var(--kk-shadow-card)] sm:p-8"
     >
-      <p className="rounded-2xl bg-stone-50 px-4 py-3 text-sm leading-relaxed text-stone-600">
+      <p className="rounded-[var(--kk-radius-md)] bg-[color:var(--color-warm)] px-4 py-3 text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
         Mode visual ini menampilkan orang tua, pasangan, dan anak dari anggota fokus. Ketuk kartu anggota untuk membuka profil.
       </p>
 
       <div className="flex min-w-max flex-col items-center gap-8">
         <div className="flex flex-wrap justify-center gap-4">
           {parents.length === 0 ? (
-            <p className="rounded-xl bg-stone-50 px-4 py-2 text-sm text-stone-600">Belum ada orang tua yang tercatat.</p>
+            <p className="rounded-[var(--kk-radius-sm)] bg-[color:var(--color-warm)] px-4 py-2 text-sm font-normal text-[color:var(--kk-muted)]">Belum ada orang tua yang tercatat.</p>
           ) : (
             parents.map((parent) => (
               <TreePersonNode
@@ -62,14 +62,14 @@ export function FamilyTreeFocus({ focusPerson, parents, spouse, childMembers }: 
         </div>
 
         {parents.length > 0 ? (
-          <div data-testid="tree-link-parent-child" className="flex items-center justify-center gap-2 text-xs font-medium text-stone-500">
-            <span className="h-px w-10 bg-stone-300" />
+          <div data-testid="tree-link-parent-child" className="flex items-center justify-center gap-2 text-xs font-medium text-[color:var(--color-clay)]">
+            <span className="h-px w-10 bg-[color:var(--color-sand)]" />
             <span>Hubungan orang tua</span>
-            <span className="h-px w-10 bg-stone-300" />
+            <span className="h-px w-10 bg-[color:var(--color-sand)]" />
           </div>
         ) : null}
 
-        <div className="flex flex-wrap items-center justify-center gap-4 rounded-2xl border border-amber-100 bg-amber-50/40 px-5 py-4">
+        <div className="flex flex-wrap items-center justify-center gap-4 rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-5 py-4">
           <TreePersonNode
             personId={focusPerson.id}
             fullName={focusPerson.full_name}
@@ -79,7 +79,7 @@ export function FamilyTreeFocus({ focusPerson, parents, spouse, childMembers }: 
           />
           {spouse.map((partner) => (
             <div key={partner.person_id} className="flex items-center gap-2">
-              <span data-testid="tree-link-spouse" className="text-sm font-semibold text-stone-500" aria-hidden="true">
+              <span data-testid="tree-link-spouse" className="text-sm font-medium text-[color:var(--color-clay)]" aria-hidden="true">
                 ↔
               </span>
               <TreePersonNode
@@ -93,16 +93,16 @@ export function FamilyTreeFocus({ focusPerson, parents, spouse, childMembers }: 
         </div>
 
         {childMembers.length > 0 ? (
-          <div data-testid="tree-link-parent-child" className="flex items-center justify-center gap-2 text-xs font-medium text-stone-500">
-            <span className="h-px w-10 bg-stone-300" />
+          <div data-testid="tree-link-parent-child" className="flex items-center justify-center gap-2 text-xs font-medium text-[color:var(--color-clay)]">
+            <span className="h-px w-10 bg-[color:var(--color-sand)]" />
             <span>Hubungan anak</span>
-            <span className="h-px w-10 bg-stone-300" />
+            <span className="h-px w-10 bg-[color:var(--color-sand)]" />
           </div>
         ) : null}
 
         <div className="flex flex-wrap justify-center gap-4">
           {childMembers.length === 0 ? (
-            <p className="rounded-xl bg-stone-50 px-4 py-2 text-sm text-stone-600">Belum ada anak yang tercatat.</p>
+            <p className="rounded-[var(--kk-radius-sm)] bg-[color:var(--color-warm)] px-4 py-2 text-sm font-normal text-[color:var(--kk-muted)]">Belum ada anak yang tercatat.</p>
           ) : (
             childMembers.map((child) => (
               <TreePersonNode

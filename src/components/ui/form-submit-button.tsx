@@ -18,7 +18,7 @@ export function FormSubmitButton({
   const isDisabled = Boolean(disabled) || pending;
 
   return (
-    <Button disabled={isDisabled} {...props}>
+    <Button disabled={isDisabled} aria-busy={pending} {...props}>
       {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
       {pending ? pendingLabel : children}
     </Button>

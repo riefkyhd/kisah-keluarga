@@ -61,7 +61,7 @@ function getRequestedImageSize(size: "sm" | "md" | "lg") {
 
 function getRadiusClasses(size: "sm" | "md" | "lg") {
   if (size === "lg") {
-    return "rounded-[2rem]";
+    return "rounded-[var(--kk-radius-xl)]";
   }
 
   return "rounded-full";
@@ -84,7 +84,7 @@ export function MemberAvatar({
     return (
       <div
         data-testid={testId}
-        className={`overflow-hidden border border-stone-200 ${sizeClasses} ${radiusClasses}`}
+        className={`overflow-hidden border border-[color:rgba(212,184,150,0.4)] ${sizeClasses} ${radiusClasses}`}
       >
         <Image
           src={photoUrl}
@@ -101,14 +101,14 @@ export function MemberAvatar({
   return (
     <div
       data-testid={testId}
-      className={`flex items-center justify-center border font-semibold ${sizeClasses} ${radiusClasses}`}
+      className={`flex items-center justify-center border font-medium ${sizeClasses} ${radiusClasses}`}
       style={
         coloredFallback
           ? getAvatarFallbackStyle(fullName)
           : {
-              borderColor: "#e7e5e4",
-              backgroundColor: "#f5f5f4",
-              color: "#57534e"
+              borderColor: "rgba(212,184,150,0.4)",
+              backgroundColor: "#f7f3ed",
+              color: "#796759"
             }
       }
       aria-label={imageAlt}

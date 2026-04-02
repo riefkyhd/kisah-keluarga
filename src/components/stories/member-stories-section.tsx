@@ -12,10 +12,10 @@ type MemberStoriesSectionProps = {
 
 export function MemberStoriesSection({ personId, stories, canManage }: MemberStoriesSectionProps) {
   return (
-    <Card data-testid="member-stories-section" className="space-y-4 rounded-[2rem] border-stone-100 p-5 sm:p-6">
+    <Card data-testid="member-stories-section" className="space-y-4 border-[color:rgba(212,184,150,0.4)]">
       <header className="space-y-1">
-        <h3 className="text-lg font-semibold text-stone-900">Cerita & Kenangan</h3>
-        <p className="text-sm leading-relaxed text-stone-600">
+        <h3 className="text-lg text-[color:var(--color-bark)]">Cerita & Kenangan</h3>
+        <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
           Kumpulan momen penting yang terkait dengan anggota ini.
         </p>
       </header>
@@ -24,25 +24,25 @@ export function MemberStoriesSection({ personId, stories, canManage }: MemberSto
         <EmptyState
           title="Belum ada cerita"
           description="Belum ada cerita untuk anggota ini."
-          className="rounded-2xl border-stone-300 bg-stone-50 py-5"
+          className="rounded-[var(--kk-radius-md)] border-[color:var(--color-sand)] bg-[color:var(--color-warm)] py-5"
         />
       ) : (
-        <ul className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+        <ul className="overflow-hidden rounded-[var(--kk-radius-md)] border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)]">
           {stories.map((story) => (
-            <li key={story.id} className="border-b border-stone-100 p-4 last:border-b-0">
+            <li key={story.id} className="border-b border-[color:rgba(212,184,150,0.4)] p-4 last:border-b-0">
               <div className="space-y-1.5">
-                <Link href={`/cerita/${story.id}`} className="font-semibold text-stone-900 hover:text-amber-800">
+                <Link href={`/cerita/${story.id}`} className="font-medium text-[color:var(--color-bark)] hover:text-[color:var(--color-clay)]">
                   {story.title}
                 </Link>
-                <p className="text-sm leading-relaxed text-stone-600">
+                <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
                   {story.event_date
                     ? `Tanggal kejadian: ${formatTanggal(story.event_date)}`
                     : "Tanggal kejadian belum diisi"}
                 </p>
               </div>
               {canManage ? (
-                <div className="mt-3 text-sm font-semibold text-stone-700">
-                  <Link href={`/cerita/${story.id}/edit`} className="hover:text-amber-800">
+                <div className="mt-3 text-sm font-medium text-[color:var(--color-clay)]">
+                  <Link href={`/cerita/${story.id}/edit`} className="hover:text-[color:var(--color-bark)]">
                     Edit Cerita
                   </Link>
                 </div>
@@ -56,7 +56,7 @@ export function MemberStoriesSection({ personId, stories, canManage }: MemberSto
         <div>
           <Link
             href={`/cerita-baru?personId=${personId}`}
-            className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-amber-700 px-5 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-amber-800"
+            className="inline-flex min-h-12 items-center justify-center rounded-[var(--kk-radius-md)] bg-[color:var(--color-clay)] px-5 py-3 text-base font-medium text-[color:var(--color-cream)] shadow-[var(--kk-shadow-soft)] hover:bg-[color:var(--color-bark)]"
           >
             Tambah Cerita
           </Link>

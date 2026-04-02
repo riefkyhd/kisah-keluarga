@@ -10,10 +10,10 @@ type StatusBannerProps = {
 };
 
 const variantStyles: Record<StatusBannerVariant, string> = {
-  success: "border-emerald-300 bg-emerald-50 text-emerald-800",
-  error: "border-rose-300 bg-rose-50 text-rose-800",
-  warning: "border-amber-300 bg-amber-50 text-amber-900",
-  info: "border-sky-300 bg-sky-50 text-sky-800"
+  success: "border-[color:#c8ddd0] bg-[color:#f0f5f1] text-[color:#3f5c45]",
+  error: "border-[color:#f3c7c1] bg-[color:#fdf2f0] text-[color:#9b3022]",
+  warning: "border-[color:var(--color-sand)] bg-[color:var(--color-warm)] text-[color:var(--color-bark)]",
+  info: "border-[color:#d8c7b3] bg-[color:#f7f3ed] text-[color:var(--color-clay)]"
 };
 
 const variantIcons: Record<StatusBannerVariant, React.ComponentType<{ className?: string }>> = {
@@ -29,7 +29,7 @@ export function StatusBanner({ variant, message, className }: StatusBannerProps)
   return (
     <div
       className={cn(
-        "flex items-start gap-2 rounded-2xl border px-4 py-3.5 text-sm leading-relaxed",
+        "kk-interactive flex items-start gap-2 rounded-[var(--kk-radius-md)] border px-4 py-3 text-sm leading-relaxed",
         variantStyles[variant],
         className
       )}

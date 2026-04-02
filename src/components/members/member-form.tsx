@@ -25,40 +25,40 @@ export function MemberForm({ action, submitLabel, personId, initialValues }: Mem
   const showDeathDate = isLivingValue === "false";
 
   return (
-    <Card className="rounded-[2rem] border-stone-100 p-5 sm:p-6">
+    <Card className="border-[color:rgba(212,184,150,0.4)]">
       <form action={action} className="space-y-6">
         {personId ? <input type="hidden" name="person_id" value={personId} /> : null}
 
-        <div className="space-y-4 rounded-2xl border border-stone-200 bg-stone-50 p-4 sm:p-5">
-          <p className="text-sm font-semibold uppercase tracking-wide text-amber-700">Identitas Dasar</p>
+        <div className="space-y-4 rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] p-4 sm:p-5">
+          <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[color:var(--color-clay)]">Identitas Dasar</p>
 
-          <label className="block space-y-2 text-base font-semibold text-stone-800">
+          <label className="block space-y-2 text-base font-medium text-[color:var(--color-bark)]">
             Nama lengkap
             <input
               required
               name="full_name"
               defaultValue={initialValues?.full_name ?? ""}
-              className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 focus:border-amber-400 focus:ring-2"
+              className="w-full rounded-[var(--kk-radius-sm)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-4 py-3 text-base text-[color:var(--color-bark)] outline-none focus:ring-2 focus:ring-[color:var(--kk-focus)]"
               placeholder="Contoh: Ahmad Wijaya"
             />
           </label>
 
-          <label className="block space-y-2 text-base font-semibold text-stone-800">
+          <label className="block space-y-2 text-base font-medium text-[color:var(--color-bark)]">
             Nama panggilan (opsional)
             <input
               name="nickname"
               defaultValue={initialValues?.nickname ?? ""}
-              className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 placeholder:text-stone-400 focus:border-amber-400 focus:ring-2"
+              className="w-full rounded-[var(--kk-radius-sm)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-4 py-3 text-base text-[color:var(--color-bark)] outline-none placeholder:text-[color:var(--kk-muted)] focus:ring-2 focus:ring-[color:var(--kk-focus)]"
               placeholder="Contoh: Pak Ahmad"
             />
           </label>
 
-          <label className="block space-y-2 text-base font-semibold text-stone-800">
+          <label className="block space-y-2 text-base font-medium text-[color:var(--color-bark)]">
             Jenis kelamin (opsional)
             <select
               name="gender"
               defaultValue={initialValues?.gender ?? ""}
-              className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 focus:border-amber-400 focus:ring-2"
+              className="w-full rounded-[var(--kk-radius-sm)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-4 py-3 text-base text-[color:var(--color-bark)] outline-none focus:ring-2 focus:ring-[color:var(--kk-focus)]"
             >
               <option value="">Belum diisi</option>
               <option value="male">Laki-laki</option>
@@ -68,29 +68,29 @@ export function MemberForm({ action, submitLabel, personId, initialValues }: Mem
           </label>
         </div>
 
-        <div className="space-y-4 rounded-2xl border border-stone-200 bg-white p-4 sm:p-5">
-          <p className="text-sm font-semibold uppercase tracking-wide text-stone-600">Informasi Kehidupan</p>
+        <div className="space-y-4 rounded-[var(--kk-radius-md)] border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] p-4 sm:p-5">
+          <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[color:var(--color-clay)]">Informasi Kehidupan</p>
 
           <div className={`grid grid-cols-1 gap-4 ${showDeathDate ? "sm:grid-cols-2" : ""}`}>
-            <label className="block space-y-2 text-base font-semibold text-stone-800">
+            <label className="block space-y-2 text-base font-medium text-[color:var(--color-bark)]">
               Tanggal lahir (opsional)
               <input
                 type="date"
                 name="birth_date"
                 defaultValue={initialValues?.birth_date ?? ""}
-                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 focus:border-amber-400 focus:ring-2"
+                className="w-full rounded-[var(--kk-radius-sm)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-4 py-3 text-base text-[color:var(--color-bark)] outline-none focus:ring-2 focus:ring-[color:var(--kk-focus)]"
               />
             </label>
 
             {showDeathDate ? (
-              <label className="block space-y-2 text-base font-semibold text-stone-800">
+              <label className="block space-y-2 text-base font-medium text-[color:var(--color-bark)]">
                 Tanggal wafat (opsional)
                 <input
                   type="date"
                   name="death_date"
                   value={deathDateValue}
                   onChange={(event) => setDeathDateValue(event.target.value)}
-                  className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 focus:border-amber-400 focus:ring-2"
+                  className="w-full rounded-[var(--kk-radius-sm)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-4 py-3 text-base text-[color:var(--color-bark)] outline-none focus:ring-2 focus:ring-[color:var(--kk-focus)]"
                 />
               </label>
             ) : (
@@ -98,7 +98,7 @@ export function MemberForm({ action, submitLabel, personId, initialValues }: Mem
             )}
           </div>
 
-          <label className="block space-y-2 text-base font-semibold text-stone-800">
+          <label className="block space-y-2 text-base font-medium text-[color:var(--color-bark)]">
             Status kehidupan
             <select
               name="is_living"
@@ -110,7 +110,7 @@ export function MemberForm({ action, submitLabel, personId, initialValues }: Mem
                   setDeathDateValue("");
                 }
               }}
-              className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 focus:border-amber-400 focus:ring-2"
+              className="w-full rounded-[var(--kk-radius-sm)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-4 py-3 text-base text-[color:var(--color-bark)] outline-none focus:ring-2 focus:ring-[color:var(--kk-focus)]"
             >
               <option value="true">Masih hidup</option>
               <option value="false">Sudah wafat</option>
@@ -119,18 +119,18 @@ export function MemberForm({ action, submitLabel, personId, initialValues }: Mem
         </div>
 
         <div className="space-y-3">
-          <label className="block space-y-2 text-base font-semibold text-stone-800">
+          <label className="block space-y-2 text-base font-medium text-[color:var(--color-bark)]">
             Catatan singkat (opsional)
             <textarea
               name="bio"
               defaultValue={initialValues?.bio ?? ""}
               rows={4}
-              className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 placeholder:text-stone-400 focus:border-amber-400 focus:ring-2"
+              className="w-full rounded-[var(--kk-radius-sm)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-4 py-3 text-base text-[color:var(--color-bark)] outline-none placeholder:text-[color:var(--kk-muted)] focus:ring-2 focus:ring-[color:var(--kk-focus)]"
               placeholder="Catatan keluarga singkat..."
             />
           </label>
 
-          <p className="text-sm leading-relaxed text-stone-600">
+          <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
             Isi data dasar terlebih dahulu. Detail lainnya bisa diperbarui kapan saja dari profil anggota.
           </p>
         </div>

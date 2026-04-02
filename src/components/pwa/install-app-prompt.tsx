@@ -68,14 +68,14 @@ export function InstallAppPrompt() {
   };
 
   return (
-    <Card className="space-y-3 border-amber-100 bg-amber-50/60 p-5 sm:p-6">
+    <Card className="space-y-3 border-[color:var(--color-sand)] bg-[color:var(--color-warm)]/70">
       <div className="flex items-start gap-3">
-        <div className="rounded-xl bg-amber-100 p-2 text-amber-700">
+        <div className="rounded-[var(--kk-radius-sm)] bg-[color:#f7efe4] p-2 text-[color:var(--color-clay)]">
           <Download className="h-5 w-5" />
         </div>
         <div className="space-y-1">
-          <h3 className="text-base font-semibold text-stone-900">Pasang aplikasi di layar utama</h3>
-          <p className="text-sm leading-relaxed text-stone-600">
+          <h3 className="text-base text-[color:var(--color-bark)]">Pasang aplikasi di layar utama</h3>
+          <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
             Supaya akses lebih cepat seperti aplikasi HP, Anda bisa menambahkan Kisah Keluarga ke home screen.
           </p>
         </div>

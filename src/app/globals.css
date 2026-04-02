@@ -21,11 +21,21 @@
   --kk-success: #3f5c45;
   --kk-focus: var(--color-rust);
   --kk-shadow-soft: 0 1px 2px rgb(0 0 0 / 0.06);
-  --kk-shadow-card: 0 6px 24px rgb(28 25 23 / 0.06);
-  --kk-shadow-float: 0 14px 36px rgb(28 25 23 / 0.16);
-  --kk-radius-control: 1rem;
-  --kk-radius-card: 2rem;
+  --kk-shadow-card: 0 1px 3px rgb(28 25 23 / 0.06), 0 4px 16px rgb(28 25 23 / 0.06);
+  --kk-shadow-panel: 0 8px 32px rgb(28 25 23 / 0.14);
+  --kk-shadow-modal: -4px 0 40px rgb(28 25 23 / 0.18);
+  --kk-shadow-float: 0 4px 24px rgb(28 25 23 / 0.14);
+  --kk-radius-sm: 0.5rem;
+  --kk-radius-md: 1rem;
+  --kk-radius-lg: 1.5rem;
+  --kk-radius-xl: 2rem;
   --kk-radius-hero: 2.5rem;
+  --kk-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --kk-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --kk-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --kk-duration-fast: 120ms;
+  --kk-duration-base: 220ms;
+  --kk-duration-slow: 380ms;
 }
 
 body {
@@ -44,11 +54,27 @@ h2,
 h3,
 h4 {
   font-family: var(--font-lora), Georgia, Cambria, "Times New Roman", Times, serif;
+  font-weight: 600;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  transition-property: background-color, border-color, color, box-shadow, transform, opacity;
+  transition-duration: var(--kk-duration-fast);
+  transition-timing-function: var(--kk-ease-out);
+}
+
+button:active,
+a:active {
+  transform: scale(0.98);
 }
 
 * {
@@ -58,6 +84,18 @@ a {
 :focus-visible {
   outline: 3px solid var(--kk-focus);
   outline-offset: 2px;
+}
+
+.kk-interactive {
+  transition-property: background-color, border-color, color, box-shadow, transform, opacity;
+  transition-duration: var(--kk-duration-fast);
+  transition-timing-function: var(--kk-ease-out);
+}
+
+.kk-panel-transition {
+  transition-property: background-color, border-color, color, box-shadow, transform, opacity;
+  transition-duration: var(--kk-duration-slow);
+  transition-timing-function: var(--kk-ease);
 }
 
 ::selection {
