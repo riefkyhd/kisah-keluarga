@@ -250,20 +250,6 @@ export default async function MemberProfilePage({ params, searchParams }: Member
         >
           Lihat di mode pohon
         </Link>
-        <Link
-          href="/timeline"
-          className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
-        >
-          Lihat timeline keluarga
-        </Link>
-        {canManageMember ? (
-          <Link
-            href={`/anggota/${member.id}/edit`}
-            className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-amber-700 px-5 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-amber-800"
-          >
-            Edit / Arsipkan Anggota
-          </Link>
-        ) : null}
       </div>
     </section>
   );

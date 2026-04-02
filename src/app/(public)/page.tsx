@@ -3,6 +3,10 @@ import { ArrowRight, BookOpen, Sparkles, TreeDeciduous, Users } from "lucide-rea
 import { Card } from "@/components/ui/card";
 import { InstallAppPrompt } from "@/components/pwa/install-app-prompt";
 import { Button } from "@/components/ui/button";
+import { hasMinimumRole, normalizeRole } from "@/lib/auth/roles";
+import { getCurrentUser } from "@/lib/auth/session";
+import { isAuthBypassEnabled } from "@/lib/auth/bypass";
+import { createClient } from "@/lib/supabase/server";
 
 const stats = [
   {
@@ -22,25 +26,51 @@ const stats = [
 const quickNavItems = [
   {
     href: "/keluarga",
-    title: "Direktori Keluarga",
+    title: "Anggota",
     description: "Temukan profil anggota dengan cepat.",
     icon: Users
   },
   {
     href: "/pohon",
-    title: "Pohon Keluarga",
+    title: "Pohon",
     description: "Lihat relasi antar generasi secara visual.",
     icon: TreeDeciduous
   },
   {
     href: "/timeline",
-    title: "Cerita Keluarga",
+    title: "Cerita",
     description: "Baca kenangan keluarga dalam urutan waktu.",
     icon: BookOpen
   }
 ];
 
-export default function PublicHomePage() {
+async function canManageMembersFromHome() {
+  if (isAuthBypassEnabled()) {
+    return true;
+  }
+
+  const user = await getCurrentUser();
+  if (!user) {
+    return false;
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error) {
+    return false;
+  }
+
+  return hasMinimumRole(normalizeRole((data as { role?: unknown } | null)?.role), "editor");
+}
+
+export default async function PublicHomePage() {
+  const canManageMembers = await canManageMembersFromHome();
+
   return (
     <section className="space-y-8 md:space-y-10">
       <div className="grid items-center gap-5 lg:grid-cols-[1.15fr_0.85fr]">
@@ -58,22 +88,10 @@ export default function PublicHomePage() {
               untuk semua generasi.
             </p>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/keluarga">
-              <Button className="min-w-[12rem] bg-[color:var(--color-clay)] text-[color:var(--color-cream)] hover:bg-[color:var(--color-bark)]">
-                Buka Direktori
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/timeline">
-              <Button
-                variant="outline"
-                className="min-w-[12rem] border-[color:var(--color-sand)] bg-white/90 text-[color:var(--color-bark)] hover:bg-[color:var(--color-warm)]"
-              >
-                Jelajahi Cerita
-              </Button>
-            </Link>
-          </div>
+          <p className="inline-flex w-fit items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-sm font-medium text-[color:var(--color-clay)]">
+            <ArrowRight className="h-4 w-4" />
+            Pilih menu Anggota, Pohon, atau Cerita untuk mulai.
+          </p>
         </Card>
 
         <Card className="relative overflow-hidden border-[color:var(--color-sand)] bg-[linear-gradient(160deg,#fff_10%,#f6efe4_100%)] px-5 py-6 shadow-[0_10px_24px_rgba(74,55,40,0.10)]">
@@ -122,7 +140,7 @@ export default function PublicHomePage() {
       <section className="space-y-4">
         <div className="space-y-2">
           <h2 className="text-3xl text-[color:var(--color-bark)]">Akses Cepat</h2>
-          <p className="text-[color:var(--color-clay)]">Pilih jalur yang paling nyaman untuk memulai.</p>
+          <p className="text-[color:var(--color-clay)]">Tiga jalur utama untuk membaca dan menelusuri kisah keluarga.</p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
@@ -144,26 +162,20 @@ export default function PublicHomePage() {
       </section>
 
       <Card className="border-[color:var(--color-sand)] bg-white/90 p-5 sm:p-6">
-        <h3 className="text-2xl text-[color:var(--color-bark)]">Mulai dengan alur sederhana</h3>
+        <h3 className="text-2xl text-[color:var(--color-bark)]">Cerita keluarga, dalam alur paling sederhana</h3>
         <p className="mt-3 text-base leading-relaxed text-[color:var(--color-clay)]">
-          Gunakan menu <strong>Keluarga</strong>, <strong>Pohon</strong>, dan <strong>Cerita</strong> untuk membaca
-          data. Untuk menambah atau mengubah informasi, gunakan akun dengan peran editor atau admin.
+          Baca profil anggota, jelajahi relasi di mode pohon, lalu lanjutkan ke cerita timeline. Jika Anda membantu
+          mengelola data keluarga, gunakan akses editor atau admin untuk menambahkan anggota baru.
         </p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <Link href="/keluarga">
-            <Button className="bg-[color:var(--color-clay)] text-[color:var(--color-cream)] hover:bg-[color:var(--color-bark)]">
-              Buka Direktori Keluarga
-            </Button>
-          </Link>
-          <Link href="/login">
-            <Button
-              variant="outline"
-              className="border-[color:var(--color-sand)] bg-white/90 text-[color:var(--color-bark)] hover:bg-[color:var(--color-warm)]"
-            >
-              Masuk sebagai Pengelola
-            </Button>
-          </Link>
-        </div>
+        {canManageMembers ? (
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link href="/anggota-baru">
+              <Button className="bg-[color:var(--color-clay)] text-[color:var(--color-cream)] hover:bg-[color:var(--color-bark)]">
+                Tambah Anggota
+              </Button>
+            </Link>
+          </div>
+        ) : null}
       </Card>
 
       <InstallAppPrompt />

@@ -28,13 +28,6 @@ export default async function AdminPage() {
             <p className="mt-1 text-sm text-stone-600">Buat akun baru, atur role, dan ubah kata sandi pengguna.</p>
           </Link>
           <Link
-            href="/keluarga"
-            className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-4 transition-colors hover:bg-stone-100"
-          >
-            <p className="font-semibold text-stone-900">Buka Direktori</p>
-            <p className="mt-1 text-sm text-stone-600">Periksa profil dan relasi anggota keluarga.</p>
-          </Link>
-          <Link
             href="/anggota-baru"
             className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 transition-colors hover:bg-amber-100"
           >
