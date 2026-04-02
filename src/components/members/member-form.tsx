@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
+import type { MemberMutationResult } from "@/server/actions/members";
 
 type MemberFormProps = {
-  action: (formData: FormData) => Promise<void>;
+  action: (formData: FormData) => Promise<MemberMutationResult | void>;
   submitLabel: string;
   personId?: string;
+  actionMode?: "redirect" | "result";
+  successRedirect?: string;
+  onActionResult?: (result: MemberMutationResult) => void;
   initialValues?: {
     full_name?: string;
     nickname?: string | null;
@@ -19,15 +23,40 @@ type MemberFormProps = {
   };
 };
 
-export function MemberForm({ action, submitLabel, personId, initialValues }: MemberFormProps) {
+export function MemberForm({
+  action,
+  submitLabel,
+  personId,
+  actionMode = "redirect",
+  successRedirect,
+  onActionResult,
+  initialValues
+}: MemberFormProps) {
+  const [actionResult, formAction] = useActionState<MemberMutationResult | null, FormData>(
+    async (_prevState, formData) => {
+      const result = await action(formData);
+      return result ?? null;
+    },
+    null
+  );
   const [isLivingValue, setIsLivingValue] = useState(initialValues?.is_living === false ? "false" : "true");
   const [deathDateValue, setDeathDateValue] = useState(initialValues?.death_date ?? "");
   const showDeathDate = isLivingValue === "false";
 
+  useEffect(() => {
+    if (!actionResult || !onActionResult) {
+      return;
+    }
+
+    onActionResult(actionResult);
+  }, [actionResult, onActionResult]);
+
   return (
     <Card className="border-[color:rgba(212,184,150,0.4)]">
-      <form action={action} className="space-y-6">
+      <form action={formAction} className="space-y-6">
         {personId ? <input type="hidden" name="person_id" value={personId} /> : null}
+        <input type="hidden" name="action_mode" value={actionMode} />
+        {successRedirect ? <input type="hidden" name="success_redirect" value={successRedirect} /> : null}
 
         <div className="space-y-4 rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] p-4 sm:p-5">
           <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[color:var(--color-clay)]">Identitas Dasar</p>

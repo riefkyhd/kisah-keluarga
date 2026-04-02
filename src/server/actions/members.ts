@@ -7,8 +7,28 @@ import { requireEditor } from "@/lib/permissions/guards";
 import { createClient } from "@/lib/supabase/server";
 import { createMemberSchema, memberArchiveSchema, updateMemberSchema } from "@/lib/validation/member";
 
+export type MemberMutationError = "invalid_form" | "save_failed";
+export type MemberMutationStatus = "created" | "updated";
+export type MemberMutationResult =
+  | { ok: true; personId: string; status: MemberMutationStatus }
+  | { ok: false; error: MemberMutationError };
+
 function toFormObject(formData: FormData) {
   return Object.fromEntries(formData.entries());
+}
+
+function getActionMode(formData: FormData): "redirect" | "result" {
+  return formData.get("action_mode") === "result" ? "result" : "redirect";
+}
+
+function getSuccessRedirect(formData: FormData) {
+  const raw = formData.get("success_redirect");
+  if (typeof raw !== "string" || raw.trim().length === 0) {
+    return null;
+  }
+
+  const safePath = sanitizeInternalReturnTo(raw, "");
+  return safePath || null;
 }
 
 function revalidateMemberPaths(personId: string) {
@@ -26,10 +46,20 @@ function redirectWithEditStatus(targetPath: string, status: string): never {
 }
 
 export async function createMemberAction(formData: FormData) {
+  const actionMode = getActionMode(formData);
+  const successRedirect = getSuccessRedirect(formData);
   const { user } = await requireEditor("/anggota-baru");
   const parsed = createMemberSchema.safeParse(toFormObject(formData));
 
   if (!parsed.success) {
+    if (actionMode === "result") {
+      return { ok: false, error: "invalid_form" } satisfies MemberMutationResult;
+    }
+
+    if (successRedirect) {
+      redirect(withQueryParam(successRedirect, "error", "invalid_form"));
+    }
+
     redirect("/anggota-baru?error=invalid_form");
   }
 
@@ -43,19 +73,45 @@ export async function createMemberAction(formData: FormData) {
   const { data, error } = await supabase.from("people").insert(payload).select("id").single();
 
   if (error || !data) {
+    if (actionMode === "result") {
+      return { ok: false, error: "save_failed" } satisfies MemberMutationResult;
+    }
+
+    if (successRedirect) {
+      redirect(withQueryParam(successRedirect, "error", "save_failed"));
+    }
+
     redirect("/anggota-baru?error=save_failed");
   }
 
-  revalidatePath("/keluarga");
+  revalidateMemberPaths(data.id);
+  if (actionMode === "result") {
+    return { ok: true, personId: data.id, status: "created" } satisfies MemberMutationResult;
+  }
+
+  if (successRedirect) {
+    redirect(withQueryParam(successRedirect, "status", "created"));
+  }
+
   redirect(`/keluarga/${data.id}?created=1`);
 }
 
 export async function updateMemberAction(formData: FormData) {
+  const actionMode = getActionMode(formData);
+  const successRedirect = getSuccessRedirect(formData);
   const parsed = updateMemberSchema.safeParse(toFormObject(formData));
 
   if (!parsed.success) {
     const fallbackPersonId =
       typeof formData.get("person_id") === "string" ? String(formData.get("person_id")) : "";
+    if (actionMode === "result") {
+      return { ok: false, error: "invalid_form" } satisfies MemberMutationResult;
+    }
+
+    if (successRedirect) {
+      redirect(withQueryParam(successRedirect, "error", "invalid_form"));
+    }
+
     redirect(`/anggota/${fallbackPersonId}/edit?error=invalid_form`);
   }
 
@@ -78,10 +134,30 @@ export async function updateMemberAction(formData: FormData) {
     .eq("id", parsed.data.person_id);
 
   if (error) {
+    if (actionMode === "result") {
+      return { ok: false, error: "save_failed" } satisfies MemberMutationResult;
+    }
+
+    if (successRedirect) {
+      redirect(withQueryParam(successRedirect, "error", "save_failed"));
+    }
+
     redirect(`/anggota/${parsed.data.person_id}/edit?error=save_failed`);
   }
 
   revalidateMemberPaths(parsed.data.person_id);
+  if (actionMode === "result") {
+    return {
+      ok: true,
+      personId: parsed.data.person_id,
+      status: "updated"
+    } satisfies MemberMutationResult;
+  }
+
+  if (successRedirect) {
+    redirect(withQueryParam(successRedirect, "status", "updated"));
+  }
+
   redirect(`/keluarga/${parsed.data.person_id}?updated=1`);
 }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,10 +10,12 @@ import { FormSubmitButton } from "@/components/ui/form-submit-button";
 import { StatusBanner } from "@/components/ui/status-banner";
 import { StatusToast } from "@/components/ui/status-toast";
 import { MemberAvatar } from "@/components/members/member-avatar";
+import { MemberForm } from "@/components/members/member-form";
 import { MemberPhotoManager } from "@/components/members/member-photo-manager";
 import { MemberStoriesSection } from "@/components/stories/member-stories-section";
 import { RelationshipSection } from "@/components/relationships/relationship-section";
 import { formatTanggal } from "@/lib/format-tanggal";
+import type { MemberMutationResult } from "@/server/actions/members";
 import type { MemberProfile } from "@/server/queries/members";
 import type {
   ProfileRelationships,
@@ -54,6 +57,7 @@ type MemberDrawerProps = {
   archiveRelationshipAction: (formData: FormData) => Promise<void>;
   uploadPhotoAction: (formData: FormData) => Promise<void>;
   removePhotoAction: (formData: FormData) => Promise<void>;
+  updateMemberAction: (formData: FormData) => Promise<MemberMutationResult | void>;
   archiveMemberAction: (formData: FormData) => Promise<void>;
   restoreMemberAction: (formData: FormData) => Promise<void>;
 };
@@ -66,6 +70,7 @@ const CLEANUP_QUERY_KEYS = [
   "photo_status",
   "error",
   "status",
+  "edit",
   "created",
   "updated"
 ] as const;
@@ -85,20 +90,41 @@ export function MemberDrawer({
   archiveRelationshipAction,
   uploadPhotoAction,
   removePhotoAction,
+  updateMemberAction,
   archiveMemberAction,
   restoreMemberAction
 }: MemberDrawerProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const editModeFromQuery = canManage && searchParams.get("edit") === "true";
+  const [mode, setMode] = useState<"view" | "edit">(editModeFromQuery ? "edit" : "view");
 
-  const closeDrawer = () => {
+  useEffect(() => {
+    setMode(editModeFromQuery ? "edit" : "view");
+  }, [editModeFromQuery, member.id]);
+
+  const pushCanvasState = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
-    CLEANUP_QUERY_KEYS.forEach((key) => params.delete(key));
     if (!params.get("personId")) {
       params.set("personId", focusPersonId);
     }
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null) {
+        params.delete(key);
+        return;
+      }
+
+      params.set(key, value);
+    });
+
     const queryString = params.toString();
     router.push(queryString ? `/?${queryString}` : "/", { scroll: false });
+  };
+
+  const closeDrawer = () => {
+    const updates = Object.fromEntries(CLEANUP_QUERY_KEYS.map((key) => [key, null]));
+    pushCanvasState(updates);
   };
 
   const birthDateLabel = formatTanggal(member.birth_date);
@@ -115,11 +141,44 @@ export function MemberDrawer({
             Lihat profil penuh
           </Link>
           {canManage ? (
-            <Link href={`/anggota/${member.id}/edit`}>
-              <Button variant="secondary" size="sm">
+            mode === "edit" ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setMode("view");
+                  pushCanvasState({
+                    edit: null,
+                    error: null,
+                    status: null,
+                    updated: null,
+                    created: null
+                  });
+                }}
+              >
+                Kembali ke Detail
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setMode("edit");
+                  pushCanvasState({
+                    memberId: member.id,
+                    edit: "true",
+                    error: null,
+                    status: null,
+                    updated: null,
+                    created: null
+                  });
+                }}
+              >
                 Edit Profil
               </Button>
-            </Link>
+            )
           ) : null}
         </div>
 
@@ -212,138 +271,183 @@ export function MemberDrawer({
           </>
         ) : null}
 
-        <MemberPhotoManager
-          personId={member.id}
-          canManage={canManage}
-          hasPhoto={Boolean(member.profile_photo_path)}
-          uploadAction={uploadPhotoAction}
-          removeAction={removePhotoAction}
-          returnTo={returnTo}
-        />
+        {canManage && mode === "edit" ? (
+          <Card className="space-y-4 border-[color:rgba(212,184,150,0.4)]">
+            <h3 className="text-base text-[color:var(--color-bark)]">Edit Profil Anggota</h3>
+            <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
+              Simpan perubahan tanpa meninggalkan pohon keluarga. Setelah tersimpan, panel akan kembali ke mode
+              detail.
+            </p>
+            <MemberForm
+              action={updateMemberAction}
+              submitLabel="Simpan Perubahan"
+              personId={member.id}
+              initialValues={member}
+              actionMode="result"
+              onActionResult={(result) => {
+                if (result?.ok) {
+                  setMode("view");
+                  pushCanvasState({
+                    memberId: result.personId,
+                    edit: null,
+                    error: null,
+                    status: "updated",
+                    updated: null,
+                    created: null
+                  });
+                  return;
+                }
 
-        <RelationshipSection
-          testId="drawer-parents-section"
-          title="Orang Tua"
-          description="Anggota yang menjadi orang tua dari profil ini."
-          emptyText="Belum ada data orang tua."
-          currentPersonId={member.id}
-          items={relationshipData.parents}
-          canManage={canManage}
-          candidates={relationshipCandidates.parent}
-          addLabel="Tambah orang tua"
-          submitLabel="Tambah Orang Tua"
-          addAction={addParentAction}
-          archiveAction={archiveRelationshipAction}
-          returnTo={returnTo}
-        />
-
-        <RelationshipSection
-          testId="drawer-spouse-section"
-          title="Pasangan"
-          description="Hubungan pasangan aktif pada profil ini."
-          emptyText="Belum ada data pasangan."
-          currentPersonId={member.id}
-          items={relationshipData.spouse}
-          canManage={canManage}
-          candidates={relationshipCandidates.spouse}
-          addLabel="Tambah pasangan"
-          submitLabel="Tambah Pasangan"
-          showAddForm={relationshipData.spouse.length === 0}
-          addAction={addSpouseAction}
-          archiveAction={archiveRelationshipAction}
-          returnTo={returnTo}
-        />
-        {canManage && relationshipData.spouse.length > 0 ? (
-          <p className="rounded-[var(--kk-radius-md)] border border-[color:#f3c7c1] bg-[color:#fdf2f0] px-4 py-3 text-sm leading-relaxed text-[color:#9b3022]">
-            Profil ini sudah memiliki pasangan aktif. Arsipkan relasi pasangan saat ini untuk menambah yang baru.
-          </p>
-        ) : null}
-
-        <RelationshipSection
-          testId="drawer-children-section"
-          title="Anak"
-          description="Anggota yang tercatat sebagai anak dari profil ini."
-          emptyText="Belum ada data anak."
-          currentPersonId={member.id}
-          items={relationshipData.children}
-          canManage={canManage}
-          candidates={relationshipCandidates.child}
-          addLabel="Tambah anak"
-          submitLabel="Tambah Anak"
-          addAction={addChildAction}
-          archiveAction={archiveRelationshipAction}
-          returnTo={returnTo}
-        />
-
-        <RelationshipSection
-          testId="drawer-siblings-section"
-          title="Saudara (otomatis)"
-          description="Diturunkan dari orang tua yang sama."
-          emptyText="Belum ada data saudara."
-          currentPersonId={member.id}
-          items={relationshipData.siblings}
-          canManage={false}
-        />
-
-        <MemberStoriesSection personId={member.id} stories={stories} canManage={canManage} />
-
-        {canManage ? (
-          <Card className="space-y-3 border-[color:rgba(212,184,150,0.4)]">
-            <h3 className="text-base text-[color:var(--color-bark)]">Arsip / Pulihkan</h3>
-            {member.is_archived ? (
-              <form action={restoreMemberAction} className="space-y-3">
-                <input type="hidden" name="person_id" value={member.id} />
-                <input type="hidden" name="return_to" value={returnTo} />
-                <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
-                  Anggota ini sedang diarsipkan. Pulihkan jika ingin menampilkannya kembali di daftar aktif.
-                </p>
-                <FormSubmitButton
-                  type="submit"
-                  className="w-full bg-[color:#3f5c45] text-[color:var(--color-cream)] hover:bg-[color:#35503c]"
-                  pendingLabel="Memulihkan..."
-                >
-                  Pulihkan Anggota
-                </FormSubmitButton>
-              </form>
-            ) : (
-              <div className="space-y-3">
-                <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
-                  Arsipkan anggota jika datanya tetap ingin disimpan tetapi tidak ditampilkan di daftar utama.
-                </p>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button type="button" variant="danger" className="w-full">
-                      Arsipkan Anggota
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Arsipkan {member.full_name}?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Anggota akan disembunyikan dari direktori. Data tetap tersimpan dan dapat dipulihkan kapan
-                        saja.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <form action={archiveMemberAction}>
-                      <input type="hidden" name="person_id" value={member.id} />
-                      <input type="hidden" name="return_to" value={returnTo} />
-                      <AlertDialogFooter>
-                        <AlertDialogCancel asChild>
-                          <Button type="button" variant="outline">
-                            Batalkan
-                          </Button>
-                        </AlertDialogCancel>
-                        <FormSubmitButton type="submit" variant="danger" pendingLabel="Mengarsipkan...">
-                          Ya, Arsipkan
-                        </FormSubmitButton>
-                      </AlertDialogFooter>
-                    </form>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            )}
+                pushCanvasState({
+                  memberId: member.id,
+                  edit: "true",
+                  error: result?.error ?? "save_failed",
+                  status: null,
+                  updated: null,
+                  created: null
+                });
+              }}
+            />
           </Card>
-        ) : null}
+        ) : (
+          <>
+            <MemberPhotoManager
+              personId={member.id}
+              canManage={canManage}
+              hasPhoto={Boolean(member.profile_photo_path)}
+              uploadAction={uploadPhotoAction}
+              removeAction={removePhotoAction}
+              returnTo={returnTo}
+            />
+
+            <RelationshipSection
+              testId="drawer-parents-section"
+              title="Orang Tua"
+              description="Anggota yang menjadi orang tua dari profil ini."
+              emptyText="Belum ada data orang tua."
+              currentPersonId={member.id}
+              items={relationshipData.parents}
+              canManage={canManage}
+              candidates={relationshipCandidates.parent}
+              addLabel="Tambah orang tua"
+              submitLabel="Tambah Orang Tua"
+              addAction={addParentAction}
+              archiveAction={archiveRelationshipAction}
+              returnTo={returnTo}
+              addSurface="sheet"
+            />
+
+            <RelationshipSection
+              testId="drawer-spouse-section"
+              title="Pasangan"
+              description="Hubungan pasangan aktif pada profil ini."
+              emptyText="Belum ada data pasangan."
+              currentPersonId={member.id}
+              items={relationshipData.spouse}
+              canManage={canManage}
+              candidates={relationshipCandidates.spouse}
+              addLabel="Tambah pasangan"
+              submitLabel="Tambah Pasangan"
+              showAddForm={relationshipData.spouse.length === 0}
+              addAction={addSpouseAction}
+              archiveAction={archiveRelationshipAction}
+              returnTo={returnTo}
+              addSurface="sheet"
+            />
+            {canManage && relationshipData.spouse.length > 0 ? (
+              <p className="rounded-[var(--kk-radius-md)] border border-[color:#f3c7c1] bg-[color:#fdf2f0] px-4 py-3 text-sm leading-relaxed text-[color:#9b3022]">
+                Profil ini sudah memiliki pasangan aktif. Arsipkan relasi pasangan saat ini untuk menambah yang baru.
+              </p>
+            ) : null}
+
+            <RelationshipSection
+              testId="drawer-children-section"
+              title="Anak"
+              description="Anggota yang tercatat sebagai anak dari profil ini."
+              emptyText="Belum ada data anak."
+              currentPersonId={member.id}
+              items={relationshipData.children}
+              canManage={canManage}
+              candidates={relationshipCandidates.child}
+              addLabel="Tambah anak"
+              submitLabel="Tambah Anak"
+              addAction={addChildAction}
+              archiveAction={archiveRelationshipAction}
+              returnTo={returnTo}
+              addSurface="sheet"
+            />
+
+            <RelationshipSection
+              testId="drawer-siblings-section"
+              title="Saudara (otomatis)"
+              description="Diturunkan dari orang tua yang sama."
+              emptyText="Belum ada data saudara."
+              currentPersonId={member.id}
+              items={relationshipData.siblings}
+              canManage={false}
+            />
+
+            <MemberStoriesSection personId={member.id} stories={stories} canManage={canManage} />
+
+            {canManage ? (
+              <Card className="space-y-3 border-[color:rgba(212,184,150,0.4)]">
+                <h3 className="text-base text-[color:var(--color-bark)]">Arsip / Pulihkan</h3>
+                {member.is_archived ? (
+                  <form action={restoreMemberAction} className="space-y-3">
+                    <input type="hidden" name="person_id" value={member.id} />
+                    <input type="hidden" name="return_to" value={returnTo} />
+                    <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
+                      Anggota ini sedang diarsipkan. Pulihkan jika ingin menampilkannya kembali di daftar aktif.
+                    </p>
+                    <FormSubmitButton
+                      type="submit"
+                      className="w-full bg-[color:#3f5c45] text-[color:var(--color-cream)] hover:bg-[color:#35503c]"
+                      pendingLabel="Memulihkan..."
+                    >
+                      Pulihkan Anggota
+                    </FormSubmitButton>
+                  </form>
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
+                      Arsipkan anggota jika datanya tetap ingin disimpan tetapi tidak ditampilkan di daftar utama.
+                    </p>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button type="button" variant="danger" className="w-full">
+                          Arsipkan Anggota
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Arsipkan {member.full_name}?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Anggota akan disembunyikan dari direktori. Data tetap tersimpan dan dapat dipulihkan kapan
+                            saja.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <form action={archiveMemberAction}>
+                          <input type="hidden" name="person_id" value={member.id} />
+                          <input type="hidden" name="return_to" value={returnTo} />
+                          <AlertDialogFooter>
+                            <AlertDialogCancel asChild>
+                              <Button type="button" variant="outline">
+                                Batalkan
+                              </Button>
+                            </AlertDialogCancel>
+                            <FormSubmitButton type="submit" variant="danger" pendingLabel="Mengarsipkan...">
+                              Ya, Arsipkan
+                            </FormSubmitButton>
+                          </AlertDialogFooter>
+                        </form>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                )}
+              </Card>
+            ) : null}
+          </>
+        )}
       </section>
     </Drawer>
   );

@@ -30,6 +30,8 @@ const MESSAGE_QUERY_KEYS = [
   "photo_status",
   "error",
   "status",
+  "edit",
+  "action",
   "created",
   "updated"
 ] as const;

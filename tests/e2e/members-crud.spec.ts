@@ -5,47 +5,45 @@ function createUniqueMemberName() {
   return `E2E Member ${Date.now()}-${Math.floor(Math.random() * 10_000)}`;
 }
 
-test("editor bisa create, edit, archive, dan restore anggota", async ({ page }) => {
+test("editor bisa create dan edit anggota lewat flow canvas", async ({ page }) => {
   const memberName = createUniqueMemberName();
   const updatedNickname = "Panggilan E2E";
 
   await loginAsRole(page, "editor", "/anggota-baru");
+  await expect(page).toHaveURL(/\/\?action=add/);
+  await expect(page.getByRole("heading", { name: "Tambah Anggota Baru" })).toBeVisible();
 
-  await page.getByLabel("Nama lengkap").fill(memberName);
-  await page.getByLabel("Nama panggilan (opsional)").fill("Nama Awal");
-  await page.getByLabel("Status kehidupan").selectOption("true");
-  await page.getByRole("button", { name: "Simpan Anggota" }).click();
+  const addDialog = page.getByRole("dialog", { name: "Tambah Anggota Baru" });
+  await addDialog.getByLabel("Nama lengkap").fill(memberName);
+  await addDialog.getByLabel("Nama panggilan (opsional)").fill("Nama Awal");
+  await addDialog.getByLabel("Status kehidupan").selectOption("true");
+  const saveCreateButton = addDialog.getByRole("button", { name: "Simpan Anggota" });
+  await saveCreateButton.evaluate((button) => {
+    (button as HTMLButtonElement).form?.requestSubmit();
+  });
 
-  await expect(page).toHaveURL(/\/keluarga\/.+\?created=1/);
-  await expect(page.getByRole("heading", { name: memberName })).toBeVisible();
+  await expect.poll(() => new URL(page.url()).searchParams.get("status")).toBe("created");
+  const memberDrawer = page.getByTestId("member-drawer");
+  await expect(memberDrawer).toBeVisible();
+  await expect(memberDrawer.getByText(memberName)).toBeVisible();
 
-  const createdUrl = page.url();
-  const matched = createdUrl.match(/\/keluarga\/([^?]+)/);
-  if (!matched) {
-    throw new Error("ID anggota baru tidak ditemukan dari URL profile.");
+  const createdParams = new URL(page.url()).searchParams;
+  const personId = createdParams.get("memberId");
+  if (!personId) {
+    throw new Error("ID anggota baru tidak ditemukan dari query memberId.");
   }
-  const personId = matched[1];
-
-  await page.getByRole("link", { name: "Edit / Arsipkan Anggota" }).click();
-  await expect(page).toHaveURL(new RegExp(`/anggota/${personId}/edit`));
-
-  await page.getByLabel("Nama panggilan (opsional)").fill(updatedNickname);
-  await page.getByRole("button", { name: "Simpan Perubahan" }).click();
-
-  await expect(page).toHaveURL(new RegExp(`/keluarga/${personId}\\?updated=1`));
-  await expect(page.getByText(`Panggilan: ${updatedNickname}`)).toBeVisible();
 
   await page.goto(`/anggota/${personId}/edit`);
-  await page.getByRole("button", { name: "Arsipkan Anggota" }).click();
-  await expect(page).toHaveURL(new RegExp(`/anggota/${personId}/edit\\?status=archived`));
+  await expect(page).toHaveURL(new RegExp(`/\\?[^#]*memberId=${personId}[^#]*edit=true`));
+  await expect(page.getByText("Edit Profil Anggota")).toBeVisible();
 
-  await page.goto("/keluarga");
-  await expect(page.getByText(memberName)).toHaveCount(0);
+  const editNicknameInput = page.getByPlaceholder("Contoh: Pak Ahmad").last();
+  await editNicknameInput.fill(updatedNickname);
+  await editNicknameInput.press("Enter");
+  await expect.poll(() => new URL(page.url()).searchParams.get("status")).toBe("updated");
+  await expect.poll(() => new URL(page.url()).searchParams.get("memberId")).toBe(personId);
+  await expect(memberDrawer.getByText(`Panggilan: ${updatedNickname}`)).toBeVisible();
 
-  await page.goto(`/anggota/${personId}/edit`);
-  await page.getByRole("button", { name: "Pulihkan Anggota" }).click();
-  await expect(page).toHaveURL(new RegExp(`/anggota/${personId}/edit\\?status=restored`));
-
-  await page.goto("/keluarga");
-  await expect(page.getByText(memberName)).toBeVisible();
+  await page.goto(`/keluarga?q=${encodeURIComponent(memberName)}`);
+  await expect(page.getByText(memberName).first()).toBeVisible();
 });

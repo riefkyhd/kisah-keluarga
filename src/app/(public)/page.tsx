@@ -2,6 +2,7 @@ import Link from "next/link";
 import { hasMinimumRole } from "@/lib/auth/roles";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { MemberCreateSheetShell } from "@/components/members/member-create-sheet-shell";
 import { MemberDrawer } from "@/components/members/member-drawer";
 import { FocusPersonCombobox } from "@/components/tree/focus-person-combobox";
 import { TreeCanvasController } from "@/components/tree/tree-canvas-controller";
@@ -16,7 +17,12 @@ import {
   removeMemberPhotoAction,
   uploadOrReplaceMemberPhotoAction
 } from "@/server/actions/member-photos";
-import { archiveMemberAction, restoreMemberAction } from "@/server/actions/members";
+import {
+  archiveMemberAction,
+  createMemberAction,
+  restoreMemberAction,
+  updateMemberAction
+} from "@/server/actions/members";
 import { getMemberById } from "@/server/queries/members";
 import {
   getProfileRelationships,
@@ -29,6 +35,8 @@ type HomeTreePageProps = {
   searchParams: Promise<{
     personId?: string;
     memberId?: string;
+    action?: string;
+    edit?: string;
     relationship_error?: string;
     relationship_status?: string;
     photo_error?: string;
@@ -174,6 +182,25 @@ export default async function PublicHomePage({ searchParams }: HomeTreePageProps
               >
                 Buka Timeline Cerita
               </Link>
+              <MemberCreateSheetShell
+                canManage={canManageMember}
+                focusPersonId={treeData.focusPerson?.id ?? currentFocusPersonId}
+                createAction={createMemberAction}
+              />
+            </div>
+          </Card>
+        ) : null}
+        {treeData.focusCandidates.length === 0 && canManageMember ? (
+          <Card className="h-fit rounded-[var(--kk-radius-lg)] border-[color:rgba(212,184,150,0.4)] p-5 shadow-[var(--kk-shadow-card)] sm:p-6">
+            <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
+              Belum ada anggota aktif. Tambahkan anggota pertama untuk mulai membangun pohon keluarga.
+            </p>
+            <div className="mt-4">
+              <MemberCreateSheetShell
+                canManage={canManageMember}
+                focusPersonId={focusPersonId}
+                createAction={createMemberAction}
+              />
             </div>
           </Card>
         ) : null}
@@ -222,6 +249,7 @@ export default async function PublicHomePage({ searchParams }: HomeTreePageProps
           archiveRelationshipAction={archiveRelationshipAction}
           uploadPhotoAction={uploadOrReplaceMemberPhotoAction}
           removePhotoAction={removeMemberPhotoAction}
+          updateMemberAction={updateMemberAction}
           archiveMemberAction={archiveMemberAction}
           restoreMemberAction={restoreMemberAction}
         />

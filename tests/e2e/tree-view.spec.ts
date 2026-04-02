@@ -92,11 +92,31 @@ test("editor tetap bisa mengakses route pohon dengan aman", async ({ page }) => 
   await loginAsRole(page, "editor", "/pohon");
   await expect(page).toHaveURL(/\/(?:\?.*)?$/);
   await expect(page.getByTestId("tree-page-heading")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Buka Direktori Keluarga" })).toBeVisible();
+  await expect(page.getByTestId("family-tree-visual")).toBeVisible();
 });
 
 test("admin tetap bisa mengakses route pohon dengan aman", async ({ page }) => {
   await loginAsRole(page, "admin", "/pohon");
   await expect(page).toHaveURL(/\/(?:\?.*)?$/);
   await expect(page.getByTestId("tree-page-heading")).toBeVisible();
+});
+
+test("tombol tambah anggota di canvas hanya untuk editor/admin", async ({ page }) => {
+  const editor = await ensureRoleUser("editor");
+  const viewer = await ensureRoleUser("viewer");
+  const focus = await createMemberFixture("Tree Add Access", editor.id);
+
+  await loginAsRole(page, "viewer", `/?personId=${focus.id}`);
+  await expect(page.getByRole("button", { name: "Tambah Anggota" })).toHaveCount(0);
+  await expect(viewer.email).toContain("e2e.viewer");
+
+  await loginAsRole(page, "editor", `/?personId=${focus.id}`);
+  const addMemberButton = page.getByRole("button", { name: "Tambah Anggota" });
+  const addMemberDialogHeading = page.getByRole("heading", { name: "Tambah Anggota Baru" });
+  if ((await addMemberDialogHeading.count()) === 0) {
+    await expect(addMemberButton).toBeVisible();
+    await addMemberButton.click();
+  }
+
+  await expect(page.getByRole("heading", { name: "Tambah Anggota Baru" })).toBeVisible();
 });

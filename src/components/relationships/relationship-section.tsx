@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
+import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 import { RelationshipActionsMenu } from "@/components/relationships/relationship-actions-menu";
 import type { RelationshipCandidate, RelationshipListItem, SiblingListItem } from "@/server/queries/relationships";
@@ -19,6 +23,7 @@ type RelationshipSectionProps = {
   addAction?: (formData: FormData) => Promise<void>;
   archiveAction?: (formData: FormData) => Promise<void>;
   returnTo?: string;
+  addSurface?: "inline" | "sheet";
 };
 
 function hasRelationshipId(
@@ -41,9 +46,36 @@ export function RelationshipSection({
   submitLabel = "Tambah Relasi",
   addAction,
   archiveAction,
-  returnTo
+  returnTo,
+  addSurface = "inline"
 }: RelationshipSectionProps) {
   const showAdd = canManage && showAddForm && Boolean(addAction);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const addFormContent =
+    candidates.length > 0 && addAction ? (
+      <form action={addAction} className="space-y-3 rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] p-4">
+        <input type="hidden" name="person_id" value={currentPersonId} />
+        {returnTo ? <input type="hidden" name="return_to" value={returnTo} /> : null}
+        <label className="block space-y-2 text-sm font-medium text-[color:var(--color-bark)]">
+          {addLabel}
+          <select
+            required
+            name="related_person_id"
+            className="w-full rounded-[var(--kk-radius-sm)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-4 py-3 text-sm text-[color:var(--color-bark)] outline-none focus:ring-2 focus:ring-[color:var(--kk-focus)]"
+          >
+            <option value="">Pilih anggota keluarga</option>
+            {candidates.map((candidate) => (
+              <option key={candidate.id} value={candidate.id}>
+                {candidate.full_name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <FormSubmitButton type="submit" className="w-full" pendingLabel="Menyimpan relasi...">
+          {submitLabel}
+        </FormSubmitButton>
+      </form>
+    ) : null;
 
   return (
     <Card data-testid={testId} className="space-y-4 border-[color:rgba(212,184,150,0.4)]">
@@ -92,28 +124,22 @@ export function RelationshipSection({
 
       {showAdd ? (
         candidates.length > 0 ? (
-          <form action={addAction} className="space-y-3 rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] p-4">
-            <input type="hidden" name="person_id" value={currentPersonId} />
-            {returnTo ? <input type="hidden" name="return_to" value={returnTo} /> : null}
-            <label className="block space-y-2 text-sm font-medium text-[color:var(--color-bark)]">
-              {addLabel}
-              <select
-                required
-                name="related_person_id"
-                className="w-full rounded-[var(--kk-radius-sm)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-4 py-3 text-sm text-[color:var(--color-bark)] outline-none focus:ring-2 focus:ring-[color:var(--kk-focus)]"
+          addSurface === "sheet" ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setSheetOpen(true)}
+                className="inline-flex min-h-12 w-full items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-4 py-3 text-sm font-medium text-[color:var(--color-bark)] transition-[background-color,border-color,color,box-shadow,transform,opacity] duration-[var(--kk-duration-fast)] ease-[var(--kk-ease-out)] hover:bg-[color:var(--color-warm)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--kk-focus)]"
               >
-                <option value="">Pilih anggota keluarga</option>
-                {candidates.map((candidate) => (
-                  <option key={candidate.id} value={candidate.id}>
-                    {candidate.full_name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <FormSubmitButton type="submit" className="w-full" pendingLabel="Menyimpan relasi...">
-              {submitLabel}
-            </FormSubmitButton>
-          </form>
+                {submitLabel}
+              </button>
+              <BottomSheet open={sheetOpen} onClose={() => setSheetOpen(false)} title={submitLabel}>
+                {addFormContent}
+              </BottomSheet>
+            </>
+          ) : (
+            addFormContent
+          )
         ) : (
           <p className="text-sm font-normal text-[color:var(--kk-muted)]">Belum ada kandidat anggota lain untuk ditautkan.</p>
         )

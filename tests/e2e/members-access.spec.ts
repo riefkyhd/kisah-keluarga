@@ -6,8 +6,8 @@ test("viewer bisa baca direktori/profil tapi tidak bisa akses write routes", asy
   const viewer = await ensureRoleUser("viewer");
   const fixture = await createMemberFixture("Viewer Access", viewer.id);
 
-  await loginAsRole(page, "viewer", "/keluarga");
-  await expect(page.getByText(fixture.full_name)).toBeVisible();
+  await loginAsRole(page, "viewer", `/keluarga?q=${encodeURIComponent(fixture.full_name)}`);
+  await expect(page.getByText(fixture.full_name).first()).toBeVisible();
 
   await page.goto(`/keluarga/${fixture.id}`);
   await expect(page.getByRole("heading", { name: fixture.full_name })).toBeVisible();
@@ -24,10 +24,13 @@ test("editor bisa akses halaman create/edit, tapi bukan admin dashboard", async 
   const fixture = await createMemberFixture("Editor Access", editor.id);
 
   await loginAsRole(page, "editor", "/anggota-baru");
+  await expect(page).toHaveURL(/\/\?action=add/);
   await expect(page.getByRole("heading", { name: "Tambah Anggota Baru" })).toBeVisible();
 
   await page.goto(`/anggota/${fixture.id}/edit`);
-  await expect(page.getByRole("heading", { name: "Edit Anggota" })).toBeVisible();
+  await expect(page).toHaveURL(new RegExp(`/\\?memberId=${fixture.id}&edit=true`));
+  await expect(page.getByTestId("member-drawer")).toBeVisible();
+  await expect(page.getByText("Edit Profil Anggota")).toBeVisible();
 
   await page.goto("/admin");
   await expect(page).toHaveURL(/\/\?error=forbidden/);
