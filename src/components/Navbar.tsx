@@ -6,7 +6,7 @@ import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
-type NavbarProps = {
+type AppNavProps = {
   hasSession: boolean;
 };
 
@@ -56,7 +56,7 @@ function BrandIcon() {
   );
 }
 
-export function Navbar({ hasSession }: NavbarProps) {
+export function AppNav({ hasSession }: AppNavProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -159,3 +159,5 @@ export function Navbar({ hasSession }: NavbarProps) {
     </header>
   );
 }
+
+export const Navbar = AppNav;

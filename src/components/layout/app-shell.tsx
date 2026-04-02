@@ -1,6 +1,6 @@
 "use client";
 
-import { Navbar } from "@/components/Navbar";
+import { AppNav } from "@/components/Navbar";
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -10,7 +10,7 @@ type AppShellProps = {
 export function AppShell({ children, hasSession }: AppShellProps) {
   return (
     <div className="min-h-screen bg-[color:var(--color-cream)] text-[color:var(--color-bark)]">
-      <Navbar hasSession={hasSession} />
+      <AppNav hasSession={hasSession} />
 
       <main className="mx-auto min-h-[calc(100dvh-6rem)] w-full max-w-5xl px-4 pb-10 pt-6 sm:px-6 md:pb-14 md:pt-10">
         {children}

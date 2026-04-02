@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { DM_Sans, Lora } from "next/font/google";
 import { AppShell } from "@/components/layout/app-shell";
 import { PwaRegister } from "@/components/pwa/pwa-register";
+import { AppToaster } from "@/components/ui/app-toaster";
 import { getCurrentUser } from "@/lib/auth/session";
 import { appThemeColor } from "@/lib/design-tokens";
 import "./globals.css";
@@ -57,6 +58,7 @@ export default async function RootLayout({
     <html lang="id">
       <body className={`${dmSans.variable} ${lora.variable}`}>
         <PwaRegister />
+        <AppToaster />
         <AppShell hasSession={Boolean(user)}>{children}</AppShell>
       </body>
     </html>

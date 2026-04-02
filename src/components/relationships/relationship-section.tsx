@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
+import { RelationshipActionsMenu } from "@/components/relationships/relationship-actions-menu";
 import type { RelationshipCandidate, RelationshipListItem, SiblingListItem } from "@/server/queries/relationships";
 
 type RelationshipSectionProps = {
@@ -71,13 +72,14 @@ export function RelationshipSection({
                   <p className="text-xs font-medium uppercase tracking-wide text-stone-500">{title}</p>
                 </div>
                 {canManage && archiveAction && hasRelationshipId(item) ? (
-                  <form action={archiveAction}>
-                    <input type="hidden" name="person_id" value={currentPersonId} />
-                    <input type="hidden" name="relationship_id" value={item.relationship_id} />
-                    <Button type="submit" size="sm" variant="outline" className="text-xs">
-                      Arsipkan Relasi
-                    </Button>
-                  </form>
+                  <RelationshipActionsMenu
+                    currentPersonId={currentPersonId}
+                    relatedPersonId={item.person_id}
+                    relatedPersonName={item.full_name}
+                    relationshipId={item.relationship_id}
+                    relationshipTypeLabel={title}
+                    archiveAction={archiveAction}
+                  />
                 ) : null}
               </div>
             </li>
@@ -104,9 +106,9 @@ export function RelationshipSection({
                 ))}
               </select>
             </label>
-            <Button type="submit" className="w-full">
+            <FormSubmitButton type="submit" className="w-full" pendingLabel="Menyimpan relasi...">
               {submitLabel}
-            </Button>
+            </FormSubmitButton>
           </form>
         ) : (
           <p className="text-sm text-stone-500">Belum ada kandidat anggota lain untuk ditautkan.</p>

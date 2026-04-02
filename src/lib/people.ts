@@ -1,3 +1,5 @@
+import { formatTanggal } from "@/lib/format-tanggal";
+
 export type GenerationFilterValue = 1 | 2 | 3;
 
 type RelationshipRoleInput = {
@@ -6,12 +8,6 @@ type RelationshipRoleInput = {
   hasSpouse: boolean;
   childCount: number;
 };
-
-const birthDateFormatter = new Intl.DateTimeFormat("id-ID", {
-  day: "2-digit",
-  month: "short",
-  year: "numeric"
-});
 
 export function normalizeGenerationFilter(rawValue?: string): GenerationFilterValue | null {
   if (!rawValue) {
@@ -27,16 +23,7 @@ export function normalizeGenerationFilter(rawValue?: string): GenerationFilterVa
 }
 
 export function formatBirthDate(value: string | null) {
-  if (!value) {
-    return null;
-  }
-
-  const date = new Date(`${value}T00:00:00.000Z`);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return birthDateFormatter.format(date);
+  return formatTanggal(value);
 }
 
 export function deriveRelationshipLabel({

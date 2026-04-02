@@ -1,6 +1,6 @@
 import type { StoryCandidateMember } from "@/server/queries/stories";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
 
 type StoryFormProps = {
   action: (formData: FormData) => Promise<void>;
@@ -80,9 +80,9 @@ export function StoryForm({ action, submitLabel, members, storyId, initialValues
           </p>
         </div>
 
-        <Button type="submit" className="w-full">
+        <FormSubmitButton type="submit" className="w-full" pendingLabel="Menyimpan...">
           {submitLabel}
-        </Button>
+        </FormSubmitButton>
       </form>
     </Card>
   );

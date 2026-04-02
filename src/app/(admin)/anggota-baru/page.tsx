@@ -6,6 +6,7 @@ import { requireEditor } from "@/lib/permissions/guards";
 import { createMemberAction } from "@/server/actions/members";
 import { SectionHeader } from "@/components/ui/section-header";
 import { StatusBanner } from "@/components/ui/status-banner";
+import { StatusToast } from "@/components/ui/status-toast";
 
 type NewMemberPageProps = {
   searchParams: Promise<{ error?: string }>;
@@ -37,7 +38,10 @@ export default async function NewMemberPage({ searchParams }: NewMemberPageProps
       />
 
       {errorMessage ? (
-        <StatusBanner variant="error" message={errorMessage} />
+        <>
+          <StatusToast variant="error" message={errorMessage} />
+          <StatusBanner variant="error" message={errorMessage} />
+        </>
       ) : null}
 
       <Card className="space-y-3 rounded-[2rem] border-stone-100 p-5 sm:p-6">

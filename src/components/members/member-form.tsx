@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
 
 type MemberFormProps = {
   action: (formData: FormData) => Promise<void>;
@@ -116,9 +116,9 @@ export function MemberForm({ action, submitLabel, personId, initialValues }: Mem
           </p>
         </div>
 
-        <Button type="submit" className="w-full">
+        <FormSubmitButton type="submit" className="w-full" pendingLabel="Menyimpan...">
           {submitLabel}
-        </Button>
+        </FormSubmitButton>
       </form>
     </Card>
   );

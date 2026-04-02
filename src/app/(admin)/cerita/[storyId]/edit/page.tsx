@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { StoryForm } from "@/components/stories/story-form";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { StatusBanner } from "@/components/ui/status-banner";
+import { StatusToast } from "@/components/ui/status-toast";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
 import { requireEditor } from "@/lib/permissions/guards";
 import { archiveStoryAction, updateStoryAction } from "@/server/actions/stories";
 import { getStoryById, listStoryMemberCandidates } from "@/server/queries/stories";
@@ -57,11 +58,17 @@ export default async function EditStoryPage({ params, searchParams }: EditStoryP
       />
 
       {errorMessage ? (
-        <StatusBanner variant="error" message={errorMessage} />
+        <>
+          <StatusToast variant="error" message={errorMessage} />
+          <StatusBanner variant="error" message={errorMessage} />
+        </>
       ) : null}
 
       {statusMessage ? (
-        <StatusBanner variant="success" message={statusMessage} />
+        <>
+          <StatusToast variant="success" message={statusMessage} />
+          <StatusBanner variant="success" message={statusMessage} />
+        </>
       ) : null}
 
       <StoryForm
@@ -87,9 +94,14 @@ export default async function EditStoryPage({ params, searchParams }: EditStoryP
             </p>
             <form action={archiveStoryAction}>
               <input type="hidden" name="story_id" value={story.id} />
-              <Button type="submit" variant="secondary" className="w-full bg-amber-100 text-amber-900 hover:bg-amber-200">
+              <FormSubmitButton
+                type="submit"
+                variant="secondary"
+                className="w-full bg-amber-100 text-amber-900 hover:bg-amber-200"
+                pendingLabel="Mengarsipkan..."
+              >
                 Arsipkan Cerita
-              </Button>
+              </FormSubmitButton>
             </form>
           </div>
         </Card>

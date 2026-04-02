@@ -3,9 +3,10 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { loginWithPasswordAction, requestMagicLink } from "./actions";
 import { getDevDummyLoginContext } from "@/server/dev-auth/config";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StatusBanner } from "@/components/ui/status-banner";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
+import { StatusToast } from "@/components/ui/status-toast";
 
 type LoginPageProps = {
   searchParams: Promise<{
@@ -67,13 +68,24 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </header>
 
         {hasSentLink ? (
-          <StatusBanner
-            variant="success"
-            message="Link login cadangan sudah dikirim. Silakan cek email Anda."
-          />
+          <>
+            <StatusToast
+              variant="success"
+              message="Link login cadangan sudah dikirim. Silakan cek email Anda."
+            />
+            <StatusBanner
+              variant="success"
+              message="Link login cadangan sudah dikirim. Silakan cek email Anda."
+            />
+          </>
         ) : null}
 
-        {errorMessage ? <StatusBanner variant="error" message={errorMessage} /> : null}
+        {errorMessage ? (
+          <>
+            <StatusToast variant="error" message={errorMessage} />
+            <StatusBanner variant="error" message={errorMessage} />
+          </>
+        ) : null}
 
         <form action={loginWithPasswordAction} className="space-y-4 text-left">
           <input type="hidden" name="next" value={nextPath} />
@@ -103,9 +115,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             />
           </label>
 
-          <Button type="submit" className="w-full">
+          <FormSubmitButton type="submit" className="w-full" pendingLabel="Masuk...">
             Masuk ke Akun
-          </Button>
+          </FormSubmitButton>
         </form>
 
         <p className="text-sm leading-relaxed text-stone-500">
@@ -133,9 +145,14 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                   className="w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-base text-stone-900 outline-none ring-amber-200 placeholder:text-stone-400 focus:border-amber-400 focus:ring-2"
                 />
               </label>
-              <Button type="submit" variant="outline" className="w-full">
+              <FormSubmitButton
+                type="submit"
+                variant="outline"
+                className="w-full"
+                pendingLabel="Mengirim link..."
+              >
                 Kirim Link Login Cadangan
-              </Button>
+              </FormSubmitButton>
             </form>
           </div>
         </details>

@@ -3,6 +3,7 @@ import { StoryForm } from "@/components/stories/story-form";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SectionHeader } from "@/components/ui/section-header";
 import { StatusBanner } from "@/components/ui/status-banner";
+import { StatusToast } from "@/components/ui/status-toast";
 import { requireEditor } from "@/lib/permissions/guards";
 import { createStoryAction } from "@/server/actions/stories";
 import { listStoryMemberCandidates } from "@/server/queries/stories";
@@ -42,7 +43,10 @@ export default async function NewStoryPage({ searchParams }: NewStoryPageProps) 
       />
 
       {errorMessage ? (
-        <StatusBanner variant="error" message={errorMessage} />
+        <>
+          <StatusToast variant="error" message={errorMessage} />
+          <StatusBanner variant="error" message={errorMessage} />
+        </>
       ) : null}
 
       {candidates.length === 0 ? (

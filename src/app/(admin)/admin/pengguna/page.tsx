@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SectionHeader } from "@/components/ui/section-header";
 import { StatusBanner } from "@/components/ui/status-banner";
+import { StatusToast } from "@/components/ui/status-toast";
 import { UserManagementPanel } from "@/components/admin/user-management-panel";
 import { requireAdmin } from "@/lib/permissions/guards";
 import { listManagedUsers } from "@/server/queries/admin-users";
@@ -53,8 +54,18 @@ export default async function AdminUsersPage({ searchParams }: AdminUsersPagePro
         description="Buat akun, atur role, ubah kata sandi, dan kelola status akses pengguna keluarga."
       />
 
-      {errorMessage ? <StatusBanner variant="error" message={errorMessage} /> : null}
-      {statusMessage ? <StatusBanner variant="success" message={statusMessage} /> : null}
+      {errorMessage ? (
+        <>
+          <StatusToast variant="error" message={errorMessage} />
+          <StatusBanner variant="error" message={errorMessage} />
+        </>
+      ) : null}
+      {statusMessage ? (
+        <>
+          <StatusToast variant="success" message={statusMessage} />
+          <StatusBanner variant="success" message={statusMessage} />
+        </>
+      ) : null}
 
       <UserManagementPanel users={users} />
     </section>

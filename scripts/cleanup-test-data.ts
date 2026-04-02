@@ -195,7 +195,26 @@ async function main() {
     throw new Error(`Gagal mengarsipkan fixture people: ${peopleArchiveError.message}`);
   }
 
-  console.log("[done] fixture people diarsipkan + foto storage terkait dihapus.");
+  const nowIso = new Date().toISOString();
+  const { error: relFromArchiveError } = await supabase
+    .from("relationships")
+    .update({ is_archived: true, updated_at: nowIso })
+    .in("from_person_id", personIds);
+  if (relFromArchiveError) {
+    throw new Error(
+      `Gagal mengarsipkan relationships (from_person_id): ${relFromArchiveError.message}`
+    );
+  }
+
+  const { error: relToArchiveError } = await supabase
+    .from("relationships")
+    .update({ is_archived: true, updated_at: nowIso })
+    .in("to_person_id", personIds);
+  if (relToArchiveError) {
+    throw new Error(`Gagal mengarsipkan relationships (to_person_id): ${relToArchiveError.message}`);
+  }
+
+  console.log("[done] fixture people + relationships diarsipkan, foto storage terkait dihapus.");
 }
 
 main().catch((error) => {

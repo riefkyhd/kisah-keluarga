@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { formatTanggal } from "@/lib/format-tanggal";
 import type { StoryListItem } from "@/server/queries/stories";
 
 type StoryCardProps = {
@@ -25,6 +26,7 @@ export function StoryCard({
   variant = "default"
 }: StoryCardProps) {
   const eventYear = story.event_date ? String(new Date(story.event_date).getFullYear()) : "Momen";
+  const eventDateLabel = formatTanggal(story.event_date);
   const actionClass =
     "inline-flex min-h-10 items-center rounded-xl px-4 py-2 text-sm font-semibold transition-colors sm:text-base";
 
@@ -46,7 +48,7 @@ export function StoryCard({
             </Link>
           </h3>
           <p className="text-sm leading-relaxed text-stone-600">
-            {story.event_date ? `Tanggal kejadian: ${story.event_date}` : "Tanggal kejadian belum diisi"}
+            {eventDateLabel ? `Tanggal kejadian: ${eventDateLabel}` : "Tanggal kejadian belum diisi"}
           </p>
           {showPerson ? (
             <p className="text-sm leading-relaxed text-stone-600">

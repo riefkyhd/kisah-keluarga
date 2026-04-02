@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, type ChangeEvent } from "react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
 
 type MemberPhotoManagerProps = {
   personId: string;
@@ -77,17 +77,17 @@ export function MemberPhotoManager({
             {uploadError ? (
               <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{uploadError}</p>
             ) : null}
-            <Button type="submit" className="w-full">
+            <FormSubmitButton type="submit" className="w-full" pendingLabel="Memproses foto...">
               {hasPhoto ? "Ganti Foto" : "Unggah Foto"}
-            </Button>
+            </FormSubmitButton>
           </form>
 
           {hasPhoto ? (
             <form action={removeAction}>
               <input type="hidden" name="person_id" value={personId} />
-              <Button type="submit" variant="danger" className="w-full">
+              <FormSubmitButton type="submit" variant="danger" className="w-full" pendingLabel="Menghapus foto...">
                 Hapus Foto
-              </Button>
+              </FormSubmitButton>
             </form>
           ) : null}
         </div>

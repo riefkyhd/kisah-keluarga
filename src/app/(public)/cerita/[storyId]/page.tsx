@@ -3,9 +3,11 @@ import { notFound } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { StatusBanner } from "@/components/ui/status-banner";
+import { StatusToast } from "@/components/ui/status-toast";
 import { getCurrentUserRole, requireViewer } from "@/lib/permissions/guards";
 import { hasMinimumRole } from "@/lib/auth/roles";
 import { getStoryById } from "@/server/queries/stories";
+import { formatTanggal } from "@/lib/format-tanggal";
 
 type StoryDetailPageProps = {
   params: Promise<{ storyId: string }>;
@@ -32,6 +34,7 @@ export default async function StoryDetailPage({ params, searchParams }: StoryDet
   const query = await searchParams;
   const statusMessage = query.status ? statusMessages[query.status] : "";
   const eventYear = story.event_date ? String(new Date(story.event_date).getFullYear()) : "Momen";
+  const eventDateLabel = formatTanggal(story.event_date);
 
   return (
     <section className="space-y-6">
@@ -53,7 +56,10 @@ export default async function StoryDetailPage({ params, searchParams }: StoryDet
       </div>
 
       {statusMessage ? (
-        <StatusBanner variant="success" message={statusMessage} />
+        <>
+          <StatusToast variant="success" message={statusMessage} />
+          <StatusBanner variant="success" message={statusMessage} />
+        </>
       ) : null}
 
       <Card className="space-y-5 rounded-[2rem] border-stone-100 p-6 sm:p-8">
@@ -70,7 +76,7 @@ export default async function StoryDetailPage({ params, searchParams }: StoryDet
         </div>
         <SectionHeader
           title={story.title}
-          description={story.event_date ? `Tanggal kejadian: ${story.event_date}` : "Tanggal kejadian belum diisi"}
+          description={eventDateLabel ? `Tanggal kejadian: ${eventDateLabel}` : "Tanggal kejadian belum diisi"}
           eyebrow="Cerita Keluarga"
         />
 

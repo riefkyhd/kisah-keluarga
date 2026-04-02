@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { StatusBanner } from "@/components/ui/status-banner";
+import { StatusToast } from "@/components/ui/status-toast";
 import { getMemberById } from "@/server/queries/members";
 import { MemberAvatar } from "@/components/members/member-avatar";
 import { MemberPhotoManager } from "@/components/members/member-photo-manager";
@@ -21,8 +22,12 @@ import {
   removeMemberPhotoAction,
   uploadOrReplaceMemberPhotoAction
 } from "@/server/actions/member-photos";
-import { getProfileRelationships, listRelationshipCandidates } from "@/server/queries/relationships";
+import {
+  getProfileRelationships,
+  listRelationshipCandidatesByType
+} from "@/server/queries/relationships";
 import { listStoriesByPersonId } from "@/server/queries/stories";
+import { formatTanggal } from "@/lib/format-tanggal";
 
 type MemberProfilePageProps = {
   params: Promise<{ personId: string }>;
@@ -31,6 +36,8 @@ type MemberProfilePageProps = {
     relationship_status?: string;
     photo_error?: string;
     photo_status?: string;
+    created?: string;
+    updated?: string;
   }>;
 };
 
@@ -69,6 +76,11 @@ const photoStatusMessages: Record<string, string> = {
   removed: "Foto profil berhasil dihapus."
 };
 
+const memberStatusMessages: Record<string, string> = {
+  created: "Anggota berhasil disimpan.",
+  updated: "Perubahan berhasil disimpan."
+};
+
 export default async function MemberProfilePage({ params, searchParams }: MemberProfilePageProps) {
   const { personId } = await params;
 
@@ -82,7 +94,9 @@ export default async function MemberProfilePage({ params, searchParams }: Member
   }
 
   const relationshipData = await getProfileRelationships(personId, canManageMember);
-  const relationshipCandidates = canManageMember ? await listRelationshipCandidates(personId) : [];
+  const relationshipCandidates = canManageMember
+    ? await listRelationshipCandidatesByType(personId)
+    : { parent: [], spouse: [], child: [] };
   const relatedStories = await listStoriesByPersonId(personId, false);
   const query = await searchParams;
   const relationshipErrorMessage = query.relationship_error
@@ -93,6 +107,13 @@ export default async function MemberProfilePage({ params, searchParams }: Member
     : "";
   const photoErrorMessage = query.photo_error ? photoErrorMessages[query.photo_error] : "";
   const photoStatusMessage = query.photo_status ? photoStatusMessages[query.photo_status] : "";
+  const memberStatusMessage = query.created
+    ? memberStatusMessages.created
+    : query.updated
+      ? memberStatusMessages.updated
+      : "";
+  const birthDateLabel = formatTanggal(member.birth_date);
+  const deathDateLabel = formatTanggal(member.death_date);
 
   return (
     <section className="space-y-6">
@@ -134,7 +155,7 @@ export default async function MemberProfilePage({ params, searchParams }: Member
           </Card>
           <Card className="rounded-2xl border-stone-100 bg-stone-50 p-4 shadow-none">
             <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">Tanggal Lahir</p>
-            <p className="mt-1 text-base font-semibold text-stone-900">{member.birth_date ?? "Belum diisi"}</p>
+            <p className="mt-1 text-base font-semibold text-stone-900">{birthDateLabel ?? "Belum diisi"}</p>
           </Card>
         </div>
       </Card>
@@ -146,7 +167,7 @@ export default async function MemberProfilePage({ params, searchParams }: Member
           description="Data dasar anggota keluarga ini disimpan agar mudah dipahami lintas generasi."
           className="pb-1"
         />
-        {member.death_date ? <p>Tanggal wafat: {member.death_date}</p> : null}
+        {deathDateLabel ? <p>Tanggal wafat: {deathDateLabel}</p> : null}
         {member.gender ? (
           <p>
             Jenis kelamin:{" "}
@@ -156,20 +177,39 @@ export default async function MemberProfilePage({ params, searchParams }: Member
         {member.bio ? <p>Catatan: {member.bio}</p> : <p>Catatan: Belum ada catatan keluarga tambahan.</p>}
       </Card>
 
+      {memberStatusMessage ? (
+        <>
+          <StatusToast variant="success" message={memberStatusMessage} />
+          <StatusBanner variant="success" message={memberStatusMessage} />
+        </>
+      ) : null}
+
       {relationshipErrorMessage ? (
-        <StatusBanner variant="error" message={relationshipErrorMessage} />
+        <>
+          <StatusToast variant="error" message={relationshipErrorMessage} />
+          <StatusBanner variant="error" message={relationshipErrorMessage} />
+        </>
       ) : null}
 
       {relationshipStatusMessage ? (
-        <StatusBanner variant="success" message={relationshipStatusMessage} />
+        <>
+          <StatusToast variant="success" message={relationshipStatusMessage} />
+          <StatusBanner variant="success" message={relationshipStatusMessage} />
+        </>
       ) : null}
 
       {photoErrorMessage ? (
-        <StatusBanner variant="error" message={photoErrorMessage} />
+        <>
+          <StatusToast variant="error" message={photoErrorMessage} />
+          <StatusBanner variant="error" message={photoErrorMessage} />
+        </>
       ) : null}
 
       {photoStatusMessage ? (
-        <StatusBanner variant="success" message={photoStatusMessage} />
+        <>
+          <StatusToast variant="success" message={photoStatusMessage} />
+          <StatusBanner variant="success" message={photoStatusMessage} />
+        </>
       ) : null}
 
       <MemberPhotoManager
@@ -188,7 +228,7 @@ export default async function MemberProfilePage({ params, searchParams }: Member
         currentPersonId={member.id}
         items={relationshipData.parents}
         canManage={canManageMember}
-        candidates={relationshipCandidates}
+        candidates={relationshipCandidates.parent}
         addLabel="Tambah orang tua"
         submitLabel="Tambah Orang Tua"
         addAction={addParentRelationshipAction}
@@ -203,7 +243,7 @@ export default async function MemberProfilePage({ params, searchParams }: Member
         currentPersonId={member.id}
         items={relationshipData.spouse}
         canManage={canManageMember}
-        candidates={relationshipCandidates}
+        candidates={relationshipCandidates.spouse}
         addLabel="Tambah pasangan"
         submitLabel="Tambah Pasangan"
         showAddForm={relationshipData.spouse.length === 0}
@@ -224,7 +264,7 @@ export default async function MemberProfilePage({ params, searchParams }: Member
         currentPersonId={member.id}
         items={relationshipData.children}
         canManage={canManageMember}
-        candidates={relationshipCandidates}
+        candidates={relationshipCandidates.child}
         addLabel="Tambah anak"
         submitLabel="Tambah Anak"
         addAction={addChildRelationshipAction}

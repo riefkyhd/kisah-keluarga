@@ -1,6 +1,17 @@
 import { APP_ROLES } from "@/lib/auth/roles";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
 import type { ManagedUserItem } from "@/server/queries/admin-users";
 import {
   createManagedUserAction,
@@ -90,9 +101,9 @@ export function UserManagementPanel({ users }: UserManagementPanelProps) {
             </select>
           </label>
 
-          <Button type="submit" className="w-full">
+          <FormSubmitButton type="submit" className="w-full" pendingLabel="Membuat akun...">
             Buat Akun
-          </Button>
+          </FormSubmitButton>
         </form>
       </Card>
 
@@ -140,9 +151,14 @@ export function UserManagementPanel({ users }: UserManagementPanelProps) {
                         ))}
                       </select>
                     </label>
-                    <Button type="submit" variant="outline" className="w-full">
+                    <FormSubmitButton
+                      type="submit"
+                      variant="outline"
+                      className="w-full"
+                      pendingLabel="Menyimpan role..."
+                    >
                       Simpan Role
-                    </Button>
+                    </FormSubmitButton>
                   </form>
 
                   <form action={resetManagedUserPasswordAction} className="space-y-2 rounded-xl border border-stone-200 bg-stone-50 p-3">
@@ -159,22 +175,61 @@ export function UserManagementPanel({ users }: UserManagementPanelProps) {
                         className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-900 outline-none ring-amber-200 placeholder:text-stone-400 focus:border-amber-400 focus:ring-2"
                       />
                     </label>
-                    <Button type="submit" variant="outline" className="w-full">
+                    <FormSubmitButton
+                      type="submit"
+                      variant="outline"
+                      className="w-full"
+                      pendingLabel="Menyimpan kata sandi..."
+                    >
                       Simpan Kata Sandi
-                    </Button>
+                    </FormSubmitButton>
                   </form>
 
-                  <form action={updateManagedUserStateAction}>
-                    <input type="hidden" name="user_id" value={managedUser.id} />
-                    <input type="hidden" name="state" value={managedUser.is_deactivated ? "reactivate" : "deactivate"} />
-                    <Button
-                      type="submit"
-                      variant={managedUser.is_deactivated ? "secondary" : "danger"}
-                      className="w-full"
-                    >
-                      {managedUser.is_deactivated ? "Aktifkan Kembali" : "Nonaktifkan Akun"}
-                    </Button>
-                  </form>
+                  {managedUser.is_deactivated ? (
+                    <form action={updateManagedUserStateAction}>
+                      <input type="hidden" name="user_id" value={managedUser.id} />
+                      <input type="hidden" name="state" value="reactivate" />
+                      <FormSubmitButton
+                        type="submit"
+                        variant="secondary"
+                        className="w-full"
+                        pendingLabel="Mengaktifkan akun..."
+                      >
+                        Aktifkan Kembali
+                      </FormSubmitButton>
+                    </form>
+                  ) : (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button type="button" variant="danger" className="w-full">
+                          Nonaktifkan Akun
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Nonaktifkan akun ini?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Nonaktifkan akun {managedUser.email}? Pengguna tidak dapat login sampai akun diaktifkan
+                            kembali oleh admin.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <form action={updateManagedUserStateAction}>
+                          <input type="hidden" name="user_id" value={managedUser.id} />
+                          <input type="hidden" name="state" value="deactivate" />
+                          <AlertDialogFooter>
+                            <AlertDialogCancel asChild>
+                              <Button type="button" variant="outline">
+                                Batalkan
+                              </Button>
+                            </AlertDialogCancel>
+                            <FormSubmitButton type="submit" variant="danger" pendingLabel="Menonaktifkan...">
+                              Ya, Nonaktifkan
+                            </FormSubmitButton>
+                          </AlertDialogFooter>
+                        </form>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
                 </Card>
               </li>
             ))}

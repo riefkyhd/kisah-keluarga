@@ -8,6 +8,18 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { StatusBanner } from "@/components/ui/status-banner";
+import { StatusToast } from "@/components/ui/status-toast";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
 
 type EditMemberPageProps = {
   params: Promise<{ personId: string }>;
@@ -55,11 +67,17 @@ export default async function EditMemberPage({ params, searchParams }: EditMembe
       />
 
       {errorMessage ? (
-        <StatusBanner variant="error" message={errorMessage} />
+        <>
+          <StatusToast variant="error" message={errorMessage} />
+          <StatusBanner variant="error" message={errorMessage} />
+        </>
       ) : null}
 
       {statusMessage ? (
-        <StatusBanner variant="success" message={statusMessage} />
+        <>
+          <StatusToast variant="success" message={statusMessage} />
+          <StatusBanner variant="success" message={statusMessage} />
+        </>
       ) : null}
 
       <MemberForm
@@ -81,20 +99,49 @@ export default async function EditMemberPage({ params, searchParams }: EditMembe
               <p className="text-sm leading-relaxed text-stone-700">
                 Anggota ini sedang diarsipkan. Pulihkan jika ingin menampilkannya kembali di direktori aktif.
               </p>
-              <Button type="submit" className="w-full bg-emerald-600 text-white hover:bg-emerald-700">
+              <FormSubmitButton
+                type="submit"
+                className="w-full bg-emerald-600 text-white hover:bg-emerald-700"
+                pendingLabel="Memulihkan..."
+              >
                 Pulihkan Anggota
-              </Button>
+              </FormSubmitButton>
             </form>
           ) : (
-            <form action={archiveMemberAction} className="space-y-3">
-              <input type="hidden" name="person_id" value={personId} />
+            <div className="space-y-3">
               <p className="text-sm leading-relaxed text-stone-700">
                 Arsipkan anggota jika datanya tetap ingin disimpan tetapi tidak ditampilkan di daftar utama.
               </p>
-              <Button type="submit" className="w-full bg-amber-700 text-white hover:bg-amber-800">
-                Arsipkan Anggota
-              </Button>
-            </form>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button type="button" className="w-full bg-amber-700 text-white hover:bg-amber-800">
+                    Arsipkan Anggota
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Arsipkan {member.full_name}?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Anggota akan disembunyikan dari direktori. Data tetap tersimpan dan dapat dipulihkan kapan
+                      saja.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <form action={archiveMemberAction}>
+                    <input type="hidden" name="person_id" value={personId} />
+                    <AlertDialogFooter>
+                      <AlertDialogCancel asChild>
+                        <Button type="button" variant="outline">
+                          Batalkan
+                        </Button>
+                      </AlertDialogCancel>
+                      <FormSubmitButton type="submit" variant="danger" pendingLabel="Mengarsipkan...">
+                        Ya, Arsipkan
+                      </FormSubmitButton>
+                    </AlertDialogFooter>
+                  </form>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           )}
         </div>
       </Card>

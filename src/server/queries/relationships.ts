@@ -61,6 +61,16 @@ export type RelationshipCandidate = {
   full_name: string;
 };
 
+export type RelationshipCandidatesByType = {
+  parent: RelationshipCandidate[];
+  spouse: RelationshipCandidate[];
+  child: RelationshipCandidate[];
+};
+
+function toSupabaseInList(ids: string[]) {
+  return `(${ids.join(",")})`;
+}
+
 function mapPeopleById(rows: PersonRow[]) {
   return new Map(rows.map((row) => [row.id, row]));
 }
@@ -93,20 +103,80 @@ function normalizeSpousePair(firstId: string, secondId: string) {
     : { firstId: secondId, secondId: firstId };
 }
 
-export async function listRelationshipCandidates(personId: string) {
+export async function listRelationshipCandidates(personId: string, excludeIds: string[] = []) {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("people")
     .select("id, full_name")
     .eq("is_archived", false)
     .neq("id", personId)
     .order("full_name", { ascending: true });
 
-  if (error) {
+  if (excludeIds.length > 0) {
+    query = query.not("id", "in", toSupabaseInList(excludeIds));
+  }
+
+  const { data: peopleRows, error: peopleError } = await query;
+
+  if (peopleError) {
     throw new Error("Gagal memuat kandidat relasi.");
   }
 
-  return (data ?? []) as RelationshipCandidate[];
+  return (peopleRows ?? []) as RelationshipCandidate[];
+}
+
+export async function listRelationshipCandidatesByType(
+  personId: string
+): Promise<RelationshipCandidatesByType> {
+  const supabase = await createClient();
+  const { data: edgeRows, error: edgeError } = await supabase
+    .from("relationships")
+    .select("from_person_id, to_person_id, relationship_type")
+    .eq("is_archived", false)
+    .or(`from_person_id.eq.${personId},to_person_id.eq.${personId}`);
+
+  if (edgeError) {
+    throw new Error("Gagal memuat relasi aktif untuk kandidat.");
+  }
+
+  const activeEdges = (edgeRows ?? []) as RelationshipRow[];
+  const existingParentIds = Array.from(
+    new Set(
+      activeEdges
+        .filter((edge) => edge.relationship_type === "parent" && edge.to_person_id === personId)
+        .map((edge) => edge.from_person_id)
+    )
+  );
+  const existingChildIds = Array.from(
+    new Set(
+      activeEdges
+        .filter((edge) => edge.relationship_type === "parent" && edge.from_person_id === personId)
+        .map((edge) => edge.to_person_id)
+    )
+  );
+  const existingSpouseIds = Array.from(
+    new Set(
+      activeEdges
+        .filter((edge) => edge.relationship_type === "spouse")
+        .map((edge) => (edge.from_person_id === personId ? edge.to_person_id : edge.from_person_id))
+    )
+  );
+
+  const [parent, spouse, child] = await Promise.all([
+    listRelationshipCandidates(personId, existingParentIds),
+    listRelationshipCandidates(personId, existingSpouseIds),
+    listRelationshipCandidates(personId, existingChildIds)
+  ]);
+
+  if (parent.length === 0 && spouse.length === 0 && child.length === 0) {
+    return { parent: [], spouse: [], child: [] };
+  }
+
+  return {
+    parent,
+    spouse,
+    child
+  };
 }
 
 export async function getProfileRelationships(personId: string, includeArchivedPeople = false) {
