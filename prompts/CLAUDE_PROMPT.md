@@ -216,4 +216,70 @@ Use a custom Sugiyama-style layout computed in src/lib/tree-layout.ts:
 
 3. Searchable combobox for focus person selection:
    Replace current dropdown with a Combobox (shadcn Command) that
-   filters by typing — no loading all 17+ names
+   filters by typing — no loading all 17+ names.
+
+---
+
+# TASK-17: Cleanup & UX Fix
+
+## Context
+App: kisah-keluarga (Next.js + Supabase)
+Semua task sebelumnya (TASK-00 s/d TASK-11) sudah selesai.
+Login bypass aktif via ENABLE_AUTH_BYPASS=true untuk demo.
+
+## Scope
+
+### FIX-1: Bersihkan test data dari DB
+- Identifikasi semua anggota dengan nama mengandung prefix `[TEST]` atau pattern
+  `Photo Flow`, `Photo Invalid`, `Photo Viewer`, `Photo Large` di tabel `people`
+- Buat script: `scripts/cleanup-test-data.ts`
+  - Query semua people dengan nama matching pattern di atas
+  - Soft-delete (set archived=true) atau hard-delete dengan konfirmasi
+  - Hapus juga foto terkait dari Supabase Storage bucket `member-photos`
+- Script harus dry-run by default, tambah flag `--confirm` untuk eksekusi nyata
+- Tambahkan ke package.json: `"cleanup:test-data": "npx ts-node scripts/cleanup-test-data.ts"`
+
+### FIX-2: Naikkan TTL signed URL foto profil
+- File: semua tempat yang memanggil Supabase storage `createSignedUrl`
+- Ubah expiry dari 1800 detik menjadi 3600 (1 jam) minimum
+- Pertimbangkan apakah bucket member-photos perlu tetap private atau bisa public
+  (foto profil keluarga biasanya ok public jika app sudah auth-gated di level route)
+- Jika dijadikan public: hapus signed URL, pakai getPublicUrl, lebih simpel dan tidak expire
+
+### FIX-3: Hapus duplikasi CTA di halaman profil anggota
+- File: `src/app/keluarga/[personId]/page.tsx` (atau nama file yang relevan)
+- Hapus tombol "Edit / Arsipkan Anggota" di bagian BAWAH halaman (footer CTA area)
+- Pertahankan tombol "Edit Profil" di bagian ATAS (header area)
+- Hapus juga "Lihat timeline keluarga" dari footer CTA jika sudah ada di navbar
+
+### FIX-4: Sederhanakan beranda
+- File: `src/app/page.tsx`
+- Hapus duplikasi "Buka Direktori Keluarga" (sudah ada "Anggota" di card atas)
+- Gabungkan section "Cerita Keluarga" dan "Mulai dari alur paling sederhana" jadi satu
+- Hasil akhir beranda: maksimal 3 CTA utama (Anggota, Pohon, Cerita) + 1 CTA secondary
+  untuk editor/admin (Tambah Anggota) yang hanya muncul jika role >= editor
+
+### FIX-5: Sembunyikan CTA editor/admin dari viewer di beranda
+- Tombol "Tambah Anggota (Editor/Admin)" di `/` tidak boleh tampil untuk viewer/publik
+- Gunakan server component untuk cek role, render kondisional
+- Berlaku juga untuk link "Tambah Cerita" di `/timeline`
+
+### FIX-6: Bersihkan menu Admin
+- File: `src/app/admin/page.tsx`
+- Hapus card "Buka Direktori" dari halaman `/admin` (ini route publik, tidak perlu di admin)
+- Hasil akhir: 3 card saja — Kelola Pengguna, Tambah Anggota, Tambah Cerita
+
+## Acceptance Criteria
+- [ ] `npm run cleanup:test-data -- --confirm` berhasil hapus semua test member dari DB
+- [ ] Foto profil tidak broken setelah 30 menit (signed URL TTL >= 1 jam, atau public URL)
+- [ ] Halaman profil anggota tidak punya dua tombol edit yang menuju URL sama
+- [ ] Beranda tidak punya dua tombol yang menuju `/keluarga`
+- [ ] User dengan role viewer tidak melihat tombol "Tambah Anggota" di beranda
+- [ ] Halaman `/admin` tidak punya shortcut ke `/keluarga`
+- [ ] `npm run lint` lulus tanpa error baru
+
+## Out of scope
+- Perubahan skema DB
+- Fitur baru
+- Pohon keluarga
+- Auth system
