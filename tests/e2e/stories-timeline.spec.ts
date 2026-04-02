@@ -88,6 +88,7 @@ test("cerita terkait tampil di profil anggota dan viewer tetap read-only", async
   await expect(page.getByRole("heading", { name: "Daftar Anggota" })).toBeVisible();
 
   await page.goto("/pohon");
+  await expect(page).toHaveURL(/\/(?:\?.*)?$/);
   await expect(page.getByTestId("tree-page-heading")).toBeVisible();
 });
 

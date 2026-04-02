@@ -24,6 +24,8 @@ type FamilyTreeProps = {
   }>;
   spouse: RelationshipListItem[];
   childMembers: RelationshipListItem[];
+  onNodeClick?: (personId: string) => void;
+  canvasHeightClassName?: string;
 };
 
 function getInitials(fullName: string) {
@@ -86,7 +88,9 @@ export function FamilyTree({
   grandparentParentLinks,
   parentSpouseLinks,
   spouse,
-  childMembers
+  childMembers,
+  onNodeClick,
+  canvasHeightClassName
 }: FamilyTreeProps) {
   const router = useRouter();
   const layout = useMemo(
@@ -153,17 +157,17 @@ export function FamilyTree({
   return (
     <section
       data-testid="family-tree-visual"
-      className="space-y-3 rounded-[2rem] border border-stone-200 bg-white p-4 shadow-sm sm:p-5"
+      className="space-y-4 rounded-[var(--kk-radius-xl)] border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] p-4 shadow-[var(--kk-shadow-card)] sm:p-5"
     >
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-stone-600">
+        <p className="text-sm font-normal text-[color:var(--kk-muted)]">
           Geser untuk pindah area pohon, cubit atau scroll untuk zoom, lalu ketuk node untuk membuka profil.
         </p>
         <div className="flex shrink-0 items-center gap-2">
           <button
             type="button"
             onClick={() => setScale((current) => clampScale(current + 0.15))}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 bg-stone-50 text-base font-semibold text-stone-700"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] text-base font-medium text-[color:var(--color-bark)] hover:bg-[color:#e7dfd3]"
             aria-label="Perbesar pohon"
           >
             +
@@ -171,7 +175,7 @@ export function FamilyTree({
           <button
             type="button"
             onClick={() => setScale((current) => clampScale(current - 0.15))}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 bg-stone-50 text-base font-semibold text-stone-700"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] text-base font-medium text-[color:var(--color-bark)] hover:bg-[color:#e7dfd3]"
             aria-label="Perkecil pohon"
           >
             -
@@ -182,17 +186,17 @@ export function FamilyTree({
               setScale(1);
               setPan({ x: 0, y: 0 });
             }}
-            className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-medium text-stone-700"
+            className="rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-3 py-2 text-xs font-medium text-[color:var(--color-bark)] hover:bg-[color:#e7dfd3]"
           >
             Reset View
           </button>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-[color:var(--color-cream)]/70">
+      <div className="overflow-hidden rounded-[var(--kk-radius-lg)] border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--color-cream)]/70">
         <svg
           viewBox={`0 0 ${layout.width} ${layout.height}`}
-          className="h-[520px] w-full touch-none"
+          className={`w-full touch-none ${canvasHeightClassName ?? "h-[520px]"}`}
           onWheel={(event) => {
             event.preventDefault();
             const zoomDelta = event.deltaY > 0 ? -0.08 : 0.08;
@@ -341,7 +345,14 @@ export function FamilyTree({
                 <g
                   key={node.id}
                   data-testid={testId}
-                  onClick={() => router.push(`/keluarga/${node.id}`)}
+                  onClick={() => {
+                    if (onNodeClick) {
+                      onNodeClick(node.id);
+                      return;
+                    }
+
+                    router.push(`/keluarga/${node.id}`);
+                  }}
                   className="cursor-pointer"
                 >
                   <title>{node.fullName}</title>

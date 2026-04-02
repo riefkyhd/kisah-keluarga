@@ -8,7 +8,7 @@ test("viewer bisa membuka halaman pohon keluarga", async ({ page }) => {
 
   await loginAsRole(page, "viewer", `/pohon?personId=${focus.id}`);
 
-  await expect(page).toHaveURL(/\/pohon\?personId=/);
+  await expect(page).toHaveURL(/\/\?personId=/);
   await expect(page.getByTestId("tree-page-heading")).toBeVisible();
   await expect(page.getByTestId("tree-root-node")).toContainText(focus.full_name);
   await expect(page.getByTestId("family-tree-visual")).toBeVisible();
@@ -50,7 +50,7 @@ test("tree menampilkan parent-child dan spouse, archived member tidak tampil, da
     createdByUserId: editor.id
   });
 
-  await loginAsRole(page, "viewer", `/pohon?personId=${focus.id}`);
+  await loginAsRole(page, "viewer", `/?personId=${focus.id}`);
 
   await expect(page.getByTestId("tree-parent-node").filter({ hasText: parent.full_name })).toHaveCount(1);
   await expect(page.getByTestId("tree-spouse-node").filter({ hasText: spouse.full_name })).toHaveCount(1);
@@ -67,11 +67,13 @@ test("tree menampilkan parent-child dan spouse, archived member tidak tampil, da
 
 test("editor tetap bisa mengakses route pohon dengan aman", async ({ page }) => {
   await loginAsRole(page, "editor", "/pohon");
+  await expect(page).toHaveURL(/\/(?:\?.*)?$/);
   await expect(page.getByTestId("tree-page-heading")).toBeVisible();
   await expect(page.getByRole("link", { name: "Buka Direktori Keluarga" })).toBeVisible();
 });
 
 test("admin tetap bisa mengakses route pohon dengan aman", async ({ page }) => {
   await loginAsRole(page, "admin", "/pohon");
+  await expect(page).toHaveURL(/\/(?:\?.*)?$/);
   await expect(page.getByTestId("tree-page-heading")).toBeVisible();
 });

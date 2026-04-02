@@ -41,16 +41,16 @@ export function FocusPersonCombobox({
 
     const params = new URLSearchParams(searchParams.toString());
     params.set("personId", selectedPerson.id);
-    router.push(`/pohon?${params.toString()}`);
+    router.push(`/?${params.toString()}`);
     setOpen(false);
   };
 
   return (
     <div className="space-y-4">
-      <label className="block text-base font-semibold text-stone-900">
+      <label className="block text-base font-medium text-[color:var(--color-bark)]">
         Fokus anggota
       </label>
-      <p className="text-sm leading-relaxed text-stone-600">
+      <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
         Cari nama anggota untuk memusatkan tampilan pohon keluarga.
       </p>
 
@@ -58,25 +58,25 @@ export function FocusPersonCombobox({
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
-          className="flex min-h-12 w-full items-center justify-between rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-left text-base text-stone-900"
+          className="flex min-h-12 w-full items-center justify-between rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-4 py-3 text-left text-base text-[color:var(--color-bark)]"
           aria-expanded={open}
           aria-controls="tree-focus-combobox-list"
         >
           <span>{selectedPerson?.full_name ?? "Pilih anggota"}</span>
-          <ChevronDown className="h-4 w-4 text-stone-500" />
+          <ChevronDown className="h-4 w-4 text-[color:var(--color-clay)]" />
         </button>
 
         {open ? (
           <div
             id="tree-focus-combobox-list"
-            className="space-y-2 rounded-2xl border border-stone-200 bg-white p-3 shadow-sm"
+            className="space-y-2 rounded-[var(--kk-radius-md)] border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] p-3 shadow-[var(--kk-shadow-card)]"
           >
             <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--kk-muted)]" />
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                className="w-full rounded-xl border border-stone-200 bg-stone-50 py-2 pl-9 pr-3 text-sm text-stone-900 outline-none ring-amber-200 focus:border-amber-400 focus:ring-2"
+                className="w-full rounded-[var(--kk-radius-sm)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] py-2 pl-9 pr-3 text-sm text-[color:var(--color-bark)] outline-none focus:ring-2 focus:ring-[color:var(--kk-focus)]"
                 placeholder="Ketik nama anggota..."
               />
             </div>
@@ -91,16 +91,16 @@ export function FocusPersonCombobox({
                         setSelectedId(candidate.id);
                         setQuery(candidate.full_name);
                       }}
-                      className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-stone-800 hover:bg-stone-50"
+                      className="flex w-full items-center justify-between rounded-[var(--kk-radius-sm)] px-3 py-2 text-left text-sm text-[color:var(--color-bark)] hover:bg-[color:var(--color-warm)]"
                     >
                       <span>{candidate.full_name}</span>
-                      {active ? <Check className="h-4 w-4 text-amber-700" /> : null}
+                      {active ? <Check className="h-4 w-4 text-[color:var(--color-clay)]" /> : null}
                     </button>
                   </li>
                 );
               })}
               {filteredCandidates.length === 0 ? (
-                <li className="rounded-xl bg-stone-50 px-3 py-2 text-sm text-stone-600">
+                <li className="rounded-[var(--kk-radius-sm)] bg-[color:var(--color-warm)] px-3 py-2 text-sm font-normal text-[color:var(--kk-muted)]">
                   Tidak ada anggota yang cocok.
                 </li>
               ) : null}

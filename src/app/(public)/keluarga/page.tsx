@@ -74,7 +74,7 @@ export default async function FamilyDirectoryPage({ searchParams }: FamilyDirect
 
       <div className="flex flex-wrap gap-3">
         <Link
-          href="/pohon"
+          href="/"
           className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
         >
           Lihat Mode Pohon

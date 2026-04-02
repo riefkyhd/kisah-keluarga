@@ -1,11 +1,4 @@
-import Link from "next/link";
-import { Card } from "@/components/ui/card";
-import { EmptyState } from "@/components/ui/empty-state";
-import { SectionHeader } from "@/components/ui/section-header";
-import { requireViewer } from "@/lib/permissions/guards";
-import { FamilyTree } from "@/components/FamilyTree";
-import { FocusPersonCombobox } from "@/components/tree/focus-person-combobox";
-import { getTreeViewData } from "@/server/queries/relationships";
+import { redirect } from "next/navigation";
 
 type TreeViewPageProps = {
   searchParams: Promise<{
@@ -13,76 +6,15 @@ type TreeViewPageProps = {
   }>;
 };
 
-function normalizeFocusPersonId(personId?: string) {
-  if (!personId) {
-    return "";
+export default async function TreeViewPage({ searchParams }: TreeViewPageProps) {
+  const query = await searchParams;
+  const personId = query.personId?.trim();
+  const params = new URLSearchParams();
+
+  if (personId) {
+    params.set("personId", personId);
   }
 
-  return personId.trim();
-}
-
-export default async function TreeViewPage({ searchParams }: TreeViewPageProps) {
-  await requireViewer("/pohon");
-  const query = await searchParams;
-  const focusPersonId = normalizeFocusPersonId(query.personId);
-  const treeData = await getTreeViewData(focusPersonId);
-
-  return (
-    <section className="space-y-6">
-      <SectionHeader
-        eyebrow="Mode Visual"
-        title="Pohon Keluarga"
-        description="Mode ini membantu membaca hubungan inti dengan cepat. Untuk pencarian dan pengelolaan data, tetap gunakan direktori dan profil anggota."
-      />
-      <h2 data-testid="tree-page-heading" className="sr-only">
-        Pohon Keluarga
-      </h2>
-
-      <div className="flex flex-wrap gap-3">
-        <Link
-          href="/keluarga"
-          className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
-        >
-          Buka Direktori Keluarga
-        </Link>
-      </div>
-
-      {treeData.focusCandidates.length > 0 ? (
-        <Card className="rounded-[1.75rem] border-stone-100 p-5 shadow-sm sm:p-6">
-          <FocusPersonCombobox
-            candidates={treeData.focusCandidates}
-            selectedPersonId={treeData.focusPerson?.id ?? ""}
-          />
-        </Card>
-      ) : null}
-
-      {treeData.focusPerson ? (
-        <>
-          <FamilyTree
-            focusPerson={treeData.focusPerson}
-            grandparents={treeData.grandparents}
-            parents={treeData.parents}
-            parentSpouses={treeData.parentSpouses}
-            grandparentParentLinks={treeData.grandparentParentLinks}
-            parentSpouseLinks={treeData.parentSpouseLinks}
-            spouse={treeData.spouse}
-            childMembers={treeData.children}
-          />
-          <div>
-            <Link
-              href={`/keluarga/${treeData.focusPerson.id}`}
-              className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
-            >
-              Buka Profil Anggota Fokus
-            </Link>
-          </div>
-        </>
-      ) : (
-        <EmptyState
-          title="Belum ada anggota aktif"
-          description="Belum ada anggota aktif untuk ditampilkan di pohon keluarga."
-        />
-      )}
-    </section>
-  );
+  const queryString = params.toString();
+  redirect(queryString ? `/?${queryString}` : "/");
 }
