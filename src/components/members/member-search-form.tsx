@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 type MemberSearchFormProps = {
@@ -13,6 +13,8 @@ export function MemberSearchForm({ value }: MemberSearchFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(value);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const normalizedQuery = useMemo(
     () => query.trim().replace(/\s+/g, " ").slice(0, 80),
@@ -21,6 +23,7 @@ export function MemberSearchForm({ value }: MemberSearchFormProps) {
 
   useEffect(() => {
     setQuery(value);
+    setIsSearching(false);
   }, [value]);
 
   useEffect(() => {
@@ -28,6 +31,7 @@ export function MemberSearchForm({ value }: MemberSearchFormProps) {
       const params = new URLSearchParams(searchParams.toString());
       const currentQuery = (searchParams.get("q") ?? "").trim().replace(/\s+/g, " ").slice(0, 80);
       if (normalizedQuery === currentQuery) {
+        setIsSearching(false);
         return;
       }
 
@@ -39,13 +43,17 @@ export function MemberSearchForm({ value }: MemberSearchFormProps) {
 
       params.delete("page");
       const nextQuery = params.toString();
-      router.push(nextQuery ? `/keluarga?${nextQuery}` : "/keluarga");
+      setIsSearching(true);
+      startTransition(() => {
+        router.push(nextQuery ? `/keluarga?${nextQuery}` : "/keluarga");
+      });
     }, 300);
 
     return () => window.clearTimeout(timeoutId);
-  }, [normalizedQuery, router, searchParams]);
+  }, [normalizedQuery, router, searchParams, startTransition]);
 
   const hasQuery = normalizedQuery.length > 0;
+  const showSearchingIndicator = isPending || isSearching;
 
   return (
     <Card className="rounded-[2rem] border-stone-100 p-5 shadow-sm sm:p-6">
@@ -62,8 +70,11 @@ export function MemberSearchForm({ value }: MemberSearchFormProps) {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Contoh: Rina, Pak Budi, atau panggilan"
-              className="w-full rounded-2xl border border-stone-200 bg-stone-50 pl-12 pr-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 placeholder:text-stone-400 focus:border-amber-400 focus:ring-2"
+              className="w-full rounded-2xl border border-stone-200 bg-stone-50 py-3.5 pl-12 pr-11 text-base text-stone-900 outline-none ring-amber-200 placeholder:text-stone-400 focus:border-amber-400 focus:ring-2"
             />
+            {showSearchingIndicator ? (
+              <Loader2 className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-stone-500" />
+            ) : null}
           </div>
         </div>
 

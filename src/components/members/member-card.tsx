@@ -38,9 +38,11 @@ export function MemberCard({ member }: MemberCardProps) {
                 ) : null}
               </div>
               <div className="flex flex-wrap gap-2">
-                <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">
-                  Gen {member.generation}
-                </span>
+                {member.generation ? (
+                  <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">
+                    Gen {member.generation}
+                  </span>
+                ) : null}
                 <span className="rounded-full bg-stone-100 px-2.5 py-1 text-xs font-semibold text-stone-700">
                   {member.primary_relationship_label}
                 </span>

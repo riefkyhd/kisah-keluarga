@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 
@@ -17,6 +20,10 @@ type MemberFormProps = {
 };
 
 export function MemberForm({ action, submitLabel, personId, initialValues }: MemberFormProps) {
+  const [isLivingValue, setIsLivingValue] = useState(initialValues?.is_living === false ? "false" : "true");
+  const [deathDateValue, setDeathDateValue] = useState(initialValues?.death_date ?? "");
+  const showDeathDate = isLivingValue === "false";
+
   return (
     <Card className="rounded-[2rem] border-stone-100 p-5 sm:p-6">
       <form action={action} className="space-y-6">
@@ -64,7 +71,7 @@ export function MemberForm({ action, submitLabel, personId, initialValues }: Mem
         <div className="space-y-4 rounded-2xl border border-stone-200 bg-white p-4 sm:p-5">
           <p className="text-sm font-semibold uppercase tracking-wide text-stone-600">Informasi Kehidupan</p>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className={`grid grid-cols-1 gap-4 ${showDeathDate ? "sm:grid-cols-2" : ""}`}>
             <label className="block space-y-2 text-base font-semibold text-stone-800">
               Tanggal lahir (opsional)
               <input
@@ -75,22 +82,34 @@ export function MemberForm({ action, submitLabel, personId, initialValues }: Mem
               />
             </label>
 
-            <label className="block space-y-2 text-base font-semibold text-stone-800">
-              Tanggal wafat (opsional)
-              <input
-                type="date"
-                name="death_date"
-                defaultValue={initialValues?.death_date ?? ""}
-                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 focus:border-amber-400 focus:ring-2"
-              />
-            </label>
+            {showDeathDate ? (
+              <label className="block space-y-2 text-base font-semibold text-stone-800">
+                Tanggal wafat (opsional)
+                <input
+                  type="date"
+                  name="death_date"
+                  value={deathDateValue}
+                  onChange={(event) => setDeathDateValue(event.target.value)}
+                  className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 focus:border-amber-400 focus:ring-2"
+                />
+              </label>
+            ) : (
+              <input type="hidden" name="death_date" value="" />
+            )}
           </div>
 
           <label className="block space-y-2 text-base font-semibold text-stone-800">
             Status kehidupan
             <select
               name="is_living"
-              defaultValue={initialValues?.is_living === false ? "false" : "true"}
+              value={isLivingValue}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+                setIsLivingValue(nextValue);
+                if (nextValue === "true") {
+                  setDeathDateValue("");
+                }
+              }}
               className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-base text-stone-900 outline-none ring-amber-200 focus:border-amber-400 focus:ring-2"
             >
               <option value="true">Masih hidup</option>

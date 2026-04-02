@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { hasMinimumRole, type AppRole } from "@/lib/auth/roles";
 import { cn } from "@/lib/utils";
 
 type AppNavProps = {
   hasSession: boolean;
+  userRole: AppRole | null;
 };
 
 type NavItem = {
@@ -36,32 +39,28 @@ function isNavActive(pathname: string, href: string) {
 
 function BrandIcon() {
   return (
-    <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[color:var(--color-clay)] text-[color:var(--color-cream)] shadow-sm">
-      <svg
-        viewBox="0 0 24 24"
-        className="h-5 w-5"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
-        <circle cx="12" cy="7.5" r="3.2" fill="currentColor" />
-        <path
-          d="M6.8 18.2c0-2.9 2.35-5.2 5.2-5.2s5.2 2.3 5.2 5.2"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      </svg>
+    <span className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl border border-[color:var(--color-sand)] bg-white shadow-sm">
+      <Image
+        src="/brand/kisah-keluarga-logo.png"
+        alt="Logo Kisah Keluarga"
+        width={36}
+        height={36}
+        className="h-full w-full object-cover"
+        priority
+      />
     </span>
   );
 }
 
-export function AppNav({ hasSession }: AppNavProps) {
+export function AppNav({ hasSession, userRole }: AppNavProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  const navItems = hasSession ? [...primaryNavItems, { href: "/admin", label: "Admin" }] : primaryNavItems;
+  const navItems =
+    hasSession && userRole && hasMinimumRole(userRole, "editor")
+      ? [...primaryNavItems, { href: "/admin", label: "Admin" }]
+      : primaryNavItems;
 
   useEffect(() => {
     setIsOpen(false);

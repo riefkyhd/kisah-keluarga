@@ -4,6 +4,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { PwaRegister } from "@/components/pwa/pwa-register";
 import { AppToaster } from "@/components/ui/app-toaster";
 import { getCurrentUser } from "@/lib/auth/session";
+import { getCurrentUserRole } from "@/lib/permissions/guards";
 import { appThemeColor } from "@/lib/design-tokens";
 import "./globals.css";
 
@@ -53,13 +54,16 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getCurrentUser();
+  const userRole = user ? await getCurrentUserRole() : null;
 
   return (
     <html lang="id">
       <body className={`${dmSans.variable} ${lora.variable}`}>
         <PwaRegister />
         <AppToaster />
-        <AppShell hasSession={Boolean(user)}>{children}</AppShell>
+        <AppShell hasSession={Boolean(user)} userRole={userRole}>
+          {children}
+        </AppShell>
       </body>
     </html>
   );

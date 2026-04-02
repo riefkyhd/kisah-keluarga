@@ -333,7 +333,7 @@ export async function listDirectoryMembers({
 
     return {
       ...row,
-      generation: generationByPersonId.get(row.id) ?? 1,
+      generation: clampGeneration(generationByPersonId.get(row.id) ?? 1),
       child_count: childCount,
       primary_relationship_label: deriveRelationshipLabel({
         gender: row.gender,

@@ -130,6 +130,7 @@ async function main() {
   });
 
   const personIds = matches.map((row) => row.id);
+  const hasPersonIds = personIds.length > 0;
   const storagePathSet = new Set<string>();
 
   matches.forEach((row) => {
@@ -157,61 +158,65 @@ async function main() {
   await removeStorageObjects(supabase, storagePaths);
 
   if (hardDelete) {
-    const { error: relFromError } = await supabase
-      .from("relationships")
-      .delete()
-      .in("from_person_id", personIds);
-    if (relFromError) {
-      throw new Error(`Gagal menghapus relationships (from_person_id): ${relFromError.message}`);
-    }
+    if (hasPersonIds) {
+      const { error: relFromError } = await supabase
+        .from("relationships")
+        .delete()
+        .in("from_person_id", personIds);
+      if (relFromError) {
+        throw new Error(`Gagal menghapus relationships (from_person_id): ${relFromError.message}`);
+      }
 
-    const { error: relToError } = await supabase
-      .from("relationships")
-      .delete()
-      .in("to_person_id", personIds);
-    if (relToError) {
-      throw new Error(`Gagal menghapus relationships (to_person_id): ${relToError.message}`);
-    }
+      const { error: relToError } = await supabase
+        .from("relationships")
+        .delete()
+        .in("to_person_id", personIds);
+      if (relToError) {
+        throw new Error(`Gagal menghapus relationships (to_person_id): ${relToError.message}`);
+      }
 
-    const { error: storiesError } = await supabase.from("stories").delete().in("person_id", personIds);
-    if (storiesError) {
-      throw new Error(`Gagal menghapus stories terkait fixture: ${storiesError.message}`);
-    }
+      const { error: storiesError } = await supabase.from("stories").delete().in("person_id", personIds);
+      if (storiesError) {
+        throw new Error(`Gagal menghapus stories terkait fixture: ${storiesError.message}`);
+      }
 
-    const { error: peopleDeleteError } = await supabase.from("people").delete().in("id", personIds);
-    if (peopleDeleteError) {
-      throw new Error(`Gagal hard-delete fixture people: ${peopleDeleteError.message}`);
+      const { error: peopleDeleteError } = await supabase.from("people").delete().in("id", personIds);
+      if (peopleDeleteError) {
+        throw new Error(`Gagal hard-delete fixture people: ${peopleDeleteError.message}`);
+      }
     }
 
     console.log("[done] hard-delete fixture berhasil (people + relationships + stories + storage).");
     return;
   }
 
-  const { error: peopleArchiveError } = await supabase
-    .from("people")
-    .update({ is_archived: true, profile_photo_path: null })
-    .in("id", personIds);
-  if (peopleArchiveError) {
-    throw new Error(`Gagal mengarsipkan fixture people: ${peopleArchiveError.message}`);
-  }
+  if (hasPersonIds) {
+    const { error: peopleArchiveError } = await supabase
+      .from("people")
+      .update({ is_archived: true, profile_photo_path: null })
+      .in("id", personIds);
+    if (peopleArchiveError) {
+      throw new Error(`Gagal mengarsipkan fixture people: ${peopleArchiveError.message}`);
+    }
 
-  const nowIso = new Date().toISOString();
-  const { error: relFromArchiveError } = await supabase
-    .from("relationships")
-    .update({ is_archived: true, updated_at: nowIso })
-    .in("from_person_id", personIds);
-  if (relFromArchiveError) {
-    throw new Error(
-      `Gagal mengarsipkan relationships (from_person_id): ${relFromArchiveError.message}`
-    );
-  }
+    const nowIso = new Date().toISOString();
+    const { error: relFromArchiveError } = await supabase
+      .from("relationships")
+      .update({ is_archived: true, updated_at: nowIso })
+      .in("from_person_id", personIds);
+    if (relFromArchiveError) {
+      throw new Error(
+        `Gagal mengarsipkan relationships (from_person_id): ${relFromArchiveError.message}`
+      );
+    }
 
-  const { error: relToArchiveError } = await supabase
-    .from("relationships")
-    .update({ is_archived: true, updated_at: nowIso })
-    .in("to_person_id", personIds);
-  if (relToArchiveError) {
-    throw new Error(`Gagal mengarsipkan relationships (to_person_id): ${relToArchiveError.message}`);
+    const { error: relToArchiveError } = await supabase
+      .from("relationships")
+      .update({ is_archived: true, updated_at: nowIso })
+      .in("to_person_id", personIds);
+    if (relToArchiveError) {
+      throw new Error(`Gagal mengarsipkan relationships (to_person_id): ${relToArchiveError.message}`);
+    }
   }
 
   console.log("[done] fixture people + relationships diarsipkan, foto storage terkait dihapus.");

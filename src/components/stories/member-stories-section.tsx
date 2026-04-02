@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { formatTanggal } from "@/lib/format-tanggal";
 import type { StoryListItem } from "@/server/queries/stories";
 
 type MemberStoriesSectionProps = {
@@ -34,7 +35,9 @@ export function MemberStoriesSection({ personId, stories, canManage }: MemberSto
                   {story.title}
                 </Link>
                 <p className="text-sm leading-relaxed text-stone-600">
-                  {story.event_date ? `Tanggal kejadian: ${story.event_date}` : "Tanggal kejadian belum diisi"}
+                  {story.event_date
+                    ? `Tanggal kejadian: ${formatTanggal(story.event_date)}`
+                    : "Tanggal kejadian belum diisi"}
                 </p>
               </div>
               {canManage ? (

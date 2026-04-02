@@ -47,6 +47,16 @@ export default async function TimelinePage() {
         <EmptyState
           title="Belum ada cerita aktif"
           description="Editor atau admin dapat menambahkan cerita pertama agar momen keluarga mulai terdokumentasi."
+          action={
+            canManageStories ? (
+              <Link
+                href="/cerita-baru"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-amber-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-amber-800"
+              >
+                Tambah Cerita Pertama
+              </Link>
+            ) : null
+          }
         />
       ) : (
         <ul

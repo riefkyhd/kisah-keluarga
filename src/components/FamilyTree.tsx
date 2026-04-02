@@ -50,6 +50,14 @@ function clampScale(value: number) {
   return Math.min(2.6, Math.max(0.7, value));
 }
 
+function truncateTreeName(name: string, maxChars = 14) {
+  if (name.length <= maxChars) {
+    return name;
+  }
+
+  return `${name.slice(0, maxChars - 1)}…`;
+}
+
 function getNodeTestId(role: string) {
   if (role === "focus") {
     return "tree-root-node";
@@ -151,16 +159,34 @@ export function FamilyTree({
         <p className="text-sm text-stone-600">
           Geser untuk pindah area pohon, cubit atau scroll untuk zoom, lalu ketuk node untuk membuka profil.
         </p>
-        <button
-          type="button"
-          onClick={() => {
-            setScale(1);
-            setPan({ x: 0, y: 0 });
-          }}
-          className="shrink-0 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-medium text-stone-700"
-        >
-          Reset View
-        </button>
+        <div className="flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setScale((current) => clampScale(current + 0.15))}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 bg-stone-50 text-base font-semibold text-stone-700"
+            aria-label="Perbesar pohon"
+          >
+            +
+          </button>
+          <button
+            type="button"
+            onClick={() => setScale((current) => clampScale(current - 0.15))}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 bg-stone-50 text-base font-semibold text-stone-700"
+            aria-label="Perkecil pohon"
+          >
+            -
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setScale(1);
+              setPan({ x: 0, y: 0 });
+            }}
+            className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-medium text-stone-700"
+          >
+            Reset View
+          </button>
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-stone-200 bg-[color:var(--color-cream)]/70">
@@ -318,6 +344,7 @@ export function FamilyTree({
                   onClick={() => router.push(`/keluarga/${node.id}`)}
                   className="cursor-pointer"
                 >
+                  <title>{node.fullName}</title>
                   <rect
                     x={nodeLeft}
                     y={nodeTop}
@@ -353,7 +380,7 @@ export function FamilyTree({
                     fontWeight="600"
                     fill={focusTone ? "#faf7f2" : "#4a3728"}
                   >
-                    {node.fullName}
+                    {truncateTreeName(node.fullName)}
                   </text>
                   <text
                     x={nodeLeft + 42}
