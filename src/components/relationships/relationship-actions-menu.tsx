@@ -29,6 +29,7 @@ type RelationshipActionsMenuProps = {
   relationshipId: string;
   relationshipTypeLabel: string;
   archiveAction: (formData: FormData) => Promise<void>;
+  returnTo?: string;
 };
 
 export function RelationshipActionsMenu({
@@ -37,7 +38,8 @@ export function RelationshipActionsMenu({
   relatedPersonName,
   relationshipId,
   relationshipTypeLabel,
-  archiveAction
+  archiveAction,
+  returnTo
 }: RelationshipActionsMenuProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -84,6 +86,7 @@ export function RelationshipActionsMenu({
           <form action={archiveAction} className="space-y-4">
             <input type="hidden" name="person_id" value={currentPersonId} />
             <input type="hidden" name="relationship_id" value={relationshipId} />
+            {returnTo ? <input type="hidden" name="return_to" value={returnTo} /> : null}
             <AlertDialogFooter>
               <AlertDialogCancel asChild>
                 <Button type="button" variant="outline">

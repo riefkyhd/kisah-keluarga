@@ -1,0 +1,350 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Drawer } from "@/components/ui/drawer";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
+import { StatusBanner } from "@/components/ui/status-banner";
+import { StatusToast } from "@/components/ui/status-toast";
+import { MemberAvatar } from "@/components/members/member-avatar";
+import { MemberPhotoManager } from "@/components/members/member-photo-manager";
+import { MemberStoriesSection } from "@/components/stories/member-stories-section";
+import { RelationshipSection } from "@/components/relationships/relationship-section";
+import { formatTanggal } from "@/lib/format-tanggal";
+import type { MemberProfile } from "@/server/queries/members";
+import type {
+  ProfileRelationships,
+  RelationshipCandidatesByType
+} from "@/server/queries/relationships";
+import type { StoryListItem } from "@/server/queries/stories";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
+
+type MemberDrawerFeedback = {
+  relationshipErrorMessage: string;
+  relationshipStatusMessage: string;
+  photoErrorMessage: string;
+  photoStatusMessage: string;
+  memberErrorMessage: string;
+  memberStatusMessage: string;
+};
+
+type MemberDrawerProps = {
+  member: MemberProfile;
+  canManage: boolean;
+  focusPersonId: string;
+  returnTo: string;
+  relationshipData: ProfileRelationships;
+  relationshipCandidates: RelationshipCandidatesByType;
+  stories: StoryListItem[];
+  feedback: MemberDrawerFeedback;
+  addParentAction: (formData: FormData) => Promise<void>;
+  addSpouseAction: (formData: FormData) => Promise<void>;
+  addChildAction: (formData: FormData) => Promise<void>;
+  archiveRelationshipAction: (formData: FormData) => Promise<void>;
+  uploadPhotoAction: (formData: FormData) => Promise<void>;
+  removePhotoAction: (formData: FormData) => Promise<void>;
+  archiveMemberAction: (formData: FormData) => Promise<void>;
+  restoreMemberAction: (formData: FormData) => Promise<void>;
+};
+
+const CLEANUP_QUERY_KEYS = [
+  "memberId",
+  "relationship_error",
+  "relationship_status",
+  "photo_error",
+  "photo_status",
+  "error",
+  "status",
+  "created",
+  "updated"
+] as const;
+
+export function MemberDrawer({
+  member,
+  canManage,
+  focusPersonId,
+  returnTo,
+  relationshipData,
+  relationshipCandidates,
+  stories,
+  feedback,
+  addParentAction,
+  addSpouseAction,
+  addChildAction,
+  archiveRelationshipAction,
+  uploadPhotoAction,
+  removePhotoAction,
+  archiveMemberAction,
+  restoreMemberAction
+}: MemberDrawerProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const closeDrawer = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    CLEANUP_QUERY_KEYS.forEach((key) => params.delete(key));
+    if (!params.get("personId")) {
+      params.set("personId", focusPersonId);
+    }
+    const queryString = params.toString();
+    router.push(queryString ? `/?${queryString}` : "/", { scroll: false });
+  };
+
+  const birthDateLabel = formatTanggal(member.birth_date);
+  const deathDateLabel = formatTanggal(member.death_date);
+
+  return (
+    <Drawer open onClose={closeDrawer} title="Profil Anggota" width="38rem">
+      <section data-testid="member-drawer" className="space-y-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Link
+            href={`/keluarga/${member.id}`}
+            className="inline-flex min-h-10 items-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-3 py-2 text-sm font-medium text-[color:var(--color-bark)] hover:bg-[color:var(--color-warm)]"
+          >
+            Lihat profil penuh
+          </Link>
+          {canManage ? (
+            <Link href={`/anggota/${member.id}/edit`}>
+              <Button variant="secondary" size="sm">
+                Edit Profil
+              </Button>
+            </Link>
+          ) : null}
+        </div>
+
+        <Card className="space-y-4 border-[color:rgba(212,184,150,0.4)] text-center">
+          <div className="mx-auto">
+            <MemberAvatar
+              fullName={member.full_name}
+              photoUrl={member.profile_photo_url}
+              size="lg"
+              testId="member-drawer-photo-image"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <h2 className="break-words text-2xl text-[color:var(--color-bark)]">{member.full_name}</h2>
+            {member.nickname ? (
+              <p className="text-sm font-normal text-[color:var(--kk-muted)]">Panggilan: {member.nickname}</p>
+            ) : null}
+          </div>
+
+          {member.is_archived ? <StatusBanner variant="warning" message="Anggota ini sedang diarsipkan." /> : null}
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Card className="rounded-[var(--kk-radius-md)] border-[color:var(--color-sand)] bg-[color:var(--color-warm)] p-4 shadow-none">
+              <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[color:var(--color-clay)]">Status</p>
+              <p className="mt-1 text-base font-medium text-[color:var(--color-bark)]">
+                {member.is_living ? "Masih hidup" : "Sudah wafat"}
+              </p>
+            </Card>
+            <Card className="rounded-[var(--kk-radius-md)] border-[color:var(--color-sand)] bg-[color:var(--color-warm)] p-4 shadow-none">
+              <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[color:var(--color-clay)]">Tanggal Lahir</p>
+              <p className="mt-1 text-base font-medium text-[color:var(--color-bark)]">
+                {birthDateLabel ?? "Belum diisi"}
+              </p>
+            </Card>
+          </div>
+        </Card>
+
+        <Card className="space-y-2 border-[color:rgba(212,184,150,0.4)] text-base leading-relaxed text-[color:var(--kk-muted)]">
+          <h3 className="text-lg text-[color:var(--color-bark)]">Informasi Dasar</h3>
+          {deathDateLabel ? <p>Tanggal wafat: {deathDateLabel}</p> : null}
+          {member.gender ? (
+            <p>
+              Jenis kelamin:{" "}
+              {member.gender === "male" ? "Laki-laki" : member.gender === "female" ? "Perempuan" : "Lainnya"}
+            </p>
+          ) : null}
+          {member.bio ? <p>Catatan: {member.bio}</p> : <p>Catatan: Belum ada catatan keluarga tambahan.</p>}
+          <Link
+            href={`/?personId=${member.id}&memberId=${member.id}`}
+            className="inline-flex min-h-10 items-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-3 py-2 text-sm font-medium text-[color:var(--color-bark)] hover:bg-[color:var(--color-warm)]"
+          >
+            Fokuskan pohon ke anggota ini
+          </Link>
+        </Card>
+
+        {feedback.memberStatusMessage ? (
+          <>
+            <StatusToast variant="success" message={feedback.memberStatusMessage} />
+            <StatusBanner variant="success" message={feedback.memberStatusMessage} />
+          </>
+        ) : null}
+        {feedback.memberErrorMessage ? (
+          <>
+            <StatusToast variant="error" message={feedback.memberErrorMessage} />
+            <StatusBanner variant="error" message={feedback.memberErrorMessage} />
+          </>
+        ) : null}
+        {feedback.relationshipStatusMessage ? (
+          <>
+            <StatusToast variant="success" message={feedback.relationshipStatusMessage} />
+            <StatusBanner variant="success" message={feedback.relationshipStatusMessage} />
+          </>
+        ) : null}
+        {feedback.relationshipErrorMessage ? (
+          <>
+            <StatusToast variant="error" message={feedback.relationshipErrorMessage} />
+            <StatusBanner variant="error" message={feedback.relationshipErrorMessage} />
+          </>
+        ) : null}
+        {feedback.photoStatusMessage ? (
+          <>
+            <StatusToast variant="success" message={feedback.photoStatusMessage} />
+            <StatusBanner variant="success" message={feedback.photoStatusMessage} />
+          </>
+        ) : null}
+        {feedback.photoErrorMessage ? (
+          <>
+            <StatusToast variant="error" message={feedback.photoErrorMessage} />
+            <StatusBanner variant="error" message={feedback.photoErrorMessage} />
+          </>
+        ) : null}
+
+        <MemberPhotoManager
+          personId={member.id}
+          canManage={canManage}
+          hasPhoto={Boolean(member.profile_photo_path)}
+          uploadAction={uploadPhotoAction}
+          removeAction={removePhotoAction}
+          returnTo={returnTo}
+        />
+
+        <RelationshipSection
+          testId="drawer-parents-section"
+          title="Orang Tua"
+          description="Anggota yang menjadi orang tua dari profil ini."
+          emptyText="Belum ada data orang tua."
+          currentPersonId={member.id}
+          items={relationshipData.parents}
+          canManage={canManage}
+          candidates={relationshipCandidates.parent}
+          addLabel="Tambah orang tua"
+          submitLabel="Tambah Orang Tua"
+          addAction={addParentAction}
+          archiveAction={archiveRelationshipAction}
+          returnTo={returnTo}
+        />
+
+        <RelationshipSection
+          testId="drawer-spouse-section"
+          title="Pasangan"
+          description="Hubungan pasangan aktif pada profil ini."
+          emptyText="Belum ada data pasangan."
+          currentPersonId={member.id}
+          items={relationshipData.spouse}
+          canManage={canManage}
+          candidates={relationshipCandidates.spouse}
+          addLabel="Tambah pasangan"
+          submitLabel="Tambah Pasangan"
+          showAddForm={relationshipData.spouse.length === 0}
+          addAction={addSpouseAction}
+          archiveAction={archiveRelationshipAction}
+          returnTo={returnTo}
+        />
+        {canManage && relationshipData.spouse.length > 0 ? (
+          <p className="rounded-[var(--kk-radius-md)] border border-[color:#f3c7c1] bg-[color:#fdf2f0] px-4 py-3 text-sm leading-relaxed text-[color:#9b3022]">
+            Profil ini sudah memiliki pasangan aktif. Arsipkan relasi pasangan saat ini untuk menambah yang baru.
+          </p>
+        ) : null}
+
+        <RelationshipSection
+          testId="drawer-children-section"
+          title="Anak"
+          description="Anggota yang tercatat sebagai anak dari profil ini."
+          emptyText="Belum ada data anak."
+          currentPersonId={member.id}
+          items={relationshipData.children}
+          canManage={canManage}
+          candidates={relationshipCandidates.child}
+          addLabel="Tambah anak"
+          submitLabel="Tambah Anak"
+          addAction={addChildAction}
+          archiveAction={archiveRelationshipAction}
+          returnTo={returnTo}
+        />
+
+        <RelationshipSection
+          testId="drawer-siblings-section"
+          title="Saudara (otomatis)"
+          description="Diturunkan dari orang tua yang sama."
+          emptyText="Belum ada data saudara."
+          currentPersonId={member.id}
+          items={relationshipData.siblings}
+          canManage={false}
+        />
+
+        <MemberStoriesSection personId={member.id} stories={stories} canManage={canManage} />
+
+        {canManage ? (
+          <Card className="space-y-3 border-[color:rgba(212,184,150,0.4)]">
+            <h3 className="text-base text-[color:var(--color-bark)]">Arsip / Pulihkan</h3>
+            {member.is_archived ? (
+              <form action={restoreMemberAction} className="space-y-3">
+                <input type="hidden" name="person_id" value={member.id} />
+                <input type="hidden" name="return_to" value={returnTo} />
+                <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
+                  Anggota ini sedang diarsipkan. Pulihkan jika ingin menampilkannya kembali di daftar aktif.
+                </p>
+                <FormSubmitButton
+                  type="submit"
+                  className="w-full bg-[color:#3f5c45] text-[color:var(--color-cream)] hover:bg-[color:#35503c]"
+                  pendingLabel="Memulihkan..."
+                >
+                  Pulihkan Anggota
+                </FormSubmitButton>
+              </form>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
+                  Arsipkan anggota jika datanya tetap ingin disimpan tetapi tidak ditampilkan di daftar utama.
+                </p>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button type="button" variant="danger" className="w-full">
+                      Arsipkan Anggota
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Arsipkan {member.full_name}?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Anggota akan disembunyikan dari direktori. Data tetap tersimpan dan dapat dipulihkan kapan
+                        saja.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <form action={archiveMemberAction}>
+                      <input type="hidden" name="person_id" value={member.id} />
+                      <input type="hidden" name="return_to" value={returnTo} />
+                      <AlertDialogFooter>
+                        <AlertDialogCancel asChild>
+                          <Button type="button" variant="outline">
+                            Batalkan
+                          </Button>
+                        </AlertDialogCancel>
+                        <FormSubmitButton type="submit" variant="danger" pendingLabel="Mengarsipkan...">
+                          Ya, Arsipkan
+                        </FormSubmitButton>
+                      </AlertDialogFooter>
+                    </form>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            )}
+          </Card>
+        ) : null}
+      </section>
+    </Drawer>
+  );
+}

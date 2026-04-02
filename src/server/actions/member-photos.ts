@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireEditor } from "@/lib/permissions/guards";
+import { sanitizeInternalReturnTo, withQueryParam } from "@/lib/navigation/return-to";
 import { createClient } from "@/lib/supabase/server";
 import { optimizeProfilePhoto } from "@/server/media/profile-photo-optimizer";
 
@@ -18,15 +19,16 @@ type PersonPhotoWriteRow = {
   profile_photo_path: string | null;
 };
 
-function redirectWithPhotoError(personId: string, error: string): never {
-  redirect(`/keluarga/${personId}?photo_error=${error}`);
+function redirectWithPhotoError(targetPath: string, error: string): never {
+  redirect(withQueryParam(targetPath, "photo_error", error));
 }
 
-function redirectWithPhotoStatus(personId: string, status: string): never {
-  redirect(`/keluarga/${personId}?photo_status=${status}`);
+function redirectWithPhotoStatus(targetPath: string, status: string): never {
+  redirect(withQueryParam(targetPath, "photo_status", status));
 }
 
 function revalidatePhotoPaths(personId: string) {
+  revalidatePath("/");
   revalidatePath("/keluarga");
   revalidatePath(`/keluarga/${personId}`);
 }
@@ -56,27 +58,28 @@ export async function uploadOrReplaceMemberPhotoAction(formData: FormData) {
   }
 
   const personId = personIdResult.data;
+  const returnTo = sanitizeInternalReturnTo(formData.get("return_to"), `/keluarga/${personId}`);
   const { user } = await requireEditor(`/keluarga/${personId}`);
   const file = formData.get("photo");
 
   if (!(file instanceof File) || file.size === 0) {
-    redirectWithPhotoError(personId, "missing_file");
+    redirectWithPhotoError(returnTo, "missing_file");
   }
 
   if (!ALLOWED_PHOTO_TYPES.has(file.type)) {
-    redirectWithPhotoError(personId, "invalid_file_type");
+    redirectWithPhotoError(returnTo, "invalid_file_type");
   }
 
   if (file.size > MAX_PHOTO_SIZE_BYTES) {
-    redirectWithPhotoError(personId, "file_too_large");
+    redirectWithPhotoError(returnTo, "file_too_large");
   }
 
   const person = await getPersonForPhotoWrite(personId);
   if (!person) {
-    redirectWithPhotoError(personId, "invalid_member");
+    redirectWithPhotoError(returnTo, "invalid_member");
   }
   if (person.is_archived) {
-    redirectWithPhotoError(personId, "archived_member");
+    redirectWithPhotoError(returnTo, "archived_member");
   }
 
   const rawBytes = new Uint8Array(await file.arrayBuffer());
@@ -85,7 +88,7 @@ export async function uploadOrReplaceMemberPhotoAction(formData: FormData) {
   try {
     optimizedPhoto = await optimizeProfilePhoto(rawBytes);
   } catch {
-    redirectWithPhotoError(personId, "optimize_failed");
+    redirectWithPhotoError(returnTo, "optimize_failed");
   }
 
   const newPhotoPath = `members/${personId}/profile-${Date.now()}.${optimizedPhoto.extension}`;
@@ -98,7 +101,7 @@ export async function uploadOrReplaceMemberPhotoAction(formData: FormData) {
     });
 
   if (uploadError) {
-    redirectWithPhotoError(personId, "upload_failed");
+    redirectWithPhotoError(returnTo, "upload_failed");
   }
 
   const previousPhotoPath = person.profile_photo_path;
@@ -113,7 +116,7 @@ export async function uploadOrReplaceMemberPhotoAction(formData: FormData) {
 
   if (updateError) {
     await supabase.storage.from(MEMBER_PHOTO_BUCKET).remove([newPhotoPath]);
-    redirectWithPhotoError(personId, "save_failed");
+    redirectWithPhotoError(returnTo, "save_failed");
   }
 
   if (previousPhotoPath && previousPhotoPath !== newPhotoPath) {
@@ -121,7 +124,7 @@ export async function uploadOrReplaceMemberPhotoAction(formData: FormData) {
   }
 
   revalidatePhotoPaths(personId);
-  redirectWithPhotoStatus(personId, previousPhotoPath ? "replaced" : "uploaded");
+  redirectWithPhotoStatus(returnTo, previousPhotoPath ? "replaced" : "uploaded");
 }
 
 export async function removeMemberPhotoAction(formData: FormData) {
@@ -132,17 +135,18 @@ export async function removeMemberPhotoAction(formData: FormData) {
   }
 
   const personId = personIdResult.data;
+  const returnTo = sanitizeInternalReturnTo(formData.get("return_to"), `/keluarga/${personId}`);
   const { user } = await requireEditor(`/keluarga/${personId}`);
   const person = await getPersonForPhotoWrite(personId);
   if (!person) {
-    redirectWithPhotoError(personId, "invalid_member");
+    redirectWithPhotoError(returnTo, "invalid_member");
   }
   if (person.is_archived) {
-    redirectWithPhotoError(personId, "archived_member");
+    redirectWithPhotoError(returnTo, "archived_member");
   }
 
   if (!person.profile_photo_path) {
-    redirectWithPhotoStatus(personId, "removed");
+    redirectWithPhotoStatus(returnTo, "removed");
   }
 
   const supabase = await createClient();
@@ -157,10 +161,10 @@ export async function removeMemberPhotoAction(formData: FormData) {
     .eq("id", personId);
 
   if (updateError) {
-    redirectWithPhotoError(personId, "remove_failed");
+    redirectWithPhotoError(returnTo, "remove_failed");
   }
 
   await supabase.storage.from(MEMBER_PHOTO_BUCKET).remove([photoPath]);
   revalidatePhotoPaths(personId);
-  redirectWithPhotoStatus(personId, "removed");
+  redirectWithPhotoStatus(returnTo, "removed");
 }

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireEditor } from "@/lib/permissions/guards";
+import { sanitizeInternalReturnTo, withQueryParam } from "@/lib/navigation/return-to";
 import {
   addChildRelationshipSchema,
   addParentRelationshipSchema,
@@ -24,12 +25,12 @@ function toFormObject(formData: FormData) {
   return Object.fromEntries(formData.entries());
 }
 
-function redirectWithRelationshipError(personId: string, error: ActionErrorCode): never {
-  redirect(`/keluarga/${personId}?relationship_error=${error}`);
+function redirectWithRelationshipError(targetPath: string, error: ActionErrorCode): never {
+  redirect(withQueryParam(targetPath, "relationship_error", error));
 }
 
-function redirectWithRelationshipStatus(personId: string, status: string): never {
-  redirect(`/keluarga/${personId}?relationship_status=${status}`);
+function redirectWithRelationshipStatus(targetPath: string, status: string): never {
+  redirect(withQueryParam(targetPath, "relationship_status", status));
 }
 
 async function ensureActivePeople(personId: string, relatedPersonId: string) {
@@ -119,6 +120,7 @@ function normalizeSpousePair(personId: string, relatedPersonId: string) {
 }
 
 function revalidateRelationshipPaths(personIds: string[]) {
+  revalidatePath("/");
   revalidatePath("/keluarga");
   Array.from(new Set(personIds)).forEach((personId) => {
     revalidatePath(`/keluarga/${personId}`);
@@ -127,39 +129,45 @@ function revalidateRelationshipPaths(personIds: string[]) {
 
 export async function addParentRelationshipAction(formData: FormData) {
   const raw = toFormObject(formData);
+  const rawReturnTo = formData.get("return_to");
   if (raw.person_id === raw.related_person_id) {
     const personId = typeof raw.person_id === "string" ? raw.person_id : "";
-    redirectWithRelationshipError(personId, "self_link");
+    const fallbackPath = personId ? `/keluarga/${personId}` : "/keluarga";
+    const returnTo = sanitizeInternalReturnTo(rawReturnTo, fallbackPath);
+    redirectWithRelationshipError(returnTo, "self_link");
   }
 
   const parsed = addParentRelationshipSchema.safeParse(raw);
   if (!parsed.success) {
     const fallbackPersonId = typeof raw.person_id === "string" ? raw.person_id : "";
-    redirectWithRelationshipError(fallbackPersonId, "invalid_relationship");
+    const fallbackPath = fallbackPersonId ? `/keluarga/${fallbackPersonId}` : "/keluarga";
+    const returnTo = sanitizeInternalReturnTo(rawReturnTo, fallbackPath);
+    redirectWithRelationshipError(returnTo, "invalid_relationship");
   }
 
   const personId = parsed.data.person_id;
+  const returnTo = sanitizeInternalReturnTo(rawReturnTo, `/keluarga/${personId}`);
   const parentId = parsed.data.related_person_id;
   const { user } = await requireEditor(`/keluarga/${personId}`);
 
   const peopleCheck = await ensureActivePeople(personId, parentId);
   if (!peopleCheck.ok) {
-    redirectWithRelationshipError(personId, peopleCheck.reason);
+    redirectWithRelationshipError(returnTo, peopleCheck.reason);
   }
 
   if (await hasActiveRelationship(parentId, personId, "parent")) {
-    redirectWithRelationshipError(personId, "duplicate_relationship");
+    redirectWithRelationshipError(returnTo, "duplicate_relationship");
   }
 
   if (await hasActiveRelationship(personId, parentId, "parent")) {
-    redirectWithRelationshipError(personId, "illegal_relationship");
+    redirectWithRelationshipError(returnTo, "illegal_relationship");
   }
 
   if (
     (await hasActiveRelationship(personId, parentId, "spouse")) ||
     (await hasActiveRelationship(parentId, personId, "spouse"))
   ) {
-    redirectWithRelationshipError(personId, "illegal_relationship");
+    redirectWithRelationshipError(returnTo, "illegal_relationship");
   }
 
   const result = await insertRelationshipEdge({
@@ -170,48 +178,54 @@ export async function addParentRelationshipAction(formData: FormData) {
   });
 
   if (!result.ok) {
-    redirectWithRelationshipError(personId, result.reason);
+    redirectWithRelationshipError(returnTo, result.reason);
   }
 
   revalidateRelationshipPaths([personId, parentId]);
-  redirectWithRelationshipStatus(personId, "added_parent");
+  redirectWithRelationshipStatus(returnTo, "added_parent");
 }
 
 export async function addChildRelationshipAction(formData: FormData) {
   const raw = toFormObject(formData);
+  const rawReturnTo = formData.get("return_to");
   if (raw.person_id === raw.related_person_id) {
     const personId = typeof raw.person_id === "string" ? raw.person_id : "";
-    redirectWithRelationshipError(personId, "self_link");
+    const fallbackPath = personId ? `/keluarga/${personId}` : "/keluarga";
+    const returnTo = sanitizeInternalReturnTo(rawReturnTo, fallbackPath);
+    redirectWithRelationshipError(returnTo, "self_link");
   }
 
   const parsed = addChildRelationshipSchema.safeParse(raw);
   if (!parsed.success) {
     const fallbackPersonId = typeof raw.person_id === "string" ? raw.person_id : "";
-    redirectWithRelationshipError(fallbackPersonId, "invalid_relationship");
+    const fallbackPath = fallbackPersonId ? `/keluarga/${fallbackPersonId}` : "/keluarga";
+    const returnTo = sanitizeInternalReturnTo(rawReturnTo, fallbackPath);
+    redirectWithRelationshipError(returnTo, "invalid_relationship");
   }
 
   const personId = parsed.data.person_id;
+  const returnTo = sanitizeInternalReturnTo(rawReturnTo, `/keluarga/${personId}`);
   const childId = parsed.data.related_person_id;
   const { user } = await requireEditor(`/keluarga/${personId}`);
 
   const peopleCheck = await ensureActivePeople(personId, childId);
   if (!peopleCheck.ok) {
-    redirectWithRelationshipError(personId, peopleCheck.reason);
+    redirectWithRelationshipError(returnTo, peopleCheck.reason);
   }
 
   if (await hasActiveRelationship(personId, childId, "parent")) {
-    redirectWithRelationshipError(personId, "duplicate_relationship");
+    redirectWithRelationshipError(returnTo, "duplicate_relationship");
   }
 
   if (await hasActiveRelationship(childId, personId, "parent")) {
-    redirectWithRelationshipError(personId, "illegal_relationship");
+    redirectWithRelationshipError(returnTo, "illegal_relationship");
   }
 
   if (
     (await hasActiveRelationship(personId, childId, "spouse")) ||
     (await hasActiveRelationship(childId, personId, "spouse"))
   ) {
-    redirectWithRelationshipError(personId, "illegal_relationship");
+    redirectWithRelationshipError(returnTo, "illegal_relationship");
   }
 
   const result = await insertRelationshipEdge({
@@ -222,49 +236,55 @@ export async function addChildRelationshipAction(formData: FormData) {
   });
 
   if (!result.ok) {
-    redirectWithRelationshipError(personId, result.reason);
+    redirectWithRelationshipError(returnTo, result.reason);
   }
 
   revalidateRelationshipPaths([personId, childId]);
-  redirectWithRelationshipStatus(personId, "added_child");
+  redirectWithRelationshipStatus(returnTo, "added_child");
 }
 
 export async function addSpouseRelationshipAction(formData: FormData) {
   const raw = toFormObject(formData);
+  const rawReturnTo = formData.get("return_to");
   if (raw.person_id === raw.related_person_id) {
     const personId = typeof raw.person_id === "string" ? raw.person_id : "";
-    redirectWithRelationshipError(personId, "self_link");
+    const fallbackPath = personId ? `/keluarga/${personId}` : "/keluarga";
+    const returnTo = sanitizeInternalReturnTo(rawReturnTo, fallbackPath);
+    redirectWithRelationshipError(returnTo, "self_link");
   }
 
   const parsed = addSpouseRelationshipSchema.safeParse(raw);
   if (!parsed.success) {
     const fallbackPersonId = typeof raw.person_id === "string" ? raw.person_id : "";
-    redirectWithRelationshipError(fallbackPersonId, "invalid_relationship");
+    const fallbackPath = fallbackPersonId ? `/keluarga/${fallbackPersonId}` : "/keluarga";
+    const returnTo = sanitizeInternalReturnTo(rawReturnTo, fallbackPath);
+    redirectWithRelationshipError(returnTo, "invalid_relationship");
   }
 
   const personId = parsed.data.person_id;
+  const returnTo = sanitizeInternalReturnTo(rawReturnTo, `/keluarga/${personId}`);
   const relatedPersonId = parsed.data.related_person_id;
   const { user } = await requireEditor(`/keluarga/${personId}`);
 
   const peopleCheck = await ensureActivePeople(personId, relatedPersonId);
   if (!peopleCheck.ok) {
-    redirectWithRelationshipError(personId, peopleCheck.reason);
+    redirectWithRelationshipError(returnTo, peopleCheck.reason);
   }
 
   const pair = normalizeSpousePair(personId, relatedPersonId);
   if (await hasActiveRelationship(pair.fromPersonId, pair.toPersonId, "spouse")) {
-    redirectWithRelationshipError(personId, "duplicate_relationship");
+    redirectWithRelationshipError(returnTo, "duplicate_relationship");
   }
 
   if (
     (await hasActiveRelationship(pair.fromPersonId, pair.toPersonId, "parent")) ||
     (await hasActiveRelationship(pair.toPersonId, pair.fromPersonId, "parent"))
   ) {
-    redirectWithRelationshipError(personId, "illegal_relationship");
+    redirectWithRelationshipError(returnTo, "illegal_relationship");
   }
 
   if ((await hasAnyActiveSpouse(personId)) || (await hasAnyActiveSpouse(relatedPersonId))) {
-    redirectWithRelationshipError(personId, "illegal_relationship");
+    redirectWithRelationshipError(returnTo, "illegal_relationship");
   }
 
   const result = await insertRelationshipEdge({
@@ -275,22 +295,26 @@ export async function addSpouseRelationshipAction(formData: FormData) {
   });
 
   if (!result.ok) {
-    redirectWithRelationshipError(personId, result.reason);
+    redirectWithRelationshipError(returnTo, result.reason);
   }
 
   revalidateRelationshipPaths([personId, relatedPersonId]);
-  redirectWithRelationshipStatus(personId, "added_spouse");
+  redirectWithRelationshipStatus(returnTo, "added_spouse");
 }
 
 export async function archiveRelationshipAction(formData: FormData) {
   const raw = toFormObject(formData);
+  const rawReturnTo = formData.get("return_to");
   const parsed = archiveRelationshipSchema.safeParse(raw);
   if (!parsed.success) {
     const fallbackPersonId = typeof raw.person_id === "string" ? raw.person_id : "";
-    redirectWithRelationshipError(fallbackPersonId, "invalid_relationship");
+    const fallbackPath = fallbackPersonId ? `/keluarga/${fallbackPersonId}` : "/keluarga";
+    const returnTo = sanitizeInternalReturnTo(rawReturnTo, fallbackPath);
+    redirectWithRelationshipError(returnTo, "invalid_relationship");
   }
 
   const personId = parsed.data.person_id;
+  const returnTo = sanitizeInternalReturnTo(rawReturnTo, `/keluarga/${personId}`);
   const { user } = await requireEditor(`/keluarga/${personId}`);
   const supabase = await createClient();
   const { data: relationship, error: relationshipError } = await supabase
@@ -300,15 +324,15 @@ export async function archiveRelationshipAction(formData: FormData) {
     .maybeSingle();
 
   if (relationshipError || !relationship) {
-    redirectWithRelationshipError(personId, "invalid_relationship");
+    redirectWithRelationshipError(returnTo, "invalid_relationship");
   }
 
   if (relationship.from_person_id !== personId && relationship.to_person_id !== personId) {
-    redirectWithRelationshipError(personId, "invalid_relationship");
+    redirectWithRelationshipError(returnTo, "invalid_relationship");
   }
 
   if (relationship.is_archived) {
-    redirectWithRelationshipStatus(personId, "archived");
+    redirectWithRelationshipStatus(returnTo, "archived");
   }
 
   const { error } = await supabase
@@ -321,9 +345,9 @@ export async function archiveRelationshipAction(formData: FormData) {
     .eq("id", relationship.id);
 
   if (error) {
-    redirectWithRelationshipError(personId, "archive_failed");
+    redirectWithRelationshipError(returnTo, "archive_failed");
   }
 
   revalidateRelationshipPaths([relationship.from_person_id, relationship.to_person_id]);
-  redirectWithRelationshipStatus(personId, "archived");
+  redirectWithRelationshipStatus(returnTo, "archived");
 }

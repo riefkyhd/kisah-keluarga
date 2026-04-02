@@ -14,7 +14,7 @@ test("viewer bisa membuka halaman pohon keluarga", async ({ page }) => {
   await expect(page.getByTestId("family-tree-visual")).toBeVisible();
 });
 
-test("tree menampilkan parent-child dan spouse, archived member tidak tampil, dan node bisa buka profil", async ({ page }) => {
+test("tree menampilkan relasi aktif, archived member tersembunyi, dan klik node membuka drawer", async ({ page }) => {
   const editor = await ensureRoleUser("editor");
 
   const focus = await createMemberFixture("Tree Focus", editor.id);
@@ -61,8 +61,31 @@ test("tree menampilkan parent-child dan spouse, archived member tidak tampil, da
   await expect(page.getByTestId("tree-link-spouse")).toHaveCount(1);
 
   await page.getByTestId("tree-child-node").filter({ hasText: child.full_name }).click();
-  await expect(page).toHaveURL(new RegExp(`/keluarga/${child.id}`));
-  await expect(page.getByRole("heading", { name: child.full_name })).toBeVisible();
+  await expect(page).toHaveURL(new RegExp(`/\\?personId=${focus.id}&memberId=${child.id}`));
+  await expect(page.getByTestId("member-drawer")).toBeVisible();
+  await expect(page.getByTestId("member-drawer").getByRole("heading", { name: child.full_name })).toBeVisible();
+
+  await page.getByRole("button", { name: "Tutup drawer" }).click();
+  await expect(page).toHaveURL(new RegExp(`/\\?personId=${focus.id}$`));
+  await expect(page.getByTestId("member-drawer")).toHaveCount(0);
+});
+
+test("drawer bisa dibuka langsung dari query memberId", async ({ page }) => {
+  const editor = await ensureRoleUser("editor");
+  const focus = await createMemberFixture("Tree Query Focus", editor.id);
+  const child = await createMemberFixture("Tree Query Child", editor.id);
+
+  await createRelationshipFixture({
+    fromPersonId: focus.id,
+    toPersonId: child.id,
+    relationshipType: "parent",
+    createdByUserId: editor.id
+  });
+
+  await loginAsRole(page, "viewer", `/?personId=${focus.id}&memberId=${child.id}`);
+
+  await expect(page.getByTestId("member-drawer")).toBeVisible();
+  await expect(page.getByTestId("member-drawer").getByRole("heading", { name: child.full_name })).toBeVisible();
 });
 
 test("editor tetap bisa mengakses route pohon dengan aman", async ({ page }) => {

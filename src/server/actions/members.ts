@@ -2,12 +2,27 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { sanitizeInternalReturnTo, withQueryParam } from "@/lib/navigation/return-to";
 import { requireEditor } from "@/lib/permissions/guards";
 import { createClient } from "@/lib/supabase/server";
 import { createMemberSchema, memberArchiveSchema, updateMemberSchema } from "@/lib/validation/member";
 
 function toFormObject(formData: FormData) {
   return Object.fromEntries(formData.entries());
+}
+
+function revalidateMemberPaths(personId: string) {
+  revalidatePath("/");
+  revalidatePath("/keluarga");
+  revalidatePath(`/keluarga/${personId}`);
+}
+
+function redirectWithEditError(targetPath: string, error: string): never {
+  redirect(withQueryParam(targetPath, "error", error));
+}
+
+function redirectWithEditStatus(targetPath: string, status: string): never {
+  redirect(withQueryParam(targetPath, "status", status));
 }
 
 export async function createMemberAction(formData: FormData) {
@@ -66,8 +81,7 @@ export async function updateMemberAction(formData: FormData) {
     redirect(`/anggota/${parsed.data.person_id}/edit?error=save_failed`);
   }
 
-  revalidatePath("/keluarga");
-  revalidatePath(`/keluarga/${parsed.data.person_id}`);
+  revalidateMemberPaths(parsed.data.person_id);
   redirect(`/keluarga/${parsed.data.person_id}?updated=1`);
 }
 
@@ -78,6 +92,10 @@ export async function archiveMemberAction(formData: FormData) {
     redirect("/keluarga?error=invalid_member");
   }
 
+  const returnTo = sanitizeInternalReturnTo(
+    formData.get("return_to"),
+    `/anggota/${parsed.data.person_id}/edit`
+  );
   const { user } = await requireEditor(`/anggota/${parsed.data.person_id}/edit`);
   const supabase = await createClient();
   const { error } = await supabase
@@ -90,12 +108,11 @@ export async function archiveMemberAction(formData: FormData) {
     .eq("id", parsed.data.person_id);
 
   if (error) {
-    redirect(`/anggota/${parsed.data.person_id}/edit?error=archive_failed`);
+    redirectWithEditError(returnTo, "archive_failed");
   }
 
-  revalidatePath("/keluarga");
-  revalidatePath(`/keluarga/${parsed.data.person_id}`);
-  redirect(`/anggota/${parsed.data.person_id}/edit?status=archived`);
+  revalidateMemberPaths(parsed.data.person_id);
+  redirectWithEditStatus(returnTo, "archived");
 }
 
 export async function restoreMemberAction(formData: FormData) {
@@ -105,6 +122,10 @@ export async function restoreMemberAction(formData: FormData) {
     redirect("/keluarga?error=invalid_member");
   }
 
+  const returnTo = sanitizeInternalReturnTo(
+    formData.get("return_to"),
+    `/anggota/${parsed.data.person_id}/edit`
+  );
   const { user } = await requireEditor(`/anggota/${parsed.data.person_id}/edit`);
   const supabase = await createClient();
   const { error } = await supabase
@@ -117,10 +138,9 @@ export async function restoreMemberAction(formData: FormData) {
     .eq("id", parsed.data.person_id);
 
   if (error) {
-    redirect(`/anggota/${parsed.data.person_id}/edit?error=restore_failed`);
+    redirectWithEditError(returnTo, "restore_failed");
   }
 
-  revalidatePath("/keluarga");
-  revalidatePath(`/keluarga/${parsed.data.person_id}`);
-  redirect(`/anggota/${parsed.data.person_id}/edit?status=restored`);
+  revalidateMemberPaths(parsed.data.person_id);
+  redirectWithEditStatus(returnTo, "restored");
 }

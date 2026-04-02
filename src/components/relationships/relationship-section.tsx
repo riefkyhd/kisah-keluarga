@@ -18,6 +18,7 @@ type RelationshipSectionProps = {
   submitLabel?: string;
   addAction?: (formData: FormData) => Promise<void>;
   archiveAction?: (formData: FormData) => Promise<void>;
+  returnTo?: string;
 };
 
 function hasRelationshipId(
@@ -39,7 +40,8 @@ export function RelationshipSection({
   addLabel = "Pilih anggota",
   submitLabel = "Tambah Relasi",
   addAction,
-  archiveAction
+  archiveAction,
+  returnTo
 }: RelationshipSectionProps) {
   const showAdd = canManage && showAddForm && Boolean(addAction);
 
@@ -79,6 +81,7 @@ export function RelationshipSection({
                     relationshipId={item.relationship_id}
                     relationshipTypeLabel={title}
                     archiveAction={archiveAction}
+                    returnTo={returnTo}
                   />
                 ) : null}
               </div>
@@ -91,6 +94,7 @@ export function RelationshipSection({
         candidates.length > 0 ? (
           <form action={addAction} className="space-y-3 rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] p-4">
             <input type="hidden" name="person_id" value={currentPersonId} />
+            {returnTo ? <input type="hidden" name="return_to" value={returnTo} /> : null}
             <label className="block space-y-2 text-sm font-medium text-[color:var(--color-bark)]">
               {addLabel}
               <select

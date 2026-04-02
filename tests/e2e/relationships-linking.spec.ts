@@ -13,7 +13,7 @@ async function expectRelationshipStatusOnProfile(
     added_spouse: "Relasi pasangan berhasil ditambahkan.",
     added_child: "Relasi anak berhasil ditambahkan."
   };
-  await expect(page.getByText(statusMessages[status])).toBeVisible();
+  await expect(page.getByRole("main").getByText(statusMessages[status])).toBeVisible();
 }
 
 test("editor bisa tambah relasi parent, spouse, dan child dari konteks profil", async ({ page }) => {
@@ -68,7 +68,7 @@ test("viewer bisa melihat section relasi tapi tidak bisa melakukan write relasi"
   await expect(page.getByRole("button", { name: "Tambah Orang Tua" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Tambah Pasangan" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Tambah Anak" })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Arsipkan Relasi" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Buka menu aksi relasi" })).toHaveCount(0);
 
   // Keep viewer role explicitly used so fixture assignment remains meaningful.
   await expect(viewer.email).toContain("e2e.viewer");
@@ -86,9 +86,16 @@ test("duplicate, self-link, aturan ilegal, dan arsip relasi ditangani aman", asy
   await parentSection.getByRole("button", { name: "Tambah Orang Tua" }).click();
   await expect(parentSection.getByRole("link", { name: parent.full_name })).toBeVisible();
 
-  await parentSection.locator('select[name="related_person_id"]').selectOption(parent.id);
+  await parentSection.locator('select[name="related_person_id"]').evaluate((node, relatedId) => {
+    const select = node as HTMLSelectElement;
+    const option = document.createElement("option");
+    option.value = String(relatedId);
+    option.text = "Parent duplicate";
+    select.appendChild(option);
+    select.value = String(relatedId);
+  }, parent.id);
   await parentSection.getByRole("button", { name: "Tambah Orang Tua" }).click();
-  await expect(page.getByText("Relasi aktif yang sama sudah ada.")).toBeVisible();
+  await expect(page.getByRole("main").getByText("Relasi aktif yang sama sudah ada.")).toBeVisible();
 
   await parentSection.locator('select[name="related_person_id"]').evaluate((node, personId) => {
     const select = node as HTMLSelectElement;
@@ -99,17 +106,21 @@ test("duplicate, self-link, aturan ilegal, dan arsip relasi ditangani aman", asy
     select.value = String(personId);
   }, person.id);
   await parentSection.getByRole("button", { name: "Tambah Orang Tua" }).click();
-  await expect(page.getByText("Anggota tidak bisa dihubungkan ke dirinya sendiri.")).toBeVisible();
+  await expect(
+    page.getByRole("main").getByText("Anggota tidak bisa dihubungkan ke dirinya sendiri.")
+  ).toBeVisible();
 
   const spouseSection = page.getByTestId("spouse-section");
   await spouseSection.locator('select[name="related_person_id"]').selectOption(parent.id);
   await spouseSection.getByRole("button", { name: "Tambah Pasangan" }).click();
   await expect(
-    page.getByText("Relasi ini tidak dapat dibuat karena bertentangan dengan aturan data keluarga.")
+    page.getByRole("main").getByText("Relasi ini tidak dapat dibuat karena bertentangan dengan aturan data keluarga.")
   ).toBeVisible();
 
-  await parentSection.getByRole("button", { name: "Arsipkan Relasi" }).click();
-  await expect(page.getByText("Relasi berhasil diarsipkan.")).toBeVisible();
+  await parentSection.getByRole("button", { name: "Buka menu aksi relasi" }).first().click();
+  await page.getByRole("menuitem", { name: "Arsipkan relasi" }).click();
+  await page.getByRole("button", { name: "Ya, Arsipkan" }).click();
+  await expect(page.getByRole("main").getByText("Relasi berhasil diarsipkan.")).toBeVisible();
   await expect(parentSection.getByRole("link", { name: parent.full_name })).toHaveCount(0);
 });
 

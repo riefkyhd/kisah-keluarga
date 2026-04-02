@@ -40,6 +40,15 @@ export function FocusPersonCombobox({
     }
 
     const params = new URLSearchParams(searchParams.toString());
+    params.delete("memberId");
+    params.delete("relationship_error");
+    params.delete("relationship_status");
+    params.delete("photo_error");
+    params.delete("photo_status");
+    params.delete("error");
+    params.delete("status");
+    params.delete("created");
+    params.delete("updated");
     params.set("personId", selectedPerson.id);
     router.push(`/?${params.toString()}`);
     setOpen(false);

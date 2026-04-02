@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { loginAsRole } from "./helpers/auth";
 import {
   attachPhotoFixtureToMember,
@@ -9,6 +9,20 @@ import {
   getMemberPhotoStorageMeta,
   ensureRoleUser
 } from "./helpers/supabase-admin";
+
+async function expectPhotoStatusOnProfile(
+  page: Page,
+  memberId: string,
+  status: "uploaded" | "replaced" | "removed"
+) {
+  await expect(page).toHaveURL(new RegExp(`/keluarga/${memberId}\\?.*photo_status=${status}`));
+  const statusMessages: Record<typeof status, string> = {
+    uploaded: "Foto profil berhasil diunggah.",
+    replaced: "Foto profil berhasil diperbarui.",
+    removed: "Foto profil berhasil dihapus."
+  };
+  await expect(page.getByRole("main").getByText(statusMessages[status])).toBeVisible();
+}
 
 test("editor bisa unggah, ganti, dan hapus foto profil anggota", async ({ page }) => {
   const editor = await ensureRoleUser("editor");
@@ -21,7 +35,7 @@ test("editor bisa unggah, ganti, dan hapus foto profil anggota", async ({ page }
     .setInputFiles(createTinyPngUpload("first-photo.png"));
   await page.getByRole("button", { name: "Unggah Foto" }).click();
 
-  await expect(page.getByText("Foto profil berhasil diunggah.")).toBeVisible();
+  await expectPhotoStatusOnProfile(page, member.id, "uploaded");
   await expect(page.locator('[data-testid="member-photo-image"] img')).toBeVisible();
   const uploadedMeta = await getMemberPhotoStorageMeta(member.id);
   expect(uploadedMeta).not.toBeNull();
@@ -38,10 +52,10 @@ test("editor bisa unggah, ganti, dan hapus foto profil anggota", async ({ page }
     .getByTestId("member-photo-upload-input")
     .setInputFiles(createTinyPngUpload("second-photo.png"));
   await page.getByRole("button", { name: "Ganti Foto" }).click();
-  await expect(page.getByText("Foto profil berhasil diperbarui.")).toBeVisible();
+  await expectPhotoStatusOnProfile(page, member.id, "replaced");
 
   await page.getByRole("button", { name: "Hapus Foto" }).click();
-  await expect(page.getByText("Foto profil berhasil dihapus.")).toBeVisible();
+  await expectPhotoStatusOnProfile(page, member.id, "removed");
   await expect(page.locator('[data-testid="member-photo-image"] img')).toHaveCount(0);
 });
 
@@ -74,7 +88,7 @@ test("unggah foto galeri yang lebih besar tetap sukses dan tersimpan teroptimasi
   await page.getByTestId("member-photo-upload-input").setInputFiles(largeUpload);
   await page.getByRole("button", { name: "Unggah Foto" }).click();
 
-  await expect(page.getByText("Foto profil berhasil diunggah.")).toBeVisible();
+  await expectPhotoStatusOnProfile(page, member.id, "uploaded");
   const uploadedMeta = await getMemberPhotoStorageMeta(member.id);
   expect(uploadedMeta).not.toBeNull();
   expect(uploadedMeta?.path.endsWith(".webp")).toBeTruthy();

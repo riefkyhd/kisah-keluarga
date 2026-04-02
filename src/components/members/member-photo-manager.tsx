@@ -10,6 +10,7 @@ type MemberPhotoManagerProps = {
   hasPhoto: boolean;
   uploadAction: (formData: FormData) => Promise<void>;
   removeAction: (formData: FormData) => Promise<void>;
+  returnTo?: string;
 };
 
 const MAX_PHOTO_SIZE_BYTES = 4 * 1024 * 1024;
@@ -20,7 +21,8 @@ export function MemberPhotoManager({
   canManage,
   hasPhoto,
   uploadAction,
-  removeAction
+  removeAction,
+  returnTo
 }: MemberPhotoManagerProps) {
   const [uploadError, setUploadError] = useState("");
 
@@ -59,6 +61,7 @@ export function MemberPhotoManager({
         <div className="space-y-3">
           <form action={uploadAction} className="space-y-3 rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] p-4">
             <input type="hidden" name="person_id" value={personId} />
+            {returnTo ? <input type="hidden" name="return_to" value={returnTo} /> : null}
             <label className="block space-y-2 text-base font-medium text-[color:var(--color-bark)]">
               Pilih foto
               <span className="block rounded-[var(--kk-radius-md)] border-2 border-dashed border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-4 py-4">
@@ -85,6 +88,7 @@ export function MemberPhotoManager({
           {hasPhoto ? (
             <form action={removeAction}>
               <input type="hidden" name="person_id" value={personId} />
+              {returnTo ? <input type="hidden" name="return_to" value={returnTo} /> : null}
               <FormSubmitButton type="submit" variant="danger" className="w-full" pendingLabel="Menghapus foto...">
                 Hapus Foto
               </FormSubmitButton>
