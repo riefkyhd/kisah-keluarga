@@ -168,10 +168,10 @@ export default async function PublicHomePage({ searchParams }: HomeTreePageProps
   }));
 
   return (
-    <section className="relative flex min-h-[calc(100dvh-11rem)] flex-col gap-5">
+    <section className="relative flex min-h-[calc(100dvh-11rem)] flex-col gap-5 pt-2 sm:pt-0">
       <h1
         data-testid="tree-page-heading"
-        className="text-[11px] font-medium uppercase tracking-[0.12em] text-[color:var(--color-clay)]"
+        className="text-sm font-semibold uppercase tracking-wider text-[color:var(--color-clay)]"
       >
         Pohon Keluarga
       </h1>

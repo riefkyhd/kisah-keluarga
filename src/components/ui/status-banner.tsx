@@ -29,13 +29,13 @@ export function StatusBanner({ variant, message, className }: StatusBannerProps)
   return (
     <div
       className={cn(
-        "kk-interactive flex items-start gap-2 rounded-[var(--kk-radius-md)] border px-4 py-3 text-sm leading-relaxed",
+        "kk-interactive flex items-center gap-3 rounded-[var(--kk-radius-md)] border-2 px-4 py-4 text-base font-bold leading-relaxed",
         variantStyles[variant],
         className
       )}
     >
-      <Icon className="mt-0.5 h-4 w-4 shrink-0" />
-      <p className="leading-relaxed">{message}</p>
+      <Icon className="h-6 w-6 shrink-0" />
+      <p className="flex-1 leading-tight">{message}</p>
     </div>
   );
 }

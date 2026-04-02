@@ -77,23 +77,46 @@ export function CanvasToolbar({
 
   return (
     <>
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:hidden">
-        <div className="pointer-events-auto mx-auto flex max-w-5xl items-center justify-between gap-2 rounded-[999px] border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] p-2 shadow-[0_4px_24px_rgba(28,25,23,0.14)]">
-          <Button type="button" variant="outline" size="icon" aria-label="Cari anggota" onClick={() => setSearchOpen(true)}>
-            <Search className="h-4 w-4" />
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-3 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:hidden">
+        <div className="pointer-events-auto mx-auto flex max-w-5xl items-center justify-between gap-1 rounded-[var(--kk-radius-xl)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] p-1.5 shadow-[var(--kk-shadow-panel)]">
+          <Button
+            type="button"
+            variant="ghost"
+            className="h-auto flex-1 flex-col gap-1.5 px-1 py-2"
+            onClick={() => setSearchOpen(true)}
+          >
+            <Search className="h-5 w-5" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">Cari</span>
           </Button>
           {canManageMembers ? (
-            <Button type="button" variant="outline" size="icon" aria-label="Tambah anggota" onClick={openAddMember}>
-              <Plus className="h-4 w-4" />
+            <Button
+              type="button"
+              variant="ghost"
+              className="h-auto flex-1 flex-col gap-1.5 px-1 py-2"
+              onClick={openAddMember}
+            >
+              <Plus className="h-5 w-5" />
+              <span className="text-[10px] font-bold uppercase tracking-wider">Tambah</span>
             </Button>
           ) : null}
-          <Button type="button" variant="outline" size="icon" aria-label="Pilih fokus anggota" onClick={() => setFocusOpen((value) => !value)}>
-            <Target className="h-4 w-4" />
+          <Button
+            type="button"
+            variant="ghost"
+            className="h-auto flex-1 flex-col gap-1.5 px-1 py-2"
+            onClick={() => setFocusOpen((value) => !value)}
+          >
+            <Target className="h-5 w-5" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">Fokus</span>
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button type="button" variant="outline" size="icon" aria-label="Menu lainnya">
-                <Ellipsis className="h-4 w-4" />
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-auto flex-1 flex-col gap-1.5 px-1 py-2"
+              >
+                <Ellipsis className="h-5 w-5" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Menu</span>
               </Button>
             </DropdownMenuTrigger>
             <ToolbarMenuItems canManageUsers={canManageUsers} showLogout={showLogout} />

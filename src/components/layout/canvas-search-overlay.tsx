@@ -79,8 +79,8 @@ export function CanvasSearchOverlay({
             "sm:inset-auto sm:right-6 sm:top-20 sm:w-[min(28rem,calc(100vw-2rem))] sm:max-h-[calc(100dvh-7rem)] sm:overflow-hidden sm:rounded-[var(--kk-radius-xl)] sm:border sm:border-[color:rgba(212,184,150,0.4)] sm:shadow-[var(--kk-shadow-panel)] sm:data-[state=open]:translate-y-0 sm:data-[state=closed]:translate-y-2"
           )}
         >
-          <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] px-5 py-4 sm:px-6">
-            <DialogPrimitive.Title id={titleId} className="text-lg text-[color:var(--color-bark)]">
+          <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-5 py-4 sm:px-6">
+            <DialogPrimitive.Title id={titleId} className="text-xl font-bold text-[color:var(--color-bark)]">
               Cari Anggota
             </DialogPrimitive.Title>
             <DialogCloseButton aria-label="Tutup pencarian" />
@@ -88,17 +88,17 @@ export function CanvasSearchOverlay({
 
           <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-6 sm:py-5">
             <div className="relative">
-              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--kk-muted)]" />
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[color:var(--kk-muted)]" />
               <input
                 autoFocus
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Cari nama atau panggilan..."
-                className="w-full rounded-[var(--kk-radius-sm)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] py-3 pl-10 pr-3 text-sm text-[color:var(--color-bark)] outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--kk-focus)]"
+                className="w-full rounded-[var(--kk-radius-md)] border-2 border-[color:var(--color-sand)] bg-[color:var(--color-warm)] py-4 pl-12 pr-4 text-lg font-medium text-[color:var(--color-bark)] outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--kk-focus)] transition-all"
               />
             </div>
 
-            <ul className="mt-4 space-y-2">
+            <ul className="mt-6 space-y-3">
               {filteredMembers.map((member) => (
                 <li key={member.id}>
                   <button
@@ -106,7 +106,7 @@ export function CanvasSearchOverlay({
                     onClick={() => {
                       onSelectMember(member.id);
                     }}
-                    className="flex w-full items-center gap-3 rounded-[var(--kk-radius-md)] border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] px-3 py-2 text-left transition-[background-color,border-color,color,box-shadow,transform,opacity] duration-[var(--kk-duration-fast)] ease-[var(--kk-ease-out)] hover:bg-[color:var(--color-warm)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--kk-focus)]"
+                    className="flex min-h-16 w-full items-center gap-4 rounded-[var(--kk-radius-md)] border-2 border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-4 py-3 text-left transition-all hover:bg-[color:var(--color-warm)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--kk-focus)] active:scale-[0.99]"
                   >
                     <MemberAvatar
                       fullName={member.fullName}
@@ -114,11 +114,11 @@ export function CanvasSearchOverlay({
                       size="sm"
                       coloredFallback
                     />
-                    <span className="min-w-0">
-                      <span className="block truncate text-sm font-medium text-[color:var(--color-bark)]">
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-base font-bold text-[color:var(--color-bark)]">
                         {member.fullName}
                       </span>
-                      <span className="block truncate text-xs font-normal text-[color:var(--kk-muted)]">
+                      <span className="block truncate text-sm font-medium text-[color:var(--color-clay)]">
                         {member.nickname ? `Panggilan: ${member.nickname}` : "Tanpa nama panggilan"}
                       </span>
                     </span>
@@ -127,7 +127,7 @@ export function CanvasSearchOverlay({
               ))}
 
               {filteredMembers.length === 0 ? (
-                <li className="rounded-[var(--kk-radius-md)] border border-dashed border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-4 py-3 text-sm text-[color:var(--kk-muted)]">
+                <li className="rounded-[var(--kk-radius-md)] border-2 border-dashed border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-6 py-5 text-base font-medium text-[color:var(--kk-muted)] text-center">
                   Anggota tidak ditemukan. Coba kata kunci lain.
                 </li>
               ) : null}

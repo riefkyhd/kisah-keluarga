@@ -17,7 +17,7 @@ export function MemberCard({ member }: MemberCardProps) {
       <Link href={`/keluarga/${member.id}`} className="group block">
         <Card
           clickable
-          className="space-y-4 border-[color:rgba(212,184,150,0.4)] p-4 hover:border-[color:var(--color-sand)]"
+          className="space-y-4 border-[color:var(--color-sand)] p-4 hover:border-[color:var(--color-clay)]"
         >
           <div className="flex items-start gap-4">
             <MemberAvatar
@@ -28,28 +28,28 @@ export function MemberCard({ member }: MemberCardProps) {
             />
             <div className="min-w-0 flex-1 space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="break-words text-base leading-snug text-[color:var(--color-bark)] group-hover:text-[color:var(--color-clay)]">
+                <h3 className="break-words text-base leading-tight font-bold text-[color:var(--color-bark)] group-hover:text-[color:var(--color-clay)]">
                   {member.full_name}
                 </h3>
                 {member.nickname ? (
-                  <span className="rounded-full bg-[color:var(--color-warm)] px-3 py-1 text-xs font-medium text-[color:var(--color-clay)]">
+                  <span className="rounded-full bg-[color:var(--color-warm)] px-3 py-1 text-xs font-semibold text-[color:var(--color-clay)] border border-[color:var(--color-sand)]">
                     Panggilan: {member.nickname}
                   </span>
                 ) : null}
               </div>
               <div className="flex flex-wrap gap-2">
                 {member.generation ? (
-                  <span className="rounded-full bg-[color:var(--color-warm)] px-3 py-1 text-xs font-medium text-[color:var(--color-bark)]">
+                  <span className="rounded-full bg-[color:var(--color-warm)] px-3 py-1 text-xs font-semibold text-[color:var(--color-bark)] border border-[color:var(--color-sand)]">
                     Gen {member.generation}
                   </span>
                 ) : null}
-                <span className="rounded-full bg-[color:#f7f3ed] px-3 py-1 text-xs font-medium text-[color:var(--color-clay)]">
+                <span className="rounded-full bg-[color:#f7f3ed] px-3 py-1 text-xs font-semibold text-[color:var(--color-clay)] border border-[color:var(--color-sand)]">
                   {member.primary_relationship_label}
                 </span>
               </div>
             </div>
 
-            <span className="ml-auto hidden rounded-[var(--kk-radius-sm)] bg-[color:var(--color-warm)] px-3 py-1.5 text-xs font-medium text-[color:var(--color-clay)] sm:inline">
+            <span className="ml-auto rounded-[var(--kk-radius-sm)] bg-[color:var(--color-warm)] border border-[color:var(--color-sand)] px-3 py-1.5 text-xs font-bold text-[color:var(--color-clay)]">
               Profil
             </span>
           </div>

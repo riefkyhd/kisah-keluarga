@@ -134,6 +134,7 @@ export function FamilyTree({
 
   const [scale, setScale] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<SVGSVGElement>(null);
 
   const pointersRef = useRef(new Map<number, { x: number; y: number }>());
   const dragPointerIdRef = useRef<number | null>(null);
@@ -141,8 +142,17 @@ export function FamilyTree({
   const pinchRef = useRef<{ distance: number; scale: number } | null>(null);
   const movedDuringGestureRef = useRef(false);
 
-  const nodeMap = new Map<string, (typeof layout.nodes)[number]>();
-  layout.nodes.forEach((node) => nodeMap.set(node.id, node));
+  const nodeMap = useMemo(() => {
+    const map = new Map<string, (typeof layout.nodes)[number]>();
+    layout.nodes.forEach((node) => map.set(node.id, node));
+    return map;
+  }, [layout.nodes]);
+
+  // Auto-center focus person on ID change
+  useMemo(() => {
+    setPan({ x: 0, y: 0 });
+    setScale(1);
+  }, [focusPerson.id]);
 
   const getPointerDistance = () => {
     const points = Array.from(pointersRef.current.values());
@@ -157,26 +167,26 @@ export function FamilyTree({
   return (
     <section
       data-testid="family-tree-visual"
-      className="space-y-4 rounded-[var(--kk-radius-xl)] border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] p-4 shadow-[var(--kk-shadow-card)] sm:p-5"
+      className="space-y-4 rounded-[var(--kk-radius-xl)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] p-4 shadow-[var(--kk-shadow-card)] sm:p-5"
     >
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-normal text-[color:var(--kk-muted)]">
-          Geser untuk pindah area pohon, cubit atau scroll untuk zoom, lalu ketuk node untuk membuka profil.
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm font-medium leading-relaxed text-[color:var(--kk-muted)]">
+          Pencet dan geser untuk pindah area, cubit atau gulir untuk perbesar. Ketuk nama untuk lihat profil.
         </p>
         <div className="flex shrink-0 items-center gap-2">
           <button
             type="button"
-            onClick={() => setScale((current) => clampScale(current + 0.15))}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] text-base font-medium text-[color:var(--color-bark)] hover:bg-[color:#e7dfd3]"
-            aria-label="Perbesar pohon"
+            onClick={() => setScale((current) => clampScale(current + 0.2))}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] text-xl font-bold text-[color:var(--color-bark)] hover:bg-[color:var(--color-sand)] active:scale-95 transition-all"
+            aria-label="Perbesar"
           >
             +
           </button>
           <button
             type="button"
-            onClick={() => setScale((current) => clampScale(current - 0.15))}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] text-base font-medium text-[color:var(--color-bark)] hover:bg-[color:#e7dfd3]"
-            aria-label="Perkecil pohon"
+            onClick={() => setScale((current) => clampScale(current - 0.2))}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] text-xl font-bold text-[color:var(--color-bark)] hover:bg-[color:var(--color-sand)] active:scale-95 transition-all"
+            aria-label="Perkecil"
           >
             -
           </button>
@@ -186,20 +196,21 @@ export function FamilyTree({
               setScale(1);
               setPan({ x: 0, y: 0 });
             }}
-            className="rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-3 py-2 text-xs font-medium text-[color:var(--color-bark)] hover:bg-[color:#e7dfd3]"
+            className="h-11 rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-4 py-2 text-sm font-bold text-[color:var(--color-bark)] hover:bg-[color:var(--color-sand)] active:scale-95 transition-all"
           >
-            Reset View
+            Reset
           </button>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-[var(--kk-radius-lg)] border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--color-cream)]/70">
+      <div className="overflow-hidden rounded-[var(--kk-radius-lg)] border border-[color:var(--color-sand)] bg-[color:var(--color-cream)]/70">
         <svg
+          ref={containerRef}
           viewBox={`0 0 ${layout.width} ${layout.height}`}
           className={`w-full touch-none ${canvasHeightClassName ?? "h-[520px]"}`}
           onWheel={(event) => {
             event.preventDefault();
-            const zoomDelta = event.deltaY > 0 ? -0.08 : 0.08;
+            const zoomDelta = event.deltaY > 0 ? -0.1 : 0.1;
             setScale((current) => clampScale(current + zoomDelta));
           }}
           onPointerDown={(event) => {
@@ -247,14 +258,14 @@ export function FamilyTree({
             const deltaX = event.clientX - lastPointerRef.current.x;
             const deltaY = event.clientY - lastPointerRef.current.y;
 
-            if (Math.abs(deltaX) + Math.abs(deltaY) > 3) {
+            if (Math.abs(deltaX) + Math.abs(deltaY) > 5) {
               movedDuringGestureRef.current = true;
             }
 
             lastPointerRef.current = { x: event.clientX, y: event.clientY };
             setPan((current) => ({
-              x: current.x + deltaX,
-              y: current.y + deltaY
+              x: current.x + deltaX / scale,
+              y: current.y + deltaY / scale
             }));
           }}
           onPointerUp={(event) => {
@@ -279,7 +290,7 @@ export function FamilyTree({
             }
           }}
         >
-          <g transform={`translate(${pan.x} ${pan.y}) scale(${scale})`}>
+          <g transform={`scale(${scale}) translate(${pan.x} ${pan.y})`}>
             {layout.edges.map((edge) => {
               const fromNode = nodeMap.get(edge.fromId);
               const toNode = nodeMap.get(edge.toId);
@@ -345,7 +356,12 @@ export function FamilyTree({
                 <g
                   key={node.id}
                   data-testid={testId}
-                  onClick={() => {
+                  onClick={(e) => {
+                    if (movedDuringGestureRef.current) {
+                      e.preventDefault();
+                      return;
+                    }
+
                     if (onNodeClick) {
                       onNodeClick(node.id);
                       return;
@@ -353,7 +369,7 @@ export function FamilyTree({
 
                     router.push(`/keluarga/${node.id}`);
                   }}
-                  className="cursor-pointer"
+                  className="cursor-pointer select-none"
                 >
                   <title>{node.fullName}</title>
                   <rect

@@ -138,7 +138,7 @@ export function MemberDrawer({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link
             href={`/keluarga/${member.id}`}
-            className="inline-flex min-h-10 items-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-3 py-2 text-sm font-medium text-[color:var(--color-bark)] hover:bg-[color:var(--color-warm)]"
+            className="inline-flex min-h-12 items-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-4 py-2 text-base font-bold text-[color:var(--color-bark)] hover:bg-[color:var(--color-warm)] shadow-sm transition-all"
           >
             Lihat profil penuh
           </Link>
@@ -147,7 +147,7 @@ export function MemberDrawer({
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
+                className="min-h-12 px-4 font-bold"
                 onClick={() => {
                   setMode("view");
                   pushCanvasState({
@@ -165,7 +165,7 @@ export function MemberDrawer({
               <Button
                 type="button"
                 variant="secondary"
-                size="sm"
+                className="min-h-12 px-4 font-bold border border-[color:var(--color-sand)]"
                 onClick={() => {
                   setMode("edit");
                   pushCanvasState({
@@ -184,7 +184,7 @@ export function MemberDrawer({
           ) : null}
         </div>
 
-        <Card className="space-y-4 border-[color:rgba(212,184,150,0.4)] text-center">
+        <Card className="space-y-5 border-[color:var(--color-sand)] p-6 text-center shadow-[var(--kk-shadow-card)]">
           <div className="mx-auto">
             <MemberAvatar
               fullName={member.full_name}
@@ -193,49 +193,55 @@ export function MemberDrawer({
               testId="member-drawer-photo-image"
             />
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <h2
               aria-label={member.full_name}
-              className="break-words text-2xl text-[color:var(--color-bark)]"
+              className="break-words text-3xl font-bold text-[color:var(--color-bark)]"
             >
               {member.full_name}
             </h2>
             {member.nickname ? (
-              <p className="text-sm font-normal text-[color:var(--kk-muted)]">Panggilan: {member.nickname}</p>
+              <p className="text-base font-semibold text-[color:var(--kk-muted)]">Panggilan: {member.nickname}</p>
             ) : null}
           </div>
 
           {member.is_archived ? <StatusBanner variant="warning" message="Anggota ini sedang diarsipkan." /> : null}
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Card className="rounded-[var(--kk-radius-md)] border-[color:var(--color-sand)] bg-[color:var(--color-warm)] p-4 shadow-none">
-              <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[color:var(--color-clay)]">Status</p>
-              <p className="mt-1 text-base font-medium text-[color:var(--color-bark)]">
+              <p className="text-xs font-bold uppercase tracking-wider text-[color:var(--color-clay)]">Status</p>
+              <p className="mt-1 text-lg font-bold text-[color:var(--color-bark)]">
                 {member.is_living ? "Masih hidup" : "Sudah wafat"}
               </p>
             </Card>
             <Card className="rounded-[var(--kk-radius-md)] border-[color:var(--color-sand)] bg-[color:var(--color-warm)] p-4 shadow-none">
-              <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[color:var(--color-clay)]">Tanggal Lahir</p>
-              <p className="mt-1 text-base font-medium text-[color:var(--color-bark)]">
+              <p className="text-xs font-bold uppercase tracking-wider text-[color:var(--color-clay)]">Tanggal Lahir</p>
+              <p className="mt-1 text-lg font-bold text-[color:var(--color-bark)]">
                 {birthDateLabel ?? "Belum diisi"}
               </p>
             </Card>
           </div>
         </Card>
 
-        <Card className="space-y-2 border-[color:rgba(212,184,150,0.4)] text-base leading-relaxed text-[color:var(--kk-muted)]">
-          <h3 className="text-lg text-[color:var(--color-bark)]">Informasi Dasar</h3>
-          {deathDateLabel ? <p>Tanggal wafat: {deathDateLabel}</p> : null}
-          {member.gender ? (
-            <p>
-              Jenis kelamin:{" "}
-              {member.gender === "male" ? "Laki-laki" : member.gender === "female" ? "Perempuan" : "Lainnya"}
-            </p>
-          ) : null}
-          {member.bio ? <p>Catatan: {member.bio}</p> : <p>Catatan: Belum ada catatan keluarga tambahan.</p>}
+        <Card className="space-y-4 border-[color:var(--color-sand)] p-6 text-base leading-relaxed text-[color:var(--kk-muted)] shadow-[var(--kk-shadow-card)]">
+          <h3 className="text-xl font-bold text-[color:var(--color-bark)]">Informasi Dasar</h3>
+          <div className="space-y-2">
+            {deathDateLabel ? <p className="font-medium"><span className="text-[color:var(--color-clay)]">Tanggal wafat:</span> {deathDateLabel}</p> : null}
+            {member.gender ? (
+              <p className="font-medium">
+                <span className="text-[color:var(--color-clay)]">Jenis kelamin:</span>{" "}
+                {member.gender === "male" ? "Laki-laki" : member.gender === "female" ? "Perempuan" : "Lainnya"}
+              </p>
+            ) : null}
+            <div className="pt-2 border-t border-[color:var(--color-warm)]">
+              <span className="block text-xs font-bold uppercase tracking-wider text-[color:var(--color-clay)] mb-1">Catatan Keluarga</span>
+              {member.bio ? <p className="text-base text-[color:var(--color-bark)] leading-relaxed">{member.bio}</p> : <p className="italic text-sm">Belum ada catatan keluarga tambahan.</p>}
+            </div>
+          </div>
+          
           <Link
             href={`/?personId=${member.id}&memberId=${member.id}`}
-            className="inline-flex min-h-10 items-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-3 py-2 text-sm font-medium text-[color:var(--color-bark)] hover:bg-[color:var(--color-warm)]"
+            className="mt-4 flex min-h-14 items-center justify-center rounded-[var(--kk-radius-md)] border-2 border-[color:var(--color-clay)] bg-[color:var(--color-clay)] px-6 py-3 text-lg font-bold text-white hover:bg-[color:var(--color-bark)] transition-colors shadow-md"
           >
             Fokuskan pohon ke anggota ini
           </Link>
@@ -279,7 +285,7 @@ export function MemberDrawer({
         ) : null}
 
         {canManage && mode === "edit" ? (
-          <Card className="space-y-4 border-[color:rgba(212,184,150,0.4)]">
+          <Card className="space-y-4 border-[color:var(--color-sand)]">
             <h3 className="text-base text-[color:var(--color-bark)]">Edit Profil Anggota</h3>
             <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
               Simpan perubahan tanpa meninggalkan pohon keluarga. Setelah tersimpan, panel akan kembali ke mode
@@ -397,7 +403,7 @@ export function MemberDrawer({
             <MemberStoriesSection personId={member.id} stories={stories} canManage={canManage} />
 
             {canManage ? (
-              <Card className="space-y-3 border-[color:rgba(212,184,150,0.4)]">
+              <Card className="space-y-3 border-[color:var(--color-sand)]">
                 <h3 className="text-base text-[color:var(--color-bark)]">Arsip / Pulihkan</h3>
                 {member.is_archived ? (
                   <form action={restoreMemberAction} className="space-y-3">
@@ -453,6 +459,17 @@ export function MemberDrawer({
                 )}
               </Card>
             ) : null}
+
+            <div className="pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="min-h-14 w-full border-2 border-[color:var(--color-sand)] text-lg font-bold text-[color:var(--color-clay)] hover:bg-[color:var(--color-warm)]"
+                onClick={closeDrawer}
+              >
+                Tutup Panel
+              </Button>
+            </div>
           </>
         )}
       </section>

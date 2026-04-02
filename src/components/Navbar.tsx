@@ -40,7 +40,6 @@ export function AppNav() {
     <header
       className={cn(
         "kk-panel-transition sticky top-0 z-50 border-b px-4 py-3 sm:px-6",
-        isRootCanvas ? "hidden sm:block" : "",
         isScrolled
           ? "border-[color:rgba(212,184,150,0.4)] bg-[color:var(--color-cream)]/90 backdrop-blur-md"
           : "border-transparent bg-[color:var(--color-cream)]"
