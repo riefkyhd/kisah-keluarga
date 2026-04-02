@@ -1,10 +1,11 @@
-import Link from "next/link";
 import { hasMinimumRole } from "@/lib/auth/roles";
-import { Card } from "@/components/ui/card";
+import { isAuthBypassEnabled } from "@/lib/auth/bypass";
 import { EmptyState } from "@/components/ui/empty-state";
-import { MemberCreateSheetShell } from "@/components/members/member-create-sheet-shell";
+import {
+  CanvasToolbar,
+  type CanvasSearchItem
+} from "@/components/layout/canvas-toolbar";
 import { MemberDrawer } from "@/components/members/member-drawer";
-import { FocusPersonCombobox } from "@/components/tree/focus-person-combobox";
 import { TreeCanvasController } from "@/components/tree/tree-canvas-controller";
 import { requireViewer } from "@/lib/permissions/guards";
 import {
@@ -23,7 +24,7 @@ import {
   restoreMemberAction,
   updateMemberAction
 } from "@/server/actions/members";
-import { getMemberById } from "@/server/queries/members";
+import { getMemberById, listActiveMembers } from "@/server/queries/members";
 import {
   getProfileRelationships,
   getTreeViewData,
@@ -117,8 +118,11 @@ export default async function PublicHomePage({ searchParams }: HomeTreePageProps
   const query = await searchParams;
   const focusPersonId = normalizeFocusPersonId(query.personId);
   const treeData = await getTreeViewData(focusPersonId);
+  const activeMembers = await listActiveMembers();
   const canManageMember = hasMinimumRole(role, "editor");
+  const canManageUsers = hasMinimumRole(role, "admin");
   const selectedMemberId = normalizeFocusPersonId(query.memberId);
+  const showLogout = !isAuthBypassEnabled();
 
   const drawerMember = selectedMemberId
     ? await getMemberById(selectedMemberId, canManageMember)
@@ -152,79 +156,56 @@ export default async function PublicHomePage({ searchParams }: HomeTreePageProps
     : null;
 
   const currentFocusPersonId = treeData.focusPerson?.id ?? focusPersonId;
+  const toolbarFocusPersonId = currentFocusPersonId || drawerMember?.id || "";
   const returnTo = drawerMember
     ? buildReturnToPath(currentFocusPersonId || drawerMember.id, drawerMember.id)
     : null;
+  const searchMembers: CanvasSearchItem[] = activeMembers.map((member) => ({
+    id: member.id,
+    fullName: member.full_name,
+    nickname: member.nickname,
+    photoUrl: member.profile_photo_url
+  }));
 
   return (
-    <section className="flex min-h-[calc(100dvh-11rem)] flex-col gap-5">
-      <h1 data-testid="tree-page-heading" className="sr-only">
+    <section className="relative flex min-h-[calc(100dvh-11rem)] flex-col gap-5">
+      <h1
+        data-testid="tree-page-heading"
+        className="text-[11px] font-medium uppercase tracking-[0.12em] text-[color:var(--color-clay)]"
+      >
         Pohon Keluarga
       </h1>
 
-      <div className="grid gap-5 lg:grid-cols-[22rem_minmax(0,1fr)]">
-        {treeData.focusCandidates.length > 0 ? (
-          <Card className="h-fit rounded-[var(--kk-radius-lg)] border-[color:rgba(212,184,150,0.4)] p-5 shadow-[var(--kk-shadow-card)] sm:p-6">
-            <FocusPersonCombobox
-              candidates={treeData.focusCandidates}
-              selectedPersonId={treeData.focusPerson?.id ?? ""}
-            />
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Link
-                href="/keluarga"
-                className="inline-flex min-h-12 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-4 py-3 text-sm font-medium text-[color:var(--color-bark)] hover:bg-[color:var(--color-warm)]"
-              >
-                Buka Direktori Keluarga
-              </Link>
-              <Link
-                href="/timeline"
-                className="inline-flex min-h-12 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] px-4 py-3 text-sm font-medium text-[color:var(--color-bark)] hover:bg-[color:var(--color-warm)]"
-              >
-                Buka Timeline Cerita
-              </Link>
-              <MemberCreateSheetShell
-                canManage={canManageMember}
-                focusPersonId={treeData.focusPerson?.id ?? currentFocusPersonId}
-                createAction={createMemberAction}
-              />
-            </div>
-          </Card>
-        ) : null}
-        {treeData.focusCandidates.length === 0 && canManageMember ? (
-          <Card className="h-fit rounded-[var(--kk-radius-lg)] border-[color:rgba(212,184,150,0.4)] p-5 shadow-[var(--kk-shadow-card)] sm:p-6">
-            <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)]">
-              Belum ada anggota aktif. Tambahkan anggota pertama untuk mulai membangun pohon keluarga.
-            </p>
-            <div className="mt-4">
-              <MemberCreateSheetShell
-                canManage={canManageMember}
-                focusPersonId={focusPersonId}
-                createAction={createMemberAction}
-              />
-            </div>
-          </Card>
-        ) : null}
+      {treeData.focusPerson ? (
+        <TreeCanvasController
+          focusPersonId={treeData.focusPerson.id}
+          focusPerson={treeData.focusPerson}
+          grandparents={treeData.grandparents}
+          parents={treeData.parents}
+          parentSpouses={treeData.parentSpouses}
+          grandparentParentLinks={treeData.grandparentParentLinks}
+          parentSpouseLinks={treeData.parentSpouseLinks}
+          spouse={treeData.spouse}
+          childMembers={treeData.children}
+          canvasHeightClassName="h-[calc(100dvh-12.5rem)] min-h-[520px] sm:h-[calc(100dvh-9rem)]"
+        />
+      ) : (
+        <EmptyState
+          title="Belum ada anggota aktif"
+          description="Belum ada anggota aktif untuk ditampilkan di pohon keluarga."
+        />
+      )}
 
-        {treeData.focusPerson ? (
-          <TreeCanvasController
-            focusPersonId={treeData.focusPerson.id}
-            focusPerson={treeData.focusPerson}
-            grandparents={treeData.grandparents}
-            parents={treeData.parents}
-            parentSpouses={treeData.parentSpouses}
-            grandparentParentLinks={treeData.grandparentParentLinks}
-            parentSpouseLinks={treeData.parentSpouseLinks}
-            spouse={treeData.spouse}
-            childMembers={treeData.children}
-            canvasHeightClassName="h-[calc(100dvh-14rem)] min-h-[520px]"
-          />
-        ) : (
-          <EmptyState
-            title="Belum ada anggota aktif"
-            description="Belum ada anggota aktif untuk ditampilkan di pohon keluarga."
-          />
-        )}
-      </div>
+      <CanvasToolbar
+        canManageMembers={canManageMember}
+        canManageUsers={canManageUsers}
+        showLogout={showLogout}
+        focusCandidates={treeData.focusCandidates}
+        selectedFocusPersonId={treeData.focusPerson?.id ?? ""}
+        focusPersonId={toolbarFocusPersonId}
+        searchMembers={searchMembers}
+        createAction={createMemberAction}
+      />
 
       {drawerMember && drawerData && returnTo ? (
         <MemberDrawer

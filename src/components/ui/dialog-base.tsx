@@ -45,7 +45,7 @@ export function useBodyScrollLock(open: boolean) {
 }
 
 export function DialogPortal({ children }: { children: React.ReactNode }) {
-  return <DialogPrimitive.Portal forceMount>{children}</DialogPrimitive.Portal>;
+  return <DialogPrimitive.Portal>{children}</DialogPrimitive.Portal>;
 }
 
 export const DialogOverlay = React.forwardRef<
@@ -54,7 +54,6 @@ export const DialogOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
-    forceMount
     className={cn(
       "fixed inset-0 z-[60] bg-[color:rgb(28_25_23_/_0.35)] backdrop-blur-sm kk-panel-transition",
       "data-[state=open]:opacity-100 data-[state=closed]:pointer-events-none data-[state=closed]:opacity-0",

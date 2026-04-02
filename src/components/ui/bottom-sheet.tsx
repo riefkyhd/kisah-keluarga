@@ -33,7 +33,6 @@ export function BottomSheet({ open, onClose, title, children }: BottomSheetProps
       <DialogPortal>
         <DialogOverlay />
         <DialogPrimitive.Content
-          forceMount
           aria-labelledby={titleId}
           className={cn(
             "fixed inset-x-0 bottom-0 z-[70] max-h-[92dvh] w-full border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] shadow-[var(--kk-shadow-panel)]",

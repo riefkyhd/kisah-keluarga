@@ -34,7 +34,6 @@ export function Drawer({ open, onClose, title, children, width = "28rem" }: Draw
       <DialogPortal>
         <DialogOverlay />
         <DialogPrimitive.Content
-          forceMount
           aria-labelledby={titleId}
           className={cn(
             "fixed inset-y-0 right-0 z-[70] flex w-full max-w-full flex-col border-l border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] shadow-[var(--kk-shadow-modal)]",

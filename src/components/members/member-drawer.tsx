@@ -15,6 +15,11 @@ import { MemberPhotoManager } from "@/components/members/member-photo-manager";
 import { MemberStoriesSection } from "@/components/stories/member-stories-section";
 import { RelationshipSection } from "@/components/relationships/relationship-section";
 import { formatTanggal } from "@/lib/format-tanggal";
+import {
+  buildCanvasHref,
+  cloneCanvasParams,
+  ensureCanvasFocus
+} from "@/lib/canvas/query-state";
 import type { MemberMutationResult } from "@/server/actions/members";
 import type { MemberProfile } from "@/server/queries/members";
 import type {
@@ -104,10 +109,8 @@ export function MemberDrawer({
   }, [editModeFromQuery, member.id]);
 
   const pushCanvasState = (updates: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (!params.get("personId")) {
-      params.set("personId", focusPersonId);
-    }
+    const params = cloneCanvasParams(searchParams);
+    ensureCanvasFocus(params, focusPersonId);
 
     Object.entries(updates).forEach(([key, value]) => {
       if (value === null) {
@@ -118,8 +121,7 @@ export function MemberDrawer({
       params.set(key, value);
     });
 
-    const queryString = params.toString();
-    router.push(queryString ? `/?${queryString}` : "/", { scroll: false });
+    router.push(buildCanvasHref(params), { scroll: false });
   };
 
   const closeDrawer = () => {
@@ -192,7 +194,12 @@ export function MemberDrawer({
             />
           </div>
           <div className="space-y-1.5">
-            <h2 className="break-words text-2xl text-[color:var(--color-bark)]">{member.full_name}</h2>
+            <h2
+              aria-label={member.full_name}
+              className="break-words text-2xl text-[color:var(--color-bark)]"
+            >
+              {member.full_name}
+            </h2>
             {member.nickname ? (
               <p className="text-sm font-normal text-[color:var(--kk-muted)]">Panggilan: {member.nickname}</p>
             ) : null}

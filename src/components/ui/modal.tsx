@@ -42,7 +42,6 @@ export function Modal({ open, onClose, title, children, size = "md" }: ModalProp
       <DialogPortal>
         <DialogOverlay />
         <DialogPrimitive.Content
-          forceMount
           aria-labelledby={titleId}
           className={cn(
             "fixed left-1/2 top-1/2 z-[70] w-[calc(100%-2rem)] -translate-x-1/2 border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] shadow-[var(--kk-shadow-panel)]",

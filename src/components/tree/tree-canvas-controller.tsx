@@ -2,6 +2,13 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { FamilyTree } from "@/components/FamilyTree";
+import {
+  buildCanvasHref,
+  CANVAS_TRANSIENT_QUERY_KEYS,
+  clearCanvasKeys,
+  cloneCanvasParams,
+  ensureCanvasFocus
+} from "@/lib/canvas/query-state";
 import type { RelationshipListItem, TreeFocusPerson } from "@/server/queries/relationships";
 
 type TreeCanvasControllerProps = {
@@ -23,19 +30,6 @@ type TreeCanvasControllerProps = {
   canvasHeightClassName?: string;
 };
 
-const MESSAGE_QUERY_KEYS = [
-  "relationship_error",
-  "relationship_status",
-  "photo_error",
-  "photo_status",
-  "error",
-  "status",
-  "edit",
-  "action",
-  "created",
-  "updated"
-] as const;
-
 export function TreeCanvasController({
   focusPersonId,
   focusPerson,
@@ -52,13 +46,11 @@ export function TreeCanvasController({
   const searchParams = useSearchParams();
 
   const handleNodeClick = (memberId: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    MESSAGE_QUERY_KEYS.forEach((key) => params.delete(key));
-    if (!params.get("personId")) {
-      params.set("personId", focusPersonId);
-    }
+    const params = cloneCanvasParams(searchParams);
+    clearCanvasKeys(params, CANVAS_TRANSIENT_QUERY_KEYS);
+    ensureCanvasFocus(params, focusPersonId);
     params.set("memberId", memberId);
-    router.push(`/?${params.toString()}`, { scroll: false });
+    router.push(buildCanvasHref(params), { scroll: false });
   };
 
   return (
