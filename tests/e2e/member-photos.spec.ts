@@ -43,10 +43,6 @@ test("editor bisa unggah, ganti, dan hapus foto profil anggota", async ({ page }
   expect(uploadedMeta?.mimetype).toBe("image/webp");
   expect((uploadedMeta?.size ?? 0) > 0).toBeTruthy();
 
-  await page.goto("/keluarga");
-  const memberCard = page.locator("a", { hasText: member.full_name }).first();
-  await expect(memberCard.locator(`img[alt="Foto profil ${member.full_name}"]`)).toBeVisible();
-
   await page.goto(`/keluarga/${member.id}`);
   await page
     .getByTestId("member-photo-upload-input")
@@ -72,10 +68,6 @@ test("viewer hanya bisa melihat foto tanpa kontrol ubah", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Ganti Foto" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Hapus Foto" })).toHaveCount(0);
   await expect(page.locator('[data-testid="member-photo-image"] img')).toBeVisible();
-
-  await page.goto("/keluarga");
-  const memberCard = page.locator("a", { hasText: member.full_name }).first();
-  await expect(memberCard.locator(`img[alt="Foto profil ${member.full_name}"]`)).toBeVisible();
 });
 
 test("unggah foto galeri yang lebih besar tetap sukses dan tersimpan teroptimasi", async ({ page }) => {

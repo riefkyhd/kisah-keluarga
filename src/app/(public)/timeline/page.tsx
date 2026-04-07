@@ -29,14 +29,14 @@ export default async function TimelinePage() {
       <div className="flex flex-wrap gap-3">
         <Link
           href="/keluarga"
-          className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
+          className="inline-flex min-h-12 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--kk-border)] bg-white px-5 py-3 text-base font-medium text-[color:var(--color-bark)] transition-colors hover:bg-[color:var(--color-warm)]"
         >
           Buka Direktori Keluarga
         </Link>
         {canManageStories ? (
           <Link
             href="/cerita-baru"
-            className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-amber-700 px-5 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-amber-800"
+            className="inline-flex min-h-12 items-center justify-center rounded-[var(--kk-radius-md)] border border-transparent bg-[color:var(--color-clay)] px-5 py-3 text-base font-medium text-white shadow-[var(--kk-shadow-soft)] transition-colors hover:bg-[color:var(--color-bark)]"
           >
             Tambah Cerita
           </Link>
@@ -60,12 +60,12 @@ export default async function TimelinePage() {
         />
       ) : (
         <ul
-          className="relative space-y-7 before:absolute before:inset-y-3 before:left-5 before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-stone-200 before:to-transparent md:before:left-1/2 md:before:-ml-px"
+          className="relative space-y-8 before:absolute before:inset-y-3 before:left-5 before:w-px before:bg-[linear-gradient(180deg,transparent,rgba(212,184,150,0.8),transparent)] md:before:left-1/2 md:before:-ml-px"
           data-testid="timeline-story-list"
         >
           {stories.map((story, index) => (
             <li key={story.id} className="relative flex md:justify-normal md:odd:flex-row-reverse">
-              <div className="absolute left-5 top-8 z-10 h-3 w-3 -translate-x-1/2 rounded-full border-4 border-[#F9F7F4] bg-amber-700 md:left-1/2" />
+              <div className="absolute left-5 top-8 z-10 h-3 w-3 -translate-x-1/2 rounded-[999px] border-[3px] border-[color:var(--color-cream)] bg-[color:var(--color-clay)] md:left-1/2" />
               <div className="ml-10 w-[calc(100%-2.5rem)] md:ml-0 md:w-[calc(50%-2.5rem)]">
                 <StoryCard story={story} canManage={canManageStories} variant="timeline" showPerson={index % 2 === 0} />
               </div>

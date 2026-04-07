@@ -20,7 +20,6 @@ type DrawerProps = {
 
 export function Drawer({ open, onClose, title, children, width = "28rem" }: DrawerProps) {
   useBodyScrollLock(open);
-  const titleId = React.useId();
 
   return (
     <DialogPrimitive.Root
@@ -34,7 +33,7 @@ export function Drawer({ open, onClose, title, children, width = "28rem" }: Draw
       <DialogPortal>
         <DialogOverlay />
         <DialogPrimitive.Content
-          aria-labelledby={titleId}
+          aria-describedby={undefined}
           className={cn(
             "fixed inset-y-0 right-0 z-[70] flex w-full max-w-full flex-col border-l border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] shadow-[var(--kk-shadow-modal)]",
             "sm:w-[var(--drawer-width)] sm:max-w-[calc(100vw-2rem)]",
@@ -43,10 +42,13 @@ export function Drawer({ open, onClose, title, children, width = "28rem" }: Draw
           )}
           style={{ "--drawer-width": width } as React.CSSProperties}
         >
-          <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] px-5 py-4">
-            <DialogPrimitive.Title id={titleId} className="text-lg text-[color:var(--color-bark)]">
+          <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-[color:rgba(212,184,150,0.4)] bg-[color:rgb(255_255_255_/_0.96)] px-5 py-4 backdrop-blur-sm">
+            <DialogPrimitive.Title className="text-xl font-semibold text-[color:var(--color-bark)]">
               {title}
             </DialogPrimitive.Title>
+            <DialogPrimitive.Description className="sr-only">
+              Panel informasi untuk {title}
+            </DialogPrimitive.Description>
             <DialogCloseButton aria-label="Tutup drawer" />
           </header>
           <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">{children}</div>

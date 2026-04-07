@@ -8,8 +8,8 @@ export function Card({ className, clickable = false, ...props }: CardProps) {
   return (
     <div
       className={cn(
-        "rounded-[var(--kk-radius-lg)] border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] p-5 shadow-[var(--kk-shadow-card)] sm:p-6",
-        clickable && "kk-interactive cursor-pointer hover:-translate-y-0.5 hover:bg-[color:var(--color-warm)]/35 hover:shadow-[var(--kk-shadow-panel)]",
+        "rounded-[var(--kk-radius-lg)] border-[1.5px] border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] p-6 shadow-[var(--kk-shadow-card)] sm:p-7 relative overflow-hidden",
+        clickable && "kk-interactive cursor-pointer hover:border-[color:var(--color-sand)] hover:shadow-[var(--kk-shadow-float)] group",
         className
       )}
       {...props}

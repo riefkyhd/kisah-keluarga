@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import type { RelationshipListItem, TreeFocusPerson } from "@/server/queries/relationships";
 import {
   buildFamilyTreeLayout,
@@ -146,10 +147,10 @@ export function FamilyTree({
     const map = new Map<string, (typeof layout.nodes)[number]>();
     layout.nodes.forEach((node) => map.set(node.id, node));
     return map;
-  }, [layout.nodes]);
+  }, [layout]);
 
   // Auto-center focus person on ID change
-  useMemo(() => {
+  useEffect(() => {
     setPan({ x: 0, y: 0 });
     setScale(1);
   }, [focusPerson.id]);
@@ -167,17 +168,17 @@ export function FamilyTree({
   return (
     <section
       data-testid="family-tree-visual"
-      className="space-y-4 rounded-[var(--kk-radius-xl)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] p-4 shadow-[var(--kk-shadow-card)] sm:p-5"
+      className="relative space-y-5 overflow-hidden rounded-[var(--kk-radius-hero)] border border-[color:var(--kk-border)] bg-[color:rgb(255_255_255_/_0.62)] p-5 shadow-[var(--kk-shadow-panel)] backdrop-blur-md sm:space-y-6 sm:p-8"
     >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm font-medium leading-relaxed text-[color:var(--kk-muted)]">
+      <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm font-normal leading-relaxed text-[color:var(--kk-muted)] sm:text-base">
           Pencet dan geser untuk pindah area, cubit atau gulir untuk perbesar. Ketuk nama untuk lihat profil.
         </p>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-3">
           <button
             type="button"
             onClick={() => setScale((current) => clampScale(current + 0.2))}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] text-xl font-bold text-[color:var(--color-bark)] hover:bg-[color:var(--color-sand)] active:scale-95 transition-all"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--kk-border)] bg-[color:var(--kk-surface)] text-xl font-medium text-[color:var(--color-bark)] shadow-[var(--kk-shadow-soft)] transition-all hover:bg-[color:var(--color-warm)]"
             aria-label="Perbesar"
           >
             +
@@ -185,7 +186,7 @@ export function FamilyTree({
           <button
             type="button"
             onClick={() => setScale((current) => clampScale(current - 0.2))}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] text-xl font-bold text-[color:var(--color-bark)] hover:bg-[color:var(--color-sand)] active:scale-95 transition-all"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--kk-border)] bg-[color:var(--kk-surface)] text-xl font-medium text-[color:var(--color-bark)] shadow-[var(--kk-shadow-soft)] transition-all hover:bg-[color:var(--color-warm)]"
             aria-label="Perkecil"
           >
             -
@@ -196,14 +197,14 @@ export function FamilyTree({
               setScale(1);
               setPan({ x: 0, y: 0 });
             }}
-            className="h-11 rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-4 py-2 text-sm font-bold text-[color:var(--color-bark)] hover:bg-[color:var(--color-sand)] active:scale-95 transition-all"
+            className="h-10 rounded-[var(--kk-radius-md)] border border-[color:var(--kk-border)] bg-[color:var(--kk-surface)] px-4 py-2 text-sm font-medium text-[color:var(--color-bark)] shadow-[var(--kk-shadow-soft)] transition-all hover:bg-[color:var(--color-warm)]"
           >
             Reset
           </button>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-[var(--kk-radius-lg)] border border-[color:var(--color-sand)] bg-[color:var(--color-cream)]/70">
+      <div className="relative z-10 overflow-hidden rounded-[var(--kk-radius-xl)] border border-[color:var(--kk-border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(240,234,224,0.62))] shadow-[var(--kk-shadow-card)]">
         <svg
           ref={containerRef}
           viewBox={`0 0 ${layout.width} ${layout.height}`}
@@ -353,9 +354,15 @@ export function FamilyTree({
               const hue = hashHue(node.fullName);
 
               return (
-                <g
+                <motion.g
                   key={node.id}
                   data-testid={testId}
+                  initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1], delay: node.row * 0.15 }}
+                  style={{ transformOrigin: `${node.x}px ${node.y}px` }}
                   onClick={(e) => {
                     if (movedDuringGestureRef.current) {
                       e.preventDefault();
@@ -369,55 +376,51 @@ export function FamilyTree({
 
                     router.push(`/keluarga/${node.id}`);
                   }}
-                  className="cursor-pointer select-none"
+                  className="cursor-pointer select-none group"
                 >
                   <title>{node.fullName}</title>
-                  <rect
+                  <foreignObject
                     x={nodeLeft}
                     y={nodeTop}
                     width={TREE_NODE_WIDTH}
                     height={TREE_NODE_HEIGHT}
-                    rx={14}
-                    fill={focusTone ? "#4a3728" : "#ffffff"}
-                    stroke={focusTone ? "#4a3728" : "#d4b896"}
-                    strokeWidth={2}
-                  />
-                  <circle
-                    cx={nodeLeft + 20}
-                    cy={node.y}
-                    r={16}
-                    fill={focusTone ? "#6b7c5e" : `hsl(${hue} 56% 86%)`}
-                    stroke={focusTone ? "#6b7c5e" : `hsl(${hue} 36% 70%)`}
-                    strokeWidth={1.4}
-                  />
-                  <text
-                    x={nodeLeft + 20}
-                    y={node.y + 4}
-                    textAnchor="middle"
-                    fontSize="10"
-                    fontWeight="700"
-                    fill={focusTone ? "#faf7f2" : `hsl(${hue} 32% 28%)`}
                   >
-                    {getInitials(node.fullName)}
-                  </text>
-                  <text
-                    x={nodeLeft + 42}
-                    y={node.y - 4}
-                    fontSize="8.2"
-                    fontWeight="600"
-                    fill={focusTone ? "#faf7f2" : "#4a3728"}
-                  >
-                    {truncateTreeName(node.fullName)}
-                  </text>
-                  <text
-                    x={nodeLeft + 42}
-                    y={node.y + 11}
-                    fontSize="8.8"
-                    fill={focusTone ? "#f0eae0" : "#8b5e3c"}
-                  >
-                    {node.roleLabel}
-                  </text>
-                </g>
+                    <div 
+                      className={`flex h-full w-full items-center gap-2 rounded-[var(--kk-radius-md)] border px-2 shadow-[var(--kk-shadow-soft)] transition-colors duration-300 ${
+                        focusTone 
+                          ? "border-[color:var(--color-bark)] bg-[color:var(--color-bark)]" 
+                          : "border-[color:var(--kk-border)] bg-[color:var(--kk-surface)] group-hover:border-[color:var(--color-clay)] group-hover:bg-[color:var(--color-warm)]"
+                      }`}
+                    >
+                      <div
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border shadow-sm font-bold text-xs"
+                        style={{
+                          backgroundColor: focusTone ? "var(--color-sage)" : `hsl(${hue} 56% 86%)`,
+                          borderColor: focusTone ? "var(--color-sage)" : `hsl(${hue} 36% 70%)`,
+                          color: focusTone ? "var(--color-cream)" : `hsl(${hue} 32% 28%)`
+                        }}
+                      >
+                        {getInitials(node.fullName)}
+                      </div>
+                      <div className="flex min-w-0 flex-1 flex-col justify-center">
+                        <span 
+                          className={`truncate text-[10px] font-medium leading-tight ${
+                            focusTone ? "text-white" : "text-[color:var(--color-bark)]"
+                          }`}
+                        >
+                          {truncateTreeName(node.fullName)}
+                        </span>
+                        <span 
+                          className={`truncate text-[9px] font-normal leading-tight ${
+                            focusTone ? "text-[color:var(--color-warm)]" : "text-[color:var(--color-clay)]"
+                          }`}
+                        >
+                          {node.roleLabel}
+                        </span>
+                      </div>
+                    </div>
+                  </foreignObject>
+                </motion.g>
               );
             })}
           </g>

@@ -55,7 +55,7 @@ test("viewer bisa mencari berdasarkan nickname", async ({ page }) => {
   await waitForQueryValue(page, "q", nickname);
 
   await expect(memberCardByName(page, member.full_name)).toHaveCount(1);
-  await expect(memberCardByName(page, `Panggilan: ${nickname}`)).toHaveCount(1);
+  await expect(memberCardByName(page, `"${nickname}"`)).toHaveCount(1);
 });
 
 test("anggota arsip tetap tersembunyi dan empty state tampil jelas", async ({ page }) => {

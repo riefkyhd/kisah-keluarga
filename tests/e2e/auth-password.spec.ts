@@ -22,5 +22,5 @@ test("login ditolak saat email atau password salah", async ({ page }) => {
   await page.getByRole("button", { name: "Masuk ke Akun" }).click();
 
   await expect(page).toHaveURL(/\/login\?error=invalid_credentials/);
-  await expect(page.getByText("Email atau kata sandi tidak cocok. Coba periksa lagi.")).toBeVisible();
+  await expect(page.getByText("Email atau kata sandi tidak cocok. Coba periksa lagi.").first()).toBeVisible();
 });

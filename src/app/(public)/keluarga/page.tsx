@@ -57,38 +57,38 @@ export default async function FamilyDirectoryPage({ searchParams }: FamilyDirect
       <SectionHeader
         eyebrow="Direktori Keluarga"
         title="Daftar Anggota"
-        description="Cari dan jelajahi profil anggota keluarga dengan nyaman. Anggota yang diarsipkan tidak ditampilkan di daftar utama."
+        description="Temukan anggota keluarga berdasarkan nama, panggilan, dan generasi. Anggota diarsipkan tidak ditampilkan di daftar utama."
       />
 
       <MemberSearchForm value={searchQuery} />
       <GenerationFilter selectedGeneration={directoryData.generationFilter} />
 
       {searchQuery ? (
-        <Card className="rounded-2xl border-stone-200 p-4">
-          <p className="text-sm leading-relaxed text-stone-700">
-            Menampilkan <span className="font-semibold">{directoryData.totalCount}</span> hasil untuk{" "}
-            <span className="font-semibold">&quot;{searchQuery}&quot;</span>.
+        <Card className="p-4">
+          <p className="text-sm leading-relaxed text-[color:var(--kk-muted)]">
+            Menampilkan <span className="font-medium">{directoryData.totalCount}</span> hasil untuk{" "}
+            <span className="font-medium">&quot;{searchQuery}&quot;</span>.
           </p>
         </Card>
       ) : null}
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-4">
         <Link
           href="/"
-          className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
+          className="inline-flex min-h-12 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--kk-border)] bg-white px-5 py-3 text-base font-medium text-[color:var(--color-bark)] transition-all hover:bg-[color:var(--color-warm)]"
         >
           Lihat Mode Pohon
         </Link>
         <Link
           href="/timeline"
-          className="inline-flex min-h-12 items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-5 py-3 text-base font-semibold text-stone-700 transition-colors hover:bg-stone-50"
+          className="inline-flex min-h-12 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--kk-border)] bg-white px-5 py-3 text-base font-medium text-[color:var(--color-bark)] transition-all hover:bg-[color:var(--color-warm)]"
         >
           Lihat Timeline Cerita
         </Link>
         {canManageMembers ? (
           <Link
             href="/anggota-baru"
-            className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-amber-700 px-5 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-amber-800"
+            className="inline-flex min-h-12 items-center justify-center rounded-[var(--kk-radius-md)] border border-transparent bg-[color:var(--color-clay)] px-5 py-3 text-base font-medium text-white shadow-[var(--kk-shadow-soft)] transition-all hover:bg-[color:var(--color-bark)]"
           >
             Tambah Anggota (Editor/Admin)
           </Link>
@@ -115,15 +115,15 @@ export default async function FamilyDirectoryPage({ searchParams }: FamilyDirect
           {canManageMembers ? (
             <li data-testid="add-member-card">
               <Link href="/anggota-baru" className="group block h-full">
-                <Card className="flex h-full min-h-[180px] flex-col items-center justify-center gap-3 rounded-[1.5rem] border-2 border-dashed border-stone-300 bg-stone-50/60 p-6 text-center transition-colors hover:border-amber-300 hover:bg-amber-50/40">
-                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white text-amber-700 shadow-sm">
+                <Card className="flex h-full min-h-[180px] flex-col items-center justify-center gap-3 border-2 border-dashed border-[color:var(--kk-border)] bg-[color:rgb(240_234_224_/_0.45)] p-6 text-center transition-colors hover:border-[color:var(--color-clay)] hover:bg-[color:rgb(240_234_224_/_0.7)]">
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-[999px] bg-white text-[color:var(--color-clay)] shadow-[var(--kk-shadow-soft)]">
                     <Plus className="h-6 w-6" />
                   </span>
                   <div className="space-y-1">
-                    <p className="text-base font-semibold text-stone-900 group-hover:text-amber-700">
+                    <p className="text-base font-medium text-[color:var(--color-bark)] group-hover:text-[color:var(--color-clay)]">
                       Tambah Anggota
                     </p>
-                    <p className="text-sm text-stone-600">Buat profil anggota keluarga baru</p>
+                    <p className="text-sm text-[color:var(--kk-muted)]">Buat profil anggota keluarga baru</p>
                   </div>
                 </Card>
               </Link>
@@ -133,34 +133,34 @@ export default async function FamilyDirectoryPage({ searchParams }: FamilyDirect
       )}
 
       {directoryData.totalPages > 1 ? (
-        <Card className="rounded-2xl border-stone-200 p-4">
+        <Card className="p-4">
           <div className="flex items-center justify-between gap-3">
             {directoryData.page > 1 ? (
               <Link
                 href={buildDirectoryHref(directoryData.page - 1)}
-                className="inline-flex min-h-11 items-center justify-center rounded-xl border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-50"
+                className="inline-flex min-h-11 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--kk-border)] bg-white px-4 py-2 text-sm font-medium text-[color:var(--color-bark)] transition-colors hover:bg-[color:var(--color-warm)]"
               >
                 ← Prev
               </Link>
             ) : (
-              <span className="inline-flex min-h-11 items-center rounded-xl border border-stone-100 bg-stone-50 px-4 py-2 text-sm font-semibold text-stone-400">
+              <span className="inline-flex min-h-11 items-center rounded-[var(--kk-radius-md)] border border-[color:var(--kk-border)] bg-[color:rgb(240_234_224_/_0.5)] px-4 py-2 text-sm font-medium text-[color:var(--kk-muted)]">
                 ← Prev
               </span>
             )}
 
-            <p className="text-sm font-medium text-stone-700">
+            <p className="text-sm font-medium text-[color:var(--kk-muted)]">
               Page {directoryData.page} of {directoryData.totalPages}
             </p>
 
             {directoryData.page < directoryData.totalPages ? (
               <Link
                 href={buildDirectoryHref(directoryData.page + 1)}
-                className="inline-flex min-h-11 items-center justify-center rounded-xl border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:bg-stone-50"
+                className="inline-flex min-h-11 items-center justify-center rounded-[var(--kk-radius-md)] border border-[color:var(--kk-border)] bg-white px-4 py-2 text-sm font-medium text-[color:var(--color-bark)] transition-colors hover:bg-[color:var(--color-warm)]"
               >
                 Next →
               </Link>
             ) : (
-              <span className="inline-flex min-h-11 items-center rounded-xl border border-stone-100 bg-stone-50 px-4 py-2 text-sm font-semibold text-stone-400">
+              <span className="inline-flex min-h-11 items-center rounded-[var(--kk-radius-md)] border border-[color:var(--kk-border)] bg-[color:rgb(240_234_224_/_0.5)] px-4 py-2 text-sm font-medium text-[color:var(--kk-muted)]">
                 Next →
               </span>
             )}

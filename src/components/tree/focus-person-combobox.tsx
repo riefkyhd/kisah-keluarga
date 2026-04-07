@@ -68,7 +68,7 @@ export function FocusPersonCombobox({
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
-          className="flex min-h-11 w-full items-center justify-between rounded-[var(--kk-radius-md)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] px-4 py-2 text-left text-sm text-[color:var(--color-bark)] transition-[background-color,border-color,color,box-shadow,transform,opacity] duration-[var(--kk-duration-fast)] ease-[var(--kk-ease-out)] hover:bg-[color:var(--color-warm)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--kk-focus)]"
+          className="flex min-h-11 w-full items-center justify-between rounded-[var(--kk-radius-md)] border border-[color:var(--kk-border)] bg-[color:var(--color-warm)] px-4 py-2 text-left text-sm text-[color:var(--color-bark)] transition-[background-color,border-color,color,box-shadow,transform,opacity] duration-[var(--kk-duration-fast)] ease-[var(--kk-ease-out)] hover:bg-[color:rgb(231_223_211)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--kk-focus)]"
           aria-expanded={open}
           aria-controls="tree-focus-combobox-list"
         >
@@ -88,7 +88,7 @@ export function FocusPersonCombobox({
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                className="w-full rounded-[var(--kk-radius-sm)] border border-[color:var(--color-sand)] bg-[color:var(--color-warm)] py-2 pl-9 pr-3 text-sm text-[color:var(--color-bark)] outline-none focus:ring-2 focus:ring-[color:var(--kk-focus)]"
+                className="w-full rounded-[var(--kk-radius-sm)] border border-[color:var(--kk-border)] bg-[color:var(--color-warm)] py-2 pl-9 pr-3 text-sm text-[color:var(--color-bark)] outline-none focus:ring-2 focus:ring-[color:var(--kk-focus)]"
                 placeholder="Ketik nama anggota..."
               />
             </div>

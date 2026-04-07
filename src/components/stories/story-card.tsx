@@ -28,14 +28,14 @@ export function StoryCard({
   const eventYear = story.event_date ? String(new Date(story.event_date).getFullYear()) : "Momen";
   const eventDateLabel = formatTanggal(story.event_date);
   const actionClass =
-    "inline-flex min-h-10 items-center rounded-[var(--kk-radius-sm)] px-4 py-2 text-sm font-medium sm:text-base";
+    "inline-flex min-h-10 items-center rounded-[var(--kk-radius-md)] px-4 py-2 text-sm font-medium sm:text-base";
 
   return (
-    <Card className="border-[color:rgba(212,184,150,0.4)]">
+    <Card className="border-[color:var(--kk-border)] bg-[color:var(--kk-surface)]">
       <article className="space-y-4">
         <header className="space-y-2">
           {variant === "timeline" ? (
-            <span className="inline-flex rounded-[var(--kk-radius-sm)] bg-[color:var(--color-warm)] px-3 py-1 text-xs font-medium uppercase tracking-[0.12em] text-[color:var(--color-clay)]">
+            <span className="inline-flex rounded-[var(--kk-radius-sm)] border border-[color:var(--kk-border)] bg-[color:var(--color-warm)] px-3 py-1 text-xs font-medium uppercase tracking-[0.12em] text-[color:var(--color-clay)]">
               {eventYear}
             </span>
           ) : null}
@@ -63,11 +63,17 @@ export function StoryCard({
         <p className="text-base font-normal leading-relaxed text-[color:var(--color-bark)]">{buildStoryPreview(story.body)}</p>
 
         <div className="flex flex-wrap gap-2 text-sm font-medium sm:text-base">
-          <Link href={`/cerita/${story.id}`} className={`${actionClass} bg-[color:var(--color-warm)] text-[color:var(--color-clay)] hover:bg-[color:#e7dfd3]`}>
+          <Link
+            href={`/cerita/${story.id}`}
+            className={`${actionClass} border border-[color:var(--kk-border)] bg-[color:var(--color-warm)] text-[color:var(--color-clay)] hover:bg-[color:rgb(231_223_211)]`}
+          >
             Buka detail cerita
           </Link>
           {canManage ? (
-            <Link href={`/cerita/${story.id}/edit`} className={`${actionClass} border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] text-[color:var(--color-clay)] hover:bg-[color:var(--color-warm)]`}>
+            <Link
+              href={`/cerita/${story.id}/edit`}
+              className={`${actionClass} border border-[color:var(--kk-border)] bg-[color:var(--kk-surface)] text-[color:var(--color-clay)] hover:bg-[color:var(--color-warm)]`}
+            >
               Edit Cerita
             </Link>
           ) : null}

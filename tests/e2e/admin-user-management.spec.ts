@@ -17,18 +17,19 @@ test("admin dapat membuat user, ubah role, reset password, dan nonaktif/aktifkan
   await page.getByLabel("Kata sandi awal").fill(initialPassword);
   await page.getByLabel("Role akun baru").selectOption("viewer");
   await page.getByRole("button", { name: "Buat Akun" }).click();
-  await expect(page.getByText("Akun baru berhasil dibuat.")).toBeVisible();
+  await expect(page.getByText("Akun baru berhasil dibuat.").first()).toBeVisible();
 
   let row = page.getByTestId("managed-user-item").filter({ hasText: email });
   await expect(row).toBeVisible();
 
   await row.getByLabel("Role akses").selectOption("editor");
   await row.getByRole("button", { name: "Simpan Role" }).click();
-  await expect(page.getByText("Role akun berhasil diperbarui.")).toBeVisible();
+  await expect(page.getByText("Role akun berhasil diperbarui.").first()).toBeVisible();
 
   row = page.getByTestId("managed-user-item").filter({ hasText: email });
   await row.getByRole("button", { name: "Nonaktifkan Akun" }).click();
-  await expect(page.getByText("Akun berhasil dinonaktifkan.")).toBeVisible();
+  await page.getByRole("button", { name: "Ya, Nonaktifkan" }).click();
+  await expect(page.getByText("Akun berhasil dinonaktifkan.").first()).toBeVisible();
 
   await page.context().clearCookies();
   await page.goto("/login?next=%2Fkeluarga");
@@ -41,12 +42,12 @@ test("admin dapat membuat user, ubah role, reset password, dan nonaktif/aktifkan
   row = page.getByTestId("managed-user-item").filter({ hasText: email });
 
   await row.getByRole("button", { name: "Aktifkan Kembali" }).click();
-  await expect(page.getByText("Akun berhasil diaktifkan kembali.")).toBeVisible();
+  await expect(page.getByText("Akun berhasil diaktifkan kembali.").first()).toBeVisible();
 
   row = page.getByTestId("managed-user-item").filter({ hasText: email });
   await row.getByLabel("Kata sandi baru").fill(resetPassword);
   await row.getByRole("button", { name: "Simpan Kata Sandi" }).click();
-  await expect(page.getByText("Kata sandi akun berhasil diperbarui.")).toBeVisible();
+  await expect(page.getByText("Kata sandi akun berhasil diperbarui.").first()).toBeVisible();
 
   await page.context().clearCookies();
   await page.goto("/login?next=%2Fcerita-baru");

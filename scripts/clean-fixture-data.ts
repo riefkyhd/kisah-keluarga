@@ -4,7 +4,13 @@ import { createClient } from "@supabase/supabase-js";
 const { loadEnvConfig } = nextEnv;
 loadEnvConfig(process.cwd());
 
-const FIXTURE_PREFIXES = ["Photo Flow", "Photo Invalid", "Photo Large", "Photo Viewer"] as const;
+const FIXTURE_PREFIXES = [
+  "[TEST]",
+  "Photo Flow",
+  "Photo Invalid",
+  "Photo Large",
+  "Photo Viewer",
+] as const;
 const PHOTO_BUCKET = "member-photos";
 
 type MatchRow = {

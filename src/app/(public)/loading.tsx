@@ -7,7 +7,7 @@ export default function Loading() {
         <Loader2 className="h-8 w-8 animate-spin text-[color:var(--color-clay)]" />
       </div>
       <p className="animate-pulse text-lg font-medium text-[color:var(--color-bark)]">
-        Memuat direktori keluarga...
+        Memuat data...
       </p>
     </div>
   );

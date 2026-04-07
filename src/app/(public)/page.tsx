@@ -168,10 +168,10 @@ export default async function PublicHomePage({ searchParams }: HomeTreePageProps
   }));
 
   return (
-    <section className="relative flex min-h-[calc(100dvh-11rem)] flex-col gap-5 pt-2 sm:pt-0">
+    <section className="relative flex min-h-[calc(100dvh-10rem)] flex-col gap-4 pt-1 sm:gap-5 sm:pt-0">
       <h1
         data-testid="tree-page-heading"
-        className="text-sm font-semibold uppercase tracking-wider text-[color:var(--color-clay)]"
+        className="text-xs font-medium uppercase tracking-[0.14em] text-[color:var(--color-clay)] sm:text-sm"
       >
         Pohon Keluarga
       </h1>
@@ -187,7 +187,7 @@ export default async function PublicHomePage({ searchParams }: HomeTreePageProps
           parentSpouseLinks={treeData.parentSpouseLinks}
           spouse={treeData.spouse}
           childMembers={treeData.children}
-          canvasHeightClassName="h-[calc(100dvh-12.5rem)] min-h-[520px] sm:h-[calc(100dvh-9rem)]"
+          canvasHeightClassName="h-[calc(100dvh-13.25rem)] min-h-[520px] sm:h-[calc(100dvh-9.5rem)]"
         />
       ) : (
         <EmptyState

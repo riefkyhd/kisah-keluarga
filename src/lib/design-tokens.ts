@@ -19,16 +19,19 @@ export const tokens = {
   },
   shadow: {
     soft: "0 1px 3px rgba(28,25,23,0.06)",
-    card: "0 4px 16px rgba(28,25,23,0.08)",
+    card: "0 1px 3px rgba(28,25,23,0.06), 0 4px 16px rgba(28,25,23,0.06)",
     panel: "0 8px 32px rgba(28,25,23,0.14)",
-    modal: "-4px 0 40px rgba(28,25,23,0.18)"
+    modal: "-4px 0 40px rgba(28,25,23,0.16)",
+    floating: "0 4px 24px rgba(28,25,23,0.14)"
   },
   motion: {
     ease: "cubic-bezier(0.16, 1, 0.3, 1)",
     easeOut: "cubic-bezier(0, 0, 0.2, 1)",
+    easeExit: "cubic-bezier(0.4, 0, 1, 1)",
     duration: {
       fast: "120ms",
       base: "220ms",
+      panel: "280ms",
       slow: "380ms"
     }
   }
@@ -44,8 +47,10 @@ export const designTokens = {
     rust: "#C4623A"
   },
   radius: {
-    control: tokens.radius.md,
+    control: tokens.radius.sm,
+    button: tokens.radius.md,
     card: tokens.radius.lg,
+    panel: tokens.radius.xl,
     hero: tokens.radius.hero
   }
 } as const;

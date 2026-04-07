@@ -17,17 +17,17 @@ export function SectionHeader({
 }: SectionHeaderProps) {
   return (
     <header className={cn("space-y-3", className)}>
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-2.5">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="space-y-3">
           {eyebrow ? (
-            <p className="text-[11px] uppercase tracking-[0.12em] text-[color:var(--color-clay)]">{eyebrow}</p>
+            <p className="text-[12px] font-bold uppercase tracking-widest text-[color:var(--color-clay)]">{eyebrow}</p>
           ) : null}
-          <h2 className="text-3xl tracking-tight text-[color:var(--color-bark)] sm:text-[2rem]">{title}</h2>
+          <h2 className="text-4xl font-bold tracking-tight text-[color:var(--color-bark)] sm:text-5xl">{title}</h2>
         </div>
         {action ? <div className="shrink-0">{action}</div> : null}
       </div>
       {description ? (
-        <p className="max-w-2xl text-[15px] font-normal leading-relaxed text-[color:var(--kk-muted)]">
+        <p className="max-w-3xl text-lg font-medium leading-relaxed text-[color:var(--kk-muted)] pt-2">
           {description}
         </p>
       ) : null}

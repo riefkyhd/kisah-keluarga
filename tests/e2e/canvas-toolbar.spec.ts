@@ -9,7 +9,7 @@ test("toolbar search membuka drawer anggota dari root canvas", async ({ page }) 
   await loginAsRole(page, "viewer", "/");
   await expect(page.getByTestId("family-tree-visual")).toBeVisible();
 
-  await page.getByRole("button", { name: "Search" }).click();
+  await page.getByRole("button", { name: "Cari Anggota" }).click();
   await page.getByPlaceholder("Cari nama atau panggilan...").fill("Toolbar Search");
   await page.getByRole("button", { name: member.full_name }).click();
 

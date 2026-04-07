@@ -69,7 +69,7 @@ function normalizeDirectorySearchQuery(searchQuery?: string) {
 
 async function buildPublicPhotoUrlMap(paths: string[]) {
   const uniquePaths = Array.from(new Set(paths));
-  const publicUrlMap = new Map<string, string>();
+  const publicUrlMap = new Map<string, string | null>();
   uniquePaths.forEach((path) => {
     publicUrlMap.set(path, getMemberPhotoPublicUrl(path));
   });

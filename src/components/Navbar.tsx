@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 function BrandIcon() {
@@ -22,8 +21,6 @@ function BrandIcon() {
 }
 
 export function AppNav() {
-  const pathname = usePathname();
-  const isRootCanvas = pathname === "/";
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -37,29 +34,34 @@ export function AppNav() {
   }, []);
 
   return (
-    <header
-      className={cn(
-        "kk-panel-transition sticky top-0 z-50 border-b px-4 py-3 sm:px-6",
-        isScrolled
-          ? "border-[color:rgba(212,184,150,0.4)] bg-[color:var(--color-cream)]/90 backdrop-blur-md"
-          : "border-transparent bg-[color:var(--color-cream)]"
-      )}
-    >
-      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3">
-        <Link href="/" className="flex items-center gap-3">
+    <div className={cn(
+      "fixed inset-x-0 top-0 z-50 pointer-events-none transition-all duration-[var(--kk-duration-base)]",
+      isScrolled ? "px-4 py-3 sm:py-4" : "px-0 py-0"
+    )}>
+      <header
+        className={cn(
+          "pointer-events-auto mx-auto flex w-full max-w-6xl items-center justify-between gap-3 transition-all duration-[var(--kk-duration-base)]",
+          isScrolled
+            ? "kk-glass rounded-[999px] px-6 py-3 shadow-[var(--kk-shadow-float)]"
+            : "border-b border-[color:rgba(212,184,150,0.4)] bg-[color:rgb(250_247_242_/_0.88)] px-4 py-4 backdrop-blur-sm sm:px-6"
+        )}
+      >
+        <Link href="/" className="group flex items-center gap-3">
           <BrandIcon />
           <div className="space-y-0.5">
             <p
-              className="text-lg font-semibold leading-none text-[color:var(--color-bark)]"
+              className="text-lg font-semibold leading-none text-[color:var(--color-bark)] transition-colors group-hover:text-[color:var(--color-clay)]"
               style={{ fontFamily: "var(--font-lora)" }}
             >
               Kisah Keluarga
             </p>
-            <p className="text-xs text-[color:var(--color-clay)]">Ruang kenangan lintas generasi</p>
+            <p className="text-[11px] font-medium uppercase tracking-wider text-[color:var(--color-clay)]">
+              Ruang kenangan lintas generasi
+            </p>
           </div>
         </Link>
-      </div>
-    </header>
+      </header>
+    </div>
   );
 }
 

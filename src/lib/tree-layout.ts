@@ -1,5 +1,5 @@
-export const TREE_NODE_WIDTH = 100;
-export const TREE_NODE_HEIGHT = 60;
+export const TREE_NODE_WIDTH = 130;
+export const TREE_NODE_HEIGHT = 48;
 const TREE_COLUMN_GAP = 56;
 const TREE_ROW_HEIGHT = 120;
 const TREE_TOP_PADDING = 56;

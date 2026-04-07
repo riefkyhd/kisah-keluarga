@@ -77,46 +77,46 @@ export function CanvasToolbar({
 
   return (
     <>
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-3 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:hidden">
-        <div className="pointer-events-auto mx-auto flex max-w-5xl items-center justify-between gap-1 rounded-[var(--kk-radius-xl)] border border-[color:var(--color-sand)] bg-[color:var(--kk-surface)] p-1.5 shadow-[var(--kk-shadow-panel)]">
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:hidden">
+        <div className="pointer-events-auto mx-auto flex max-w-md items-center justify-between gap-1 kk-glass rounded-[var(--kk-radius-hero)] p-2 shadow-[var(--kk-shadow-float)]">
           <Button
             type="button"
             variant="ghost"
-            className="h-auto flex-1 flex-col gap-1.5 px-1 py-2"
+            className="h-auto flex-1 flex-col gap-1.5 px-2 py-3 rounded-2xl hover:bg-white/50"
             onClick={() => setSearchOpen(true)}
           >
-            <Search className="h-5 w-5" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">Cari</span>
+            <Search className="h-6 w-6 text-[color:var(--color-clay)]" />
+            <span className="text-[10px] font-medium uppercase tracking-wider text-[color:var(--color-bark)]">Cari</span>
           </Button>
           {canManageMembers ? (
             <Button
               type="button"
               variant="ghost"
-              className="h-auto flex-1 flex-col gap-1.5 px-1 py-2"
+              className="h-auto flex-1 flex-col gap-1.5 px-2 py-3 rounded-2xl hover:bg-white/50"
               onClick={openAddMember}
             >
-              <Plus className="h-5 w-5" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">Tambah</span>
+              <Plus className="h-6 w-6 text-[color:var(--color-clay)]" />
+              <span className="text-[10px] font-medium uppercase tracking-wider text-[color:var(--color-bark)]">Tambah</span>
             </Button>
           ) : null}
           <Button
             type="button"
             variant="ghost"
-            className="h-auto flex-1 flex-col gap-1.5 px-1 py-2"
+            className="h-auto flex-1 flex-col gap-1.5 px-2 py-3 rounded-2xl hover:bg-white/50"
             onClick={() => setFocusOpen((value) => !value)}
           >
-            <Target className="h-5 w-5" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">Fokus</span>
+            <Target className="h-6 w-6 text-[color:var(--color-clay)]" />
+            <span className="text-[10px] font-medium uppercase tracking-wider text-[color:var(--color-bark)]">Fokus</span>
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 type="button"
                 variant="ghost"
-                className="h-auto flex-1 flex-col gap-1.5 px-1 py-2"
+                className="h-auto flex-1 flex-col gap-1.5 px-2 py-3 rounded-2xl hover:bg-white/50"
               >
-                <Ellipsis className="h-5 w-5" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Menu</span>
+                <Ellipsis className="h-6 w-6 text-[color:var(--color-clay)]" />
+                <span className="text-[10px] font-medium uppercase tracking-wider text-[color:var(--color-bark)]">Menu</span>
               </Button>
             </DropdownMenuTrigger>
             <ToolbarMenuItems canManageUsers={canManageUsers} showLogout={showLogout} />
@@ -124,33 +124,32 @@ export function CanvasToolbar({
         </div>
       </div>
 
-      <div className="pointer-events-none fixed right-6 top-20 z-40 hidden sm:block">
-        <div className="pointer-events-auto flex items-center gap-2 rounded-[999px] border border-[color:rgba(212,184,150,0.4)] bg-[color:var(--kk-surface)] p-2 shadow-[0_4px_24px_rgba(28,25,23,0.14)]">
-          <Button type="button" variant="outline" size="sm" onClick={() => setSearchOpen(true)}>
-            <Search className="h-4 w-4" />
-            Search
+      <div className="pointer-events-none fixed right-6 top-24 z-40 hidden sm:block">
+        <div className="pointer-events-auto flex flex-col gap-3 kk-glass rounded-[var(--kk-radius-xl)] p-3 shadow-[var(--kk-shadow-float)]">
+          <Button type="button" variant="outline" className="justify-start border border-[color:var(--kk-border)] bg-white/70 shadow-[var(--kk-shadow-soft)] hover:bg-[color:var(--color-warm)]" onClick={() => setSearchOpen(true)}>
+            <Search className="h-5 w-5 mr-2 text-[color:var(--color-clay)]" />
+            <span className="font-medium text-[color:var(--color-bark)]">Cari Anggota</span>
           </Button>
           {canManageMembers ? (
             <Button
               type="button"
               variant="outline"
-              size="sm"
-              aria-label="Tambah Anggota"
+              className="justify-start border border-[color:var(--kk-border)] bg-white/70 shadow-[var(--kk-shadow-soft)] hover:bg-[color:var(--color-warm)]"
               onClick={openAddMember}
             >
-              <Plus className="h-4 w-4" />
-              Tambah Anggota
+              <Plus className="h-5 w-5 mr-2 text-[color:var(--color-clay)]" />
+              <span className="font-medium text-[color:var(--color-bark)]">Tambah Anggota</span>
             </Button>
           ) : null}
-          <Button type="button" variant="outline" size="sm" onClick={() => setFocusOpen((value) => !value)}>
-            <Target className="h-4 w-4" />
-            Fokus
+          <Button type="button" variant="outline" className="justify-start border border-[color:var(--kk-border)] bg-white/70 shadow-[var(--kk-shadow-soft)] hover:bg-[color:var(--color-warm)]" onClick={() => setFocusOpen((value) => !value)}>
+            <Target className="h-5 w-5 mr-2 text-[color:var(--color-clay)]" />
+            <span className="font-medium text-[color:var(--color-bark)]">Ubah Fokus</span>
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button type="button" variant="outline" size="sm">
-                <Ellipsis className="h-4 w-4" />
-                Menu
+              <Button type="button" variant="outline" className="justify-start border border-[color:var(--kk-border)] bg-white/70 shadow-[var(--kk-shadow-soft)] hover:bg-[color:var(--color-warm)]">
+                <Ellipsis className="h-5 w-5 mr-2 text-[color:var(--color-clay)]" />
+                <span className="font-medium text-[color:var(--color-bark)]">Menu Lainnya</span>
               </Button>
             </DropdownMenuTrigger>
             <ToolbarMenuItems canManageUsers={canManageUsers} showLogout={showLogout} />
